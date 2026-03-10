@@ -1,0 +1,131 @@
+guest - 
+Authentication: Sign up, Log in, Password recovery.
+
+Discovery: Browse the catalog of available gaming clubs.
+
+Viewing Details: View specific club profiles (location, photos, available hardware, pricing plans).
+
+Check Availability: See real-time availability of PCs or consoles (read-only).
+
+auth user - 
+Booking Management: Reserve a specific PC, console, or VIP room for a certain date/time. Cancel or reschedule an active booking.
+
+Financials: Top up internal account balance via payment gateway, view transaction history.
+
+Session Control: Start a gaming session (e.g., via a QR code or PIN at the venue), pause, or end the session.
+
+Social & Engagement: Leave ratings and text reviews for clubs after a session.
+
+Profile Management: Update personal details, change passwords, link external gaming accounts (Steam, Riot, etc.).
+
+admin - 
+This role controls the entire "Cyberzone" system. They focus on moderation, global finances, and platform health.
+
+Tenant Management: Approve, reject, or suspend new club registrations.
+
+User Management: Ban or unban users, force-reset passwords in case of security breaches.
+
+Global Configuration: Set platform-wide commission rates, configure integrated payment providers.
+
+Global Analytics: View total platform revenue, active user counts, and overall system load.
+
+Moderation: Delete inappropriate reviews, handle dispute tickets between Users and Club Owners.
+
+club owner -
+Venue Management: Update club profile (description, working hours, photos).
+
+Hardware/Inventory Management: Add, edit, or remove workstations. Group PCs into zones (e.g., Standard, Boot-camp, VIP) and specify hardware specs (CPU, GPU, monitor refresh rate).
+
+Pricing Configuration: Create and manage tariff plans (hourly rates, night packages, weekend promos).
+
+Booking Oversight: View a dashboard of current, upcoming, and past reservations. Manually assign users to PCs if they walk in.
+
+Analytics & Reports: View daily/monthly revenue, PC utilization rates, and customer retention metrics.
+
+Staff Management: Add or remove local admins/operators for their specific club.
+
+
+
+
+
+
+
+
+
+1. Підсистема: Identity & Access Management (Управління користувачами та доступом)
+Відповідає за безпеку, авторизацію, профілі та ролі.
+
+Guest ➔ Authentication: Sign up, Log in, Password recovery.
+
+Auth User ➔ Profile Management: Update personal details, change passwords, link external gaming accounts (Steam, Riot, etc.).
+
+Club Owner ➔ Management: Створювати заявку для реєстрації нового клубу, увійти в акаунт клубу.
+
+Admin ➔ User Management: Ban or unban users, force-reset passwords in case of security breaches.
+
+Admin ➔ Tenant Management: Approve, reject, or suspend new club registrations.
+
+2. Підсистема: Catalog & Venue Profile (Каталог та профілі клубів)
+Відповідає за відображення інформації про заклади та їхній пошук.
+
+Guest ➔ Discovery: Browse the catalog of available gaming clubs.
+
+Guest ➔ Viewing Details: View specific club profiles (location, photos, available hardware, pricing plans).
+
+Club Owner ➔ Venue Management: Update club profile (description, working hours, photos).
+
+3. Підсистема: Booking & Scheduling (Бронювання та розклад)
+Ядро системи, що відповідає за резервацію часу та машин.
+
+Guest ➔ Check Availability: See real-time availability of PCs or consoles (read-only).
+
+Auth User ➔ Booking Management: Reserve a specific PC, console, or VIP room for a certain date/time. Cancel or reschedule an active booking.
+
+Club Owner ➔ Booking Oversight: View a dashboard of current, upcoming, and past reservations. Manually assign users to PCs if they walk in.
+
+4. Підсистема: Session & Hardware Management (Управління сеансами та залізом)
+Відповідає за фізичну взаємодію з комп'ютерами та їхній облік.
+
+Auth User ➔ Session Control: Start a gaming session (e.g., via a QR code or PIN at the venue), pause, or end the session.
+
+Club Owner ➔ Hardware/Inventory Management: Add, edit, or remove workstations. specify hardware specs.
+
+5. Підсистема: Billing & Finance (Білінг та фінанси)
+Усі грошові транзакції, тарифи та комісії.
+
+Auth User ➔ Financials: Top up internal account balance via payment gateway, view transaction history.
+
+Club Owner ➔ Pricing Configuration: Create and manage tariff plans (hourly rates, night packages, weekend promos).
+
+Admin ➔ Global Configuration: Set platform-wide commission rates, configure integrated payment providers.
+
+6. Підсистема: Social & Moderation (Відгуки та модерація)
+Взаємодія ком'юніті та вирішення конфліктів.
+
+Auth User ➔ Social & Engagement: Leave ratings and text reviews for clubs after a session.
+
+Admin ➔ Moderation: Delete inappropriate reviews, handle dispute tickets between Users and Club Owners.
+
+7. Підсистема: Analytics & Reporting (Аналітика та статистика)
+Збір метрик для бізнесу та платформи загалом.
+
+Club Owner ➔ Analytics & Reports: View daily/monthly revenue, PC utilization rates, and customer retention metrics.
+
+Admin ➔ Global Analytics: View total platform revenue, active user counts, and overall system load.
+
+
+Для цього ми виділимо окрему групу юз-кейсів, яку можна назвати Підсистема: Food & Beverage (Бар та замовлення).
+
+Ось як вони розподіляться між нашими ролями:
+
+Auth User (Під час активної сесії)
+Browse Bar Menu: Переглядати доступні товари бару, їхні ціни, фотографії та наявність на складі.
+
+Place Order: Формувати кошик і замовляти товари прямо до свого ігрового місця. Система має автоматично підтягувати номер ПК з поточної активної сесії, щоб юзеру не треба було вводити його вручну.
+
+Payment for F&B: Оплачувати замовлення. Це може бути моментальне списання з віртуального балансу платформи або додавання суми до загального чека, який юзер оплатить по завершенню ігрового часу.
+
+Club Owner (Або адміністратор на рецепції)
+Menu & Inventory Management: Створювати нові позиції меню, редагувати ціни та керувати залишками (щоб унеможливити замовлення енергетика, якщо він закінчився в холодильнику).
+
+Order Fulfillment: Отримувати сповіщення про нове замовлення, бачити перелік товарів та номер ПК, приймати замовлення в роботу (клік по кнопці "Прийняти") та закривати його (клік по кнопці "Видано/Доставлено").

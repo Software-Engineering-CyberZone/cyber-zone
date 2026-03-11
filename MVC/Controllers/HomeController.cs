@@ -8,12 +8,10 @@ namespace MVC.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
     private readonly IApplicationDbContext _context;
 
-    public HomeController(ILogger<HomeController> logger, IApplicationDbContext context)
+    public HomeController(IApplicationDbContext context)
     {
-        _logger = logger;
         _context = context;
     }
 

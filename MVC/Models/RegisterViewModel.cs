@@ -4,27 +4,23 @@ namespace MVC.Models;
 
 public class RegisterViewModel
 {
-    [Required]
-    [Display(Name = "Username")]
-    [StringLength(100, MinimumLength = 3)]
-    public string UserName { get; set; } = string.Empty;
+    [Required(ErrorMessage = "Поле Нікнейм є обов'язковим")]
+    public string UserName { get; set; } = null!;
 
-    [Required]
-    [EmailAddress]
-    public string Email { get; set; } = string.Empty;
+    [Required(ErrorMessage = "Поле Ім'я є обов'язковим")]
+    public string FullName { get; set; } = null!;
 
-    [Required]
-    [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least {2} characters long.")]
+    [Required(ErrorMessage = "Поле Email є обов'язковим")]
+    [EmailAddress(ErrorMessage = "Некоректний формат Email")]
+    public string Email { get; set; } = null!;
+
+    [Required(ErrorMessage = "Поле Пароль є обов'язковим")]
+    [StringLength(100, ErrorMessage = "Пароль має містити щонайменше {2} символів.", MinimumLength = 6)]
     [DataType(DataType.Password)]
-    public string Password { get; set; } = string.Empty;
+    public string Password { get; set; } = null!;
 
-    [Required]
     [DataType(DataType.Password)]
-    [Display(Name = "Confirm password")]
-    [Compare("Password", ErrorMessage = "Passwords do not match.")]
-    public string ConfirmPassword { get; set; } = string.Empty;
-
-    [Display(Name = "Full name")]
-    [StringLength(200)]
-    public string? FullName { get; set; }
+    [Display(Name = "Підтвердження паролю")]
+    [Compare("Password", ErrorMessage = "Паролі не співпадають.")]
+    public string ConfirmPassword { get; set; } = null!;
 }

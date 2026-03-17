@@ -50,7 +50,7 @@
         <div class="auth-card" style="height: auto; min-height: 479px;">
             
             <h1 class="auth-title">Вітаємо!</h1>
-
+            <div asp-validation-summary="ModelOnly" class="text-danger" style="color: #ff4d4d; font-size: 14px; margin-bottom: 15px; text-align: center;"></div>
             <form asp-controller="Account" asp-action="Login" method="post" asp-route-returnUrl="@ViewData["ReturnUrl"]">
                 
                 <div class="form-group">

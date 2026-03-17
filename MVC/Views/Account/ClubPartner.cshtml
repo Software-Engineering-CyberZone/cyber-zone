@@ -1,0 +1,85 @@
+I@model MVC.Models.ClubPartnerViewModel
+@{
+    ViewData["Title"] = "Для власників клубів";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CyberZone</title>
+    <link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />
+    <style>
+        .partner-footer-note {
+            width: 363px;
+            margin: 25px auto 0;
+            font-family: 'Lato', sans-serif;
+            font-weight: 300;
+            font-size: 12px;
+            line-height: 14px;
+            text-align: center;
+            color: #EDEDED;
+        }
+        .success-alert {
+            color: #D6FF3F;
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body class="cyber-auth">
+
+    <header class="cyber-header">
+        <div class="header-left">
+            <img src="~/images/logo.png" alt="Logo" class="logo-img" /> 
+            <span class="logo-text">CyberZone</span>
+        </div>
+        <div class="header-right">
+            <div class="avatar-circle"></div>
+            <span class="guest-text">Гість</span>
+        </div>
+    </header>
+
+    <main class="auth-wrapper">
+        <div class="auth-card" style="height: auto; min-height: 478px;">
+            
+            <h1 class="auth-title">Долучайтеся до наших парнерів!</h1>
+
+            @if (TempData["Message"] != null)
+            {
+                <div class="success-alert">@TempData["Message"]</div>
+            }
+
+            <form asp-action="ClubPartner" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="form-group">
+                    <label class="auth-label" asp-for="Email">Email</label>
+                    <input type="email" class="auth-input" asp-for="Email" placeholder="example@club.com" />
+                    <span asp-validation-for="Email" class="text-danger" style="font-size: 11px;"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="auth-label" asp-for="Phone">Номер телефону</label>
+                    <input type="text" class="auth-input" asp-for="Phone" placeholder="+380..." />
+                    <span asp-validation-for="Phone" class="text-danger" style="font-size: 11px;"></span>
+                </div>
+
+                <button type="submit" class="auth-btn btn-register" style="margin-top: 35px;">Надіслати заявку</button>
+                <a asp-controller="Home" asp-action="Index" class="auth-btn btn-cancel">Скасувати</a>
+            </form>
+
+            <p class="partner-footer-note">
+                Ми дуже цінуємо Ваше бажання співпрацювати з нами! З Вами обов’язково зв’яжеться наш менеджер для уточнення деталей.
+            </p>
+        </div>
+    </main>
+
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }
+</body>
+</html>

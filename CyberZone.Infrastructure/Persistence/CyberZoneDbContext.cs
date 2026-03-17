@@ -1,18 +1,19 @@
 using CyberZone.Application.Interfaces;
 using CyberZone.Domain.Common;
 using CyberZone.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace CyberZone.Infrastructure.Persistence;
 
-public class CyberZoneDbContext : DbContext, IApplicationDbContext
+public class CyberZoneDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>, IApplicationDbContext
 {
     public CyberZoneDbContext(DbContextOptions<CyberZoneDbContext> options)
         : base(options)
     {
     }
 
-    public DbSet<User> Users => Set<User>();
     public DbSet<Club> Clubs => Set<Club>();
     public DbSet<Hardware> Hardwares => Set<Hardware>();
     public DbSet<Tariff> Tariffs => Set<Tariff>();

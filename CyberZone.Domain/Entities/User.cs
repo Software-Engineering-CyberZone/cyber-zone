@@ -1,16 +1,16 @@
 using CyberZone.Domain.Common;
-using CyberZone.Domain.Enums;
+using Microsoft.AspNetCore.Identity;
 
 namespace CyberZone.Domain.Entities;
 
-public class User : EntityBase, IAuditable
+public class User : IdentityUser<Guid>, IAuditable
 {
-    public string UserName { get; set; } = string.Empty;
-    public string Email { get; set; } = string.Empty;
-    public string PasswordHash { get; set; } = string.Empty;
+    public User()
+    {
+        Id = Guid.NewGuid();
+    }
+
     public string? FullName { get; set; }
-    public string? Phone { get; set; }
-    public UserRole Role { get; set; } = UserRole.Client;
     public decimal Balance { get; set; }
 
     /// <summary>

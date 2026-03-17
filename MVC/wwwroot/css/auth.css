@@ -1,0 +1,188 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Lato:wght@300;500&display=swap');
+
+:root {
+    --bg-dark: #0B1222;
+    --card-bg: #1B2735;
+    --input-bg: #1C2838;
+    --text-light: #EDEDED;
+    --text-dark: #000000;
+    --line-color: #93A0A9;
+    --gradient-accent: linear-gradient(91.95deg, #D6FF3F 2.89%, #E05BBE 97.05%);
+    --gradient-avatar: linear-gradient(180deg, #D6FF3F 0%, #E05BBE 100%);
+}
+
+body.cyber-auth {
+    background-color: var(--bg-dark);
+    margin: 0;
+    padding: 0;
+    font-family: 'Lato', sans-serif;
+    color: var(--text-light);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ================= ХЕДЕР ================= */
+.cyber-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 84px;
+    padding: 0 40px;
+    border-bottom: 1px solid var(--line-color);
+}
+
+.header-left, .header-right {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+
+.logo-img, .avatar-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.avatar-circle {
+    background: var(--gradient-avatar);
+}
+
+.logo-text {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 20px;
+    color: var(--text-light);
+}
+
+.guest-text {
+    font-family: 'Lato', sans-serif;
+    font-weight: 300;
+    font-size: 16px;
+    color: var(--text-light);
+}
+
+/* ================= КАРТКА РЕЄСТРАЦІЇ / ЛОГІНУ ================= */
+.auth-wrapper {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.auth-card {
+    background: var(--card-bg);
+    border-radius: 10px;
+    width: 419px;
+    padding: 37px 31px 31px 31px;
+    box-sizing: border-box;
+}
+
+.auth-title {
+    font-family: 'Lato', sans-serif;
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 29px;
+    text-align: center;
+    color: var(--text-light);
+    margin: 0 0 35px 0;
+}
+
+/* ================= ПОЛЯ ВВОДУ ================= */
+.form-group {
+    margin-bottom: 21px;
+}
+
+.auth-label {
+    display: block;
+    font-family: 'Lato', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 17px;
+    color: var(--text-light);
+    margin-bottom: 6px;
+}
+
+/* Стилі для всіх інпутів з градієнтною обводкою */
+.auth-input {
+    width: 100%;
+    height: 38px;
+    padding: 0 15px;
+    box-sizing: border-box;
+    font-family: 'Lato', sans-serif;
+    color: var(--text-light);
+    font-size: 14px;
+    outline: none;
+    /* Радіус з Фігми */
+    border-radius: 3px;
+    /* Трюк для збереження заокруглення з градієнтною рамкою (товщина рамки 2px) */
+    border: 2px solid transparent;
+    background-image: linear-gradient(var(--input-bg), var(--input-bg)), linear-gradient(90deg, #D6FF3F 0%, #E05BBE 100%);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    /* Легке світіння за замовчуванням */
+    box-shadow: 0 0 8px rgba(224, 91, 190, 0.1);
+    transition: all 0.3s ease;
+}
+
+    /* Ефект, коли користувач клікає на будь-яке поле, щоб ввести текст */
+    .auth-input:focus {
+        /* Підсилюємо неонове світіння */
+        box-shadow: 0 0 15px rgba(214, 255, 63, 0.25), 0 0 15px rgba(224, 91, 190, 0.25);
+        /* Робимо фон поля ледь світлішим при введенні */
+        background-image: linear-gradient(rgba(28, 40, 56, 0.9), rgba(28, 40, 56, 0.9)), linear-gradient(90deg, #D6FF3F 0%, #E05BBE 100%);
+    }
+
+/* ================= КНОПКИ ТА ПОСИЛАННЯ ================= */
+.auth-btn {
+    width: 100%;
+    height: 49px;
+    border-radius: 5px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.2s;
+    box-sizing: border-box;
+}
+
+    .auth-btn:hover {
+        opacity: 0.85;
+    }
+
+.btn-register {
+    background: var(--gradient-accent);
+    color: var(--text-dark);
+    margin-top: 38px;
+}
+
+.btn-cancel {
+    background: var(--input-bg);
+    color: var(--text-light);
+    margin-top: 16px;
+}
+
+.auth-footer-text {
+    font-family: 'Lato', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 17px;
+    text-align: center;
+    color: var(--text-light);
+    margin-top: 16px;
+}
+
+.auth-link {
+    color: var(--text-light);
+    text-decoration: underline;
+}
+
+    .auth-link:hover {
+        color: #D6FF3F;
+    }

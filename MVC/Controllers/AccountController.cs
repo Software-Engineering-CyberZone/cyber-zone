@@ -1,5 +1,5 @@
 using CyberZone.Domain.Entities;
-using CyberZone.Domain.Enums;
+using MVC.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,101 +12,112 @@ public class AccountController : Controller
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
 
+    // Впроваджуємо залежності Identity через конструктор
     public AccountController(UserManager<User> userManager, SignInManager<User> signInManager)
     {
         _userManager = userManager;
         _signInManager = signInManager;
     }
 
-    [HttpGet]
-    public IActionResult Login(string? returnUrl = null)
-    {
-        return View(new LoginViewModel { ReturnUrl = returnUrl });
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Login(LoginViewModel model)
-    {
-        if (!ModelState.IsValid)
-            return View(model);
-
-        var user = await _userManager.FindByEmailAsync(model.Email);
-        if (user == null)
-        {
-            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-            return View(model);
-        }
-
-        var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: true);
-
-        if (result.Succeeded)
-        {
-            if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
-                return Redirect(model.ReturnUrl);
-
-            return RedirectToAction("Index", "Home");
-        }
-
-        if (result.IsLockedOut)
-        {
-            ModelState.AddModelError(string.Empty, "Account locked out. Please try again later.");
-            return View(model);
-        }
-
-        ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-        return View(model);
-    }
+    // ================= РЕЄСТРАЦІЯ =================
 
     [HttpGet]
     public IActionResult Register()
     {
-        return View(new RegisterViewModel());
+        // Якщо юзер вже залогінений - йому не треба на сторінку реєстрації
+        if (User.Identity!.IsAuthenticated) return RedirectToAction("Catalog", "Home");
+        return View();
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Register(RegisterViewModel model)
     {
-        if (!ModelState.IsValid)
-            return View(model);
-
-        var user = new User
+        if (ModelState.IsValid)
         {
-            UserName = model.UserName,
-            Email = model.Email,
-            FullName = model.FullName
-        };
+            // 1. Створюємо об'єкт користувача
+            var user = new User
+            {
+                UserName = model.UserName,
+                Email = model.Email,
+                // Якщо у вашій сутності User є поле FullName, розкоментуй наступний рядок:
+                // FullName = model.FullName 
+            };
 
-        var result = await _userManager.CreateAsync(user, model.Password);
+            // 2. Зберігаємо в базу (Identity автоматично хешує пароль)
+            var result = await _userManager.CreateAsync(user, model.Password);
 
-        if (result.Succeeded)
-        {
-            await _userManager.AddToRoleAsync(user, nameof(UserRole.Client));
-            await _signInManager.SignInAsync(user, isPersistent: false);
-            return RedirectToAction("Index", "Home");
+            if (result.Succeeded)
+            {
+                // 3. Автоматично логінимо користувача після успішної реєстрації
+                await _signInManager.SignInAsync(user, isPersistent: false);
+
+                // 4. Перекидаємо на сторінку каталогу
+                return RedirectToAction("Catalog", "Home");
+            }
+
+            // Якщо є помилки (наприклад, такий Email вже є), додаємо їх у ModelState
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
         }
 
-        foreach (var error in result.Errors)
+        // Якщо щось пішло не так, повертаємо форму з введеними даними та помилками
+        return View(model);
+    }
+
+    // ================= ЛОГІН =================
+
+    [HttpGet]
+    public IActionResult Login(string? returnUrl = null)
+    {
+        if (User.Identity!.IsAuthenticated) return RedirectToAction("Catalog", "Home");
+
+        ViewData["ReturnUrl"] = returnUrl;
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null)
+    {
+        ViewData["ReturnUrl"] = returnUrl;
+
+        if (ModelState.IsValid)
         {
-            ModelState.AddModelError(string.Empty, error.Description);
+            // Identity стандартно логінить по UserName. 
+            // Оскільки в нашій формі логіну поле називається Email, ми спочатку шукаємо юзера за Email:
+            var user = await _userManager.FindByEmailAsync(model.Email);
+
+            if (user != null)
+            {
+                // Перевіряємо пароль і логінимо
+                var result = await _signInManager.PasswordSignInAsync(user.UserName!, model.Password, isPersistent: false, lockoutOnFailure: false);
+
+                if (result.Succeeded)
+                {
+                    // Якщо є ReturnUrl (користувач хотів кудись зайти, але його не пустило), повертаємо туди
+                    if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                        return Redirect(returnUrl);
+
+                    // Інакше - на каталог
+                    return RedirectToAction("Catalog", "Home");
+                }
+            }
+
+            // Щоб не підказувати хакерам, що саме не так (логін чи пароль), виводимо загальну помилку
+            ModelState.AddModelError(string.Empty, "Невірний email або пароль.");
         }
 
         return View(model);
     }
 
+    // ================= ВИХІД =================
+
     [HttpPost]
-    [ValidateAntiForgeryToken]
-    [Authorize]
     public async Task<IActionResult> Logout()
     {
         await _signInManager.SignOutAsync();
+        // Після виходу кидаємо на головну сторінку (Welcome)
         return RedirectToAction("Index", "Home");
-    }
-
-    [HttpGet]
-    public IActionResult AccessDenied()
-    {
-        return View();
     }
 }

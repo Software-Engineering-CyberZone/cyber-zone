@@ -1,54 +1,82 @@
-@model RegisterViewModel
+@model MVC.Models.RegisterViewModel
 @{
-    ViewData["Title"] = "Register";
+    ViewData["Title"] = "Реєстрація";
+    Layout = null; 
 }
 
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <h2>Register</h2>
-        <hr />
-        <form asp-action="Register" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CyberZone</title>
+    <link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />
+</head>
+<body class="cyber-auth">
 
-            <div class="mb-3">
-                <label asp-for="UserName" class="form-label"></label>
-                <input asp-for="UserName" class="form-control" />
-                <span asp-validation-for="UserName" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="Email" class="form-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="FullName" class="form-label"></label>
-                <input asp-for="FullName" class="form-control" />
-                <span asp-validation-for="FullName" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="Password" class="form-label"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="ConfirmPassword" class="form-label"></label>
-                <input asp-for="ConfirmPassword" class="form-control" />
-                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Register</button>
-        </form>
-
-        <div class="mt-3">
-            <p>Already have an account? <a asp-action="Login">Login here</a></p>
+    <header class="cyber-header">
+        <div class="header-left">
+            <img src="~/images/logo.png" alt="Logo" class="logo-img" /> 
+            <span class="logo-text">CyberZone</span>
         </div>
-    </div>
-</div>
+        <div class="header-right">
+            <div class="avatar-circle"></div>
+            <span class="guest-text">Гість</span>
+        </div>
+    </header>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+    <main class="auth-wrapper">
+        <div class="auth-card">
+            
+            <h1 class="auth-title">Раді з Вами познайомитись!</h1>
+
+            <form asp-controller="Account" asp-action="Register" method="post">
+                
+                <div class="form-group">
+                    <label class="auth-label" asp-for="UserName">Нікнейм (Логін)</label>
+                    <input type="text" class="auth-input" asp-for="UserName" placeholder="cyber_gamer99" />
+                    <span asp-validation-for="UserName" class="text-danger" style="color: #ff4d4d; font-size: 12px; display: block; margin-top: 4px;"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="auth-label" asp-for="FullName">Ім’я</label>
+                    <input type="text" class="auth-input" asp-for="FullName" placeholder="Введіть ваше ім'я" />
+                    <span asp-validation-for="FullName" class="text-danger" style="color: #ff4d4d; font-size: 12px; display: block; margin-top: 4px;"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="auth-label" asp-for="Email">Email</label>
+                    <input type="email" class="auth-input" asp-for="Email" placeholder="your@email.com" />
+                    <span asp-validation-for="Email" class="text-danger" style="color: #ff4d4d; font-size: 12px; display: block; margin-top: 4px;"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="auth-label" asp-for="Password">Пароль</label>
+                    <input type="password" class="auth-input" asp-for="Password" placeholder="••••••••" />
+                    <span asp-validation-for="Password" class="text-danger" style="color: #ff4d4d; font-size: 12px; display: block; margin-top: 4px;"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="auth-label" asp-for="ConfirmPassword">Підтвердження паролю</label>
+                    <input type="password" class="auth-input" asp-for="ConfirmPassword" placeholder="••••••••" />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger" style="color: #ff4d4d; font-size: 12px; display: block; margin-top: 4px;"></span>
+                </div>
+
+                <button type="submit" class="auth-btn btn-register">Зареєструватися</button>
+                
+                <a asp-controller="Home" asp-action="Index" class="auth-btn btn-cancel">Скасувати</a>
+
+            </form>
+
+            <div class="auth-footer-text">
+                Вже маєте акаунт? <a asp-controller="Account" asp-action="Login" class="auth-link">Увійти</a>
+            </div>
+
+        </div>
+    </main>
+
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }
+</body>
+</html>

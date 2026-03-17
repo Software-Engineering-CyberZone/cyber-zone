@@ -1,0 +1,154 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Lato:wght@300;500&display=swap');
+
+:root {
+    --bg-dark: #0B1222; /* Темний фон сторінки */
+    --text-light: #EDEDED;
+    --text-dark: #000000;
+    --btn-bg: #1C2838;
+    --line-color: #93A0A9;
+    --gradient-accent: linear-gradient(91.95deg, #D6FF3F 2.89%, #E05BBE 97.05%);
+    --gradient-avatar: linear-gradient(180deg, #D6FF3F 0%, #E05BBE 100%);
+}
+
+body.cyber-welcome {
+    background-color: var(--bg-dark);
+    margin: 0;
+    padding: 0;
+    font-family: 'Lato', sans-serif; /* Базовий шрифт */
+    color: var(--text-light);
+    min-height: 100vh;
+}
+
+/* ================= ХЕДЕР ================= */
+.cyber-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 84px;
+    padding: 0 40px; /* Відступи з боків */
+    border-bottom: 1px solid var(--line-color);
+}
+
+.header-left, .header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Відстань між іконкою та текстом */
+}
+
+.logo-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.logo-text {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 24px;
+    color: var(--text-light);
+}
+
+.avatar-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--gradient-avatar);
+}
+
+.guest-text {
+    font-family: 'Lato', sans-serif;
+    font-weight: 300;
+    font-size: 16px;
+    color: var(--text-light);
+}
+
+/* ================= ОСНОВНИЙ КОНТЕНТ ================= */
+.main-container {
+    max-width: 1024px; /* Ширина по картинці з макета */
+    margin: 60px auto; /* Відцентровуємо по горизонталі */
+    padding: 0 20px;
+}
+
+.hero-image {
+    width: 100%;
+    max-width: 1024px;
+    height: 432px;
+    object-fit: cover;
+    border-radius: 8px; /* Легке заокруглення, якщо треба */
+    margin-bottom: 40px;
+}
+
+/* Блок під картинкою: Текст зліва, Кнопки справа */
+.content-split {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 40px;
+}
+
+/* Ліва частина (Текст) */
+.text-section {
+    max-width: 665px;
+}
+
+.hero-title {
+    font-family: 'Lato', sans-serif;
+    font-weight: 500;
+    font-size: 32px;
+    line-height: 38px;
+    margin: 0 0 15px 0;
+    color: var(--text-light);
+}
+
+.hero-desc {
+    font-family: 'Lato', sans-serif;
+    font-weight: 300;
+    font-size: 20px;
+    line-height: 24px;
+    margin: 0;
+    color: var(--text-light);
+    max-width: 597px;
+}
+
+/* Права частина (Кнопки) */
+.actions-section {
+    display: flex;
+    flex-direction: column;
+    gap: 14px; /* Вирахувано з макета (682px - 627px - 41px) */
+    width: 265px;
+    flex-shrink: 0;
+}
+
+.btn-cyber {
+    width: 100%;
+    height: 41px;
+    border-radius: 5px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+    .btn-cyber:hover {
+        opacity: 0.85;
+    }
+
+/* Стилі конкретних кнопок */
+.btn-dark {
+    background: var(--btn-bg);
+    color: var(--text-light);
+}
+
+.btn-gradient {
+    background: var(--gradient-accent);
+    color: var(--text-dark);
+}

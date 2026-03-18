@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Infrastructure.Services;
 
 namespace CyberZone.Infrastructure;
 
@@ -37,7 +38,6 @@ public static class DependencyInjection
         })
         .AddEntityFrameworkStores<CyberZoneDbContext>()
         .AddDefaultTokenProviders();
-
         services.ConfigureApplicationCookie(options =>
         {
             options.LoginPath = "/Account/Login";
@@ -47,7 +47,7 @@ public static class DependencyInjection
 
         // Services
         services.AddScoped<PaymentService>();
-
+        services.AddScoped<IClubService, ClubService>();
         return services;
     }
 }

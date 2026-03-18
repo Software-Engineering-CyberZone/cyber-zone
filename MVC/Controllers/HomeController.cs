@@ -10,10 +10,12 @@ namespace MVC.Controllers;
 public class HomeController : Controller
 {
     private readonly IApplicationDbContext _context;
+    private readonly IClubService _clubService;
 
-    public HomeController(IApplicationDbContext context)
+    public HomeController(IApplicationDbContext context, IClubService clubService)
     {
         _context = context;
+        _clubService = clubService;
     }
 
     public async Task<IActionResult> Index()
@@ -34,8 +36,9 @@ public class HomeController : Controller
     }
 
     [Authorize]
-    public IActionResult Catalog()
+    public async Task<IActionResult> Catalog()
     {
-        return View();
+        var clubs = await _clubService.GetClubsForCatalogAsync();
+        return View(clubs); // ѕередаЇмо список у View
     }
 }

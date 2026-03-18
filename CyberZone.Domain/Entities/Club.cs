@@ -10,7 +10,7 @@ public class Club : EntityBase, IAuditable
     public Address Address { get; set; } = new();
     public string? Phone { get; set; }
     public string? Email { get; set; }
-
+    public double Rating { get; set; }
     /// <summary>
     /// JSONB column storing work hours (e.g., {"Monday": "09:00-23:00"}).
     /// </summary>
@@ -23,7 +23,7 @@ public class Club : EntityBase, IAuditable
 
     // Navigation properties
     public ICollection<Hardware> Hardwares { get; set; } = [];
-    public ICollection<Tariff> Tariffs { get; set; } = [];
+    public ICollection<Tariff> Tariffs { get; set; } = new List<Tariff>();
     public ICollection<MenuItem> MenuItems { get; set; } = [];
     public ICollection<Review> Reviews { get; set; } = [];
 }

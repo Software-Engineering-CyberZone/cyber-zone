@@ -47,25 +47,33 @@
                 <button class="btn-clear">Скасувати</button>
             </div>
         </aside>
-
+        
+        @using CyberZone.Application.DTOs
+        @model IEnumerable<ClubCatalogDto>
         <main class="clubs-grid">
-            @for(int i = 0; i < 6; i++) {
-                <div class="club-card">
-                    <img src="~/images/welcome_gaming.png" class="club-img" alt="Club" />
-                    <div class="club-info">
-                        <div class="info-top">
-                            <span class="club-name">Київ: CyberPro Arena</span>
-                            <span class="club-price">від 90 грн / год</span>
+            @foreach (var club in Model)
+                {
+                    <div class="club-card">
+                        <img src="@(string.IsNullOrEmpty(club.ImageUrl) ? "/images/welcome_gaming.png" : club.ImageUrl)" class="club-img" alt="@club.Name" />
+                        <div class="club-info">
+                            <div class="info-top">
+                                <span class="club-name">@club.Name</span>
+                                <span class="club-price">від @club.MinPrice.ToString("0") грн / год</span>
+                            </div>
+                            <div class="club-address">@club.FullAddress</div>
+                            <div class="club-rating">
+                                @{
+                                    string stars = new string('⭐', (int)global::System.Math.Round(club.Rating));
+                                }
+                                @stars (@club.Rating.ToString("0.0"))
+                            </div>
                         </div>
-                        <div class="club-address">м. Київ, вул. Болоня, 51</div>
-                        <div class="club-rating">⭐⭐⭐⭐⭐ (5)</div>
+                        <div class="card-buttons">
+                            <a asp-action="Details" asp-route-id="@club.Id" class="btn-detail">Детальніше</a>
+                            <a asp-action="Booking" asp-route-id="@club.Id" class="btn-book">Забронювати</a>
+                        </div>
                     </div>
-                    <div class="card-buttons">
-                        <a href="#" class="btn-detail">Детальніше</a>
-                        <a href="#" class="btn-book">Забронювати</a>
-                    </div>
-                </div>
-            }
+                }
         </main>
 
     </div>

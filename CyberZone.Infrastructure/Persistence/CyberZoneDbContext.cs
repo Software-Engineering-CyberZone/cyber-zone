@@ -28,8 +28,6 @@ public class CyberZoneDbContext : IdentityDbContext<User, IdentityRole<Guid>, Gu
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
-        // Apply all IEntityTypeConfiguration<T> from this assembly
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(CyberZoneDbContext).Assembly);
     }
 

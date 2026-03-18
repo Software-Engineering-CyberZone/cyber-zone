@@ -1,9 +1,74 @@
-@{
-    ViewData["Title"] = "������� �����";
-    Layout = null;
+﻿@{
+    ViewData["Title"] = "Каталог клубів";
 }
 
-<h1 style="color: white; background: #0B1222; padding: 20px;">
-    ������� ����! �����, @User.Identity.Name!
-</h1>
-<a href="/Account/Logout" style="color: #D6FF3F;">����� (��������� ������)</a>
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CyberZone</title>
+    <link rel="stylesheet" href="~/css/catalog.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/welcome.css" asp-append-version="true" /> </head>
+<body class="catalog-page">
+
+    <div class="catalog-wrapper">
+        
+        <aside class="filter-sidebar">
+            <div class="filter-header">
+                <span class="filter-title">Фільтр</span>
+            </div>
+
+            <div class="filter-section">
+                <span class="section-title">Місто</span>
+                <div class="filter-item active"><div class="checkbox-custom"></div> Київ</div>
+                <div class="filter-item active"><div class="checkbox-custom"></div> Львів</div>
+                <div class="filter-item"><div class="checkbox-custom"></div> Одеса</div>
+                <div class="filter-item"><div class="checkbox-custom"></div> Рівне</div>
+                <div class="filter-item"><div class="checkbox-custom"></div> Ужгород</div>
+            </div>
+
+            <div class="filter-section">
+                <span class="section-title">Тип зони</span>
+                <div class="filter-item"><div class="checkbox-custom"></div> VIP</div>
+                <div class="filter-item active"><div class="checkbox-custom"></div> Стандарт</div>
+                <div class="filter-item"><div class="checkbox-custom"></div> Консоль</div>
+            </div>
+
+            <div class="filter-section">
+                <span class="section-title">Рейтинг</span>
+                <div class="filter-item"><div class="checkbox-custom"></div> 5.0</div>
+                <div class="filter-item"><div class="checkbox-custom"></div> 4.5+</div>
+                <div class="filter-item"><div class="checkbox-custom"></div> 4+</div>
+            </div>
+
+            <div class="filter-actions">
+                <button class="btn-apply">Застосувати</button>
+                <button class="btn-clear">Скасувати</button>
+            </div>
+        </aside>
+
+        <main class="clubs-grid">
+            @for(int i = 0; i < 6; i++) {
+                <div class="club-card">
+                    <img src="~/images/welcome_gaming.png" class="club-img" alt="Club" />
+                    <div class="club-info">
+                        <div class="info-top">
+                            <span class="club-name">Київ: CyberPro Arena</span>
+                            <span class="club-price">від 90 грн / год</span>
+                        </div>
+                        <div class="club-address">м. Київ, вул. Болоня, 51</div>
+                        <div class="club-rating">⭐⭐⭐⭐⭐ (5)</div>
+                    </div>
+                    <div class="card-buttons">
+                        <a href="#" class="btn-detail">Детальніше</a>
+                        <a href="#" class="btn-book">Забронювати</a>
+                    </div>
+                </div>
+            }
+        </main>
+
+    </div>
+
+</body>
+</html>

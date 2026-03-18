@@ -1,0 +1,45 @@
+@using Microsoft.AspNetCore.Identity
+@using CyberZone.Domain.Entities
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+<header class="cyber-header">
+    <div class="header-left">
+        <a asp-controller="Home" asp-action="Index" class="logo-wrapper">
+            <img src="~/images/logo.png" alt="Logo" class="logo-img" /> 
+            <span class="logo-text">CyberZone</span>
+        </a>
+        @if (SignInManager.IsSignedIn(User))
+        {
+            <a asp-controller="Home" asp-action="Catalog" class="nav-badge">Клуби</a>
+        }
+    </div>
+
+    <div class="header-center">
+        @if (SignInManager.IsSignedIn(User))
+            {
+                <div class="search-wrapper">
+                    <input type="text" class="search-box" placeholder="Пошук по назві клубу" />
+                </div>
+            }
+    </div>
+
+    <div class="header-right">
+        <div class="avatar-circle"></div>
+        
+        <div class="user-controls">
+            @if (SignInManager.IsSignedIn(User))
+            {
+                <span class="username-label">@User.Identity?.Name</span>
+                <form asp-controller="Account" asp-action="Logout" method="post" class="logout-form">
+                    <button type="submit" class="auth-sub-link logout-btn">Вийти</button>
+                </form>
+            }
+            else
+            {
+                <span class="username-label">Гість</span>
+                <a asp-controller="Account" asp-action="Login" class="auth-sub-link login-btn">Увійти</a>
+            }
+        </div>
+    </div>
+</header>

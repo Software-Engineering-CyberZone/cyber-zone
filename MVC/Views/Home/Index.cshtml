@@ -1,6 +1,5 @@
 ﻿@{
     ViewData["Title"] = "Welcome";
-    Layout = null; 
 }
 
 <!DOCTYPE html>
@@ -12,18 +11,6 @@
     <link rel="stylesheet" href="~/css/welcome.css" asp-append-version="true" />
 </head>
 <body class="cyber-welcome">
-
-    <header class="cyber-header">
-        <div class="header-left">
-            <img src="~/images/logo.png" alt="Logo" class="logo-img" /> 
-            <span class="logo-text">CyberZone</span>
-        </div>
-        
-        <div class="header-right">
-            <div class="avatar-circle"></div>
-            <span class="guest-text">Гість</span>
-        </div>
-    </header>
 
     <main class="main-container">
         
@@ -45,7 +32,7 @@
                 
                 <a asp-controller="Account" asp-action="Register" class="btn-cyber btn-gradient">Зареєструватися</a>
                 
-                <a asp-controller="Account" asp-action="ClubPartner" class="btn-cyber btn-style-4">Для власника клубу</a>
+                <a asp-controller="Account" asp-action="ClubPartner" class="btn-cyber btn-dark">Для власника клубу</a>
             </div>
 
         </div>

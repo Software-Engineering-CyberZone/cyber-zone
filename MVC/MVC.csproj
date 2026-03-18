@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="ClubRequests\" />
     <Folder Include="wwwroot\images\" />
   </ItemGroup>
 

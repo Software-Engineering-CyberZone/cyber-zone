@@ -1,31 +1,97 @@
-html {
-  font-size: 14px;
+/* Глобальні стилі хедера */
+.cyber-header {
+    height: 84px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 40px;
+    background-color: #0B1222;
+    border-bottom: 1px solid #93A0A9;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
-@media (min-width: 768px) {
-  html {
+.logo-wrapper {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+
+.nav-badge {
+    margin-left: 20px;
+    background: #1C2838;
+    padding: 8px 20px;
+    border-radius: 5px;
+    color: #fff;
+    text-decoration: none;
+    font-family: 'Inter', sans-serif;
     font-size: 16px;
-  }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+.header-center {
+    flex-grow: 1;
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 30px;
 }
 
-html {
-  position: relative;
-  min-height: 100%;
+.search-box {
+    width: 240px;
+    height: 33px;
+    background: #1B2531;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 5px;
+    padding: 0 15px;
+    color: #EDEDED;
+    font-size: 13px;
+    outline: none;
 }
 
-body {
-  margin-bottom: 60px;
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    min-width: 120px;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+.user-controls {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+.username-label {
+    font-family: 'Lato', sans-serif;
+    color: #EDEDED;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+.auth-sub-link {
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: 'Lato', sans-serif;
+    font-size: 12px;
+    text-decoration: underline;
+    cursor: pointer;
+    text-align: left;
+}
+
+.login-btn {
+    color: #E05BBE;
+}
+
+.logout-btn {
+    color: #D6FF3F;
+}
+
+.avatar-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #D6FF3F 0%, #E05BBE 100%);
 }

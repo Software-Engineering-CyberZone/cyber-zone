@@ -1,10 +1,8 @@
+using CyberZone.Application.Common;
 using CyberZone.Application.DTOs;
 using CyberZone.Application.Interfaces;
-using CyberZone.Domain.Entities;
-using CyberZone.Domain.ValueObjects;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Moq;
 using MVC.Controllers;
 
@@ -12,15 +10,13 @@ namespace CyberZone.Tests.Controllers;
 
 public class HomeControllerTests
 {
-    private readonly Mock<IApplicationDbContext> _mockContext;
     private readonly Mock<IClubService> _mockClubService;
     private readonly HomeController _controller;
 
     public HomeControllerTests()
     {
-        _mockContext = new Mock<IApplicationDbContext>();
         _mockClubService = new Mock<IClubService>();
-        _controller = new HomeController(_mockContext.Object, _mockClubService.Object);
+        _controller = new HomeController(_mockClubService.Object);
     }
 
     [Fact]
@@ -41,7 +37,7 @@ public class HomeControllerTests
         };
         _mockClubService
             .Setup(s => s.GetClubsForCatalogAsync())
-            .ReturnsAsync(clubs);
+            .ReturnsAsync(Result.Success<IEnumerable<ClubCatalogDto>>(clubs));
 
         var result = await _controller.Catalog();
 
@@ -54,7 +50,7 @@ public class HomeControllerTests
     {
         _mockClubService
             .Setup(s => s.GetClubsForCatalogAsync())
-            .ReturnsAsync(new List<ClubCatalogDto>());
+            .ReturnsAsync(Result.Success<IEnumerable<ClubCatalogDto>>(new List<ClubCatalogDto>()));
 
         await _controller.Catalog();
 
@@ -66,7 +62,7 @@ public class HomeControllerTests
     {
         _mockClubService
             .Setup(s => s.GetClubsForCatalogAsync())
-            .ReturnsAsync(Enumerable.Empty<ClubCatalogDto>());
+            .ReturnsAsync(Result.Success<IEnumerable<ClubCatalogDto>>(Enumerable.Empty<ClubCatalogDto>()));
 
         var result = await _controller.Catalog();
 

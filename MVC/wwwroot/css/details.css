@@ -1,0 +1,626 @@
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:wght@300;400;500;600&display=swap');
+
+:root {
+    --bg: #0B1222;
+    --bg2: #111827;
+    --bg3: #1C2838;
+    --border: rgba(255,255,255,0.07);
+    --accent: #D6FF3F;
+    --accent2: #E05BBE;
+    --text: #EDEDED;
+    --muted: #93A0A9;
+    --pink: #E05BBE;
+}
+
+body.details-page {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Exo 2', sans-serif;
+    margin: 0;
+}
+
+/* BREADCRUMB */
+.breadcrumb-bar {
+    padding: 16px 40px;
+    font-size: 13px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 1440px;
+    margin: 0 auto;
+}
+
+.breadcrumb-bar a {
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.breadcrumb-bar a:hover { color: var(--text); }
+.breadcrumb-sep { color: var(--border); font-size: 16px; }
+.breadcrumb-current { color: var(--text); }
+
+/* MAIN */
+.details-main {
+    padding: 0 40px 60px;
+    max-width: 1440px;
+    margin: 0 auto;
+}
+
+/* HERO */
+.hero {
+    display: grid;
+    grid-template-columns: minmax(400px, 1fr) 1fr;
+    gap: 40px;
+    margin-bottom: 50px;
+    align-items: start;
+}
+
+.club-image {
+    width: 100%;
+    height: 330px;
+    min-height: 280px;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    background: #1a0a2e;
+}
+
+.club-image-inner {
+    width: 100%;
+    height: 100%;
+    background:
+        radial-gradient(ellipse 60% 40% at 50% 80%, rgba(200,0,255,0.45) 0%, transparent 70%),
+        radial-gradient(ellipse 80% 30% at 20% 100%, rgba(255,0,180,0.3) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 50% at 80% 60%, rgba(0,200,255,0.2) 0%, transparent 60%),
+        linear-gradient(180deg, #0a0015 0%, #1a0030 60%, #2a0050 100%);
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.club-image-inner::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0; height: 80px;
+    background: linear-gradient(0deg, rgba(200,0,255,0.5) 0%, transparent 100%);
+}
+
+.club-sign {
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: rgba(255,50,50,0.9);
+    letter-spacing: 3px;
+    text-shadow: 0 0 20px rgba(255,0,0,0.8), 0 0 40px rgba(255,0,0,0.4);
+}
+
+.monitors {
+    display: flex;
+    gap: 12px;
+    position: absolute;
+    bottom: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    justify-content: center;
+}
+
+.monitor {
+    width: 80px;
+    height: 55px;
+    border-radius: 4px;
+    border: 1px solid rgba(200,0,255,0.5);
+    background: linear-gradient(135deg, #0d0020, #1a0035);
+    box-shadow: 0 0 15px rgba(200,0,255,0.3), inset 0 0 10px rgba(150,0,200,0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.monitor::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    background: linear-gradient(135deg,
+        rgba(80,0,200,0.6),
+        rgba(200,0,255,0.3),
+        rgba(0,150,255,0.4));
+    border-radius: 2px;
+}
+
+.chair-row {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 16px;
+    width: 85%;
+    justify-content: center;
+}
+
+.chair {
+    width: 50px;
+    height: 40px;
+    background: linear-gradient(180deg, #1a1a2e 0%, #0d0d1a 100%);
+    border-radius: 6px 6px 2px 2px;
+    border: 1px solid rgba(100,0,200,0.3);
+}
+
+/* INFO PANEL */
+.info-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-top: 10px;
+}
+
+.stars {
+    display: flex;
+    gap: 3px;
+}
+
+.star {
+    color: var(--accent);
+    font-size: 18px;
+}
+
+.star-empty {
+    color: var(--muted);
+    font-size: 18px;
+}
+
+.detail-club-name {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 40px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    line-height: 1;
+    color: var(--text);
+}
+
+.location {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.location-icon { color: var(--accent2); font-size: 16px; }
+
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.contact-info span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.description {
+    color: #a0a0b8;
+    font-size: 14px;
+    line-height: 1.7;
+    max-width: 520px;
+    margin-top: 6px;
+}
+
+.price-block {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.price-from { color: var(--muted); font-size: 15px; }
+
+.price-value {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1;
+}
+
+.price-unit { color: var(--muted); font-size: 15px; }
+
+.book-btn {
+    background: var(--accent);
+    color: #0B1222;
+    border: none;
+    font-family: 'Exo 2', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 14px 32px;
+    border-radius: 6px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: opacity 0.2s, transform 0.1s;
+    width: 220px;
+    text-decoration: none;
+    text-align: center;
+    display: inline-block;
+}
+
+.book-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+.book-btn:active { transform: translateY(0); }
+
+/* BOTTOM GRID */
+.bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+
+.section-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 24px;
+    color: var(--text);
+}
+
+/* TARIFF TABLE */
+.tariff-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tariff-table th {
+    text-align: center;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.tariff-table td {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+}
+
+.tariff-table td:not(:first-child) {
+    text-align: center;
+}
+
+.zone-label {
+    color: var(--text);
+    font-weight: 500;
+}
+
+.tariff-type-hourly { color: var(--accent) !important; }
+.tariff-type-night { color: var(--pink) !important; }
+.tariff-type-daily { color: #ff9900 !important; }
+.tariff-type-weekend { color: #00bfff !important; }
+
+.price-main { font-weight: 600; font-size: 15px; color: var(--text); }
+
+/* HARDWARE SECTION */
+.hardware-section {
+    margin-top: 50px;
+}
+
+.hw-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+}
+
+.hw-card {
+    background: var(--bg3);
+    border-radius: 8px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    transition: border-color 0.2s;
+}
+
+.hw-card:hover {
+    border-color: rgba(255,255,255,0.15);
+}
+
+.hw-card-available {
+    border-color: rgba(214,255,63,0.3);
+}
+
+.hw-card-available:hover {
+    border-color: rgba(214,255,63,0.5);
+}
+
+.hw-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.hw-name {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.hw-badge {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.hw-badge-available {
+    background: rgba(214,255,63,0.15);
+    color: var(--accent);
+}
+
+.hw-badge-busy {
+    background: rgba(255,77,184,0.15);
+    color: var(--pink);
+}
+
+.hw-badge-repair {
+    background: rgba(255,153,0,0.15);
+    color: #ff9900;
+}
+
+.hw-badge-offline {
+    background: rgba(147,160,169,0.15);
+    color: var(--muted);
+}
+
+.hw-specs {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 12px;
+}
+
+.hw-specs li {
+    font-size: 12px;
+    color: var(--muted);
+    padding: 2px 0;
+}
+
+.hw-specs li strong {
+    color: var(--text);
+}
+
+.hw-book-btn {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    background: var(--accent);
+    color: #0B1222;
+    border: none;
+    border-radius: 5px;
+    font-family: 'Exo 2', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+.hw-book-btn:hover { opacity: 0.85; }
+
+/* MENU SECTION */
+.menu-section {
+    margin-top: 50px;
+}
+
+.menu-category-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--accent2);
+    margin: 20px 0 12px;
+    letter-spacing: 0.5px;
+}
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+}
+
+.menu-card {
+    background: var(--bg3);
+    border-radius: 8px;
+    padding: 14px;
+    border: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.menu-card-info {
+    flex: 1;
+}
+
+.menu-card-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+}
+
+.menu-card-desc {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+}
+
+.menu-card-price {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent);
+    white-space: nowrap;
+}
+
+.menu-unavailable {
+    opacity: 0.4;
+}
+
+/* WORK HOURS */
+.work-hours-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.wh-chip {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+.wh-chip strong {
+    color: var(--accent);
+}
+
+/* RESPONSIVE */
+
+/* Large screens 1600+ — extra breathing room */
+@media (min-width: 1600px) {
+    .details-main,
+    .breadcrumb-bar {
+        max-width: 1600px;
+    }
+
+    .hero {
+        grid-template-columns: minmax(500px, 1.2fr) 1fr;
+        gap: 60px;
+    }
+
+    .club-image {
+        height: 380px;
+    }
+
+    .detail-club-name {
+        font-size: 48px;
+    }
+
+    .price-value {
+        font-size: 56px;
+    }
+}
+
+/* Medium screens — tablets / small laptops */
+@media (max-width: 1100px) {
+    .hero {
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+    }
+
+    .club-image {
+        height: 280px;
+    }
+
+    .detail-club-name {
+        font-size: 32px;
+    }
+
+    .price-value {
+        font-size: 40px;
+    }
+}
+
+/* Tablets */
+@media (max-width: 900px) {
+    .hero {
+        grid-template-columns: 1fr;
+    }
+
+    .bottom-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .details-main {
+        padding: 0 20px 40px;
+    }
+
+    .breadcrumb-bar {
+        padding: 16px 20px;
+    }
+
+    .club-image {
+        height: 260px;
+    }
+
+    .description {
+        max-width: 100%;
+    }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .details-main {
+        padding: 0 16px 30px;
+    }
+
+    .breadcrumb-bar {
+        padding: 12px 16px;
+    }
+
+    .detail-club-name {
+        font-size: 28px;
+    }
+
+    .price-value {
+        font-size: 36px;
+    }
+
+    .book-btn {
+        width: 100%;
+    }
+
+    .club-image {
+        height: 200px;
+    }
+
+    .monitors {
+        gap: 6px;
+    }
+
+    .monitor {
+        width: 50px;
+        height: 35px;
+    }
+
+    .chair {
+        width: 35px;
+        height: 28px;
+    }
+
+    .hw-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .menu-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .bottom-grid {
+        gap: 30px;
+    }
+}

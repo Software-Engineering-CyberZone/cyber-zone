@@ -4,6 +4,8 @@ using CyberZone.Infrastructure.Persistence;
 using CyberZone.Infrastructure.Services;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Moq;
 
 namespace CyberZone.Tests.Infrastructure.Services;
 
@@ -19,7 +21,8 @@ public class PaymentServiceTests : IDisposable
             .Options;
 
         _context = new CyberZoneDbContext(options);
-        _paymentService = new PaymentService(_context);
+        var logger = new Mock<ILogger<PaymentService>>();
+        _paymentService = new PaymentService(_context, logger.Object);
     }
 
     private async Task<User> SeedUserAsync(decimal balance = 0m)

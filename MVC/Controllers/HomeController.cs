@@ -1,7 +1,6 @@
 using CyberZone.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using MVC.Models;
 using System.Diagnostics;
 
@@ -9,19 +8,17 @@ namespace MVC.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly IApplicationDbContext _context;
     private readonly IClubService _clubService;
 
-    public HomeController(IApplicationDbContext context, IClubService clubService)
+    public HomeController(IClubService clubService)
     {
-        _context = context;
         _clubService = clubService;
     }
 
     public async Task<IActionResult> Index()
     {
-        var clubs = await _context.Clubs.ToListAsync();
-        return View(clubs);
+        var result = await _clubService.GetClubsForCatalogAsync();
+        return View(result.IsSuccess ? result.Value : Enumerable.Empty<CyberZone.Application.DTOs.ClubCatalogDto>());
     }
 
     public IActionResult Privacy()
@@ -38,7 +35,25 @@ public class HomeController : Controller
     [Authorize]
     public async Task<IActionResult> Catalog()
     {
-        var clubs = await _clubService.GetClubsForCatalogAsync();
-        return View(clubs); // ѕередаЇмо список у View
+        var result = await _clubService.GetClubsForCatalogAsync();
+        if (result.IsFailure)
+        {
+            TempData["Error"] = result.Error;
+            return View(Enumerable.Empty<CyberZone.Application.DTOs.ClubCatalogDto>());
+        }
+
+        return View(result.Value);
+    }
+
+    [Authorize]
+    public async Task<IActionResult> Details(Guid id)
+    {
+        var result = await _clubService.GetClubDetailsAsync(id);
+        if (result.IsFailure)
+        {
+            return NotFound();
+        }
+
+        return View(result.Value);
     }
 }

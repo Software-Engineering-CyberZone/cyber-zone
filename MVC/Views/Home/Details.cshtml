@@ -1,0 +1,305 @@
+@using CyberZone.Application.DTOs
+@using CyberZone.Domain.Enums
+@model ClubDetailsDto
+
+@{
+    ViewData["Title"] = Model.Name;
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CyberZone</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/details.css" asp-append-version="true" />
+</head>
+<body class="details-page">
+
+<partial name="_Header" />
+
+<div class="breadcrumb-bar">
+    <a asp-action="Catalog">Каталог клубів</a>
+    <span class="breadcrumb-sep">›</span>
+    <span class="breadcrumb-current">@Model.Name</span>
+</div>
+
+<div class="details-main">
+
+    <!-- HERO -->
+    <div class="hero">
+        <div class="club-image">
+            <div class="club-image-inner">
+                <div class="club-sign">@Model.Name.ToUpperInvariant()</div>
+                <div class="monitors">
+                    <div class="monitor"></div>
+                    <div class="monitor"></div>
+                    <div class="monitor"></div>
+                    <div class="monitor"></div>
+                    <div class="monitor"></div>
+                </div>
+                <div class="chair-row">
+                    <div class="chair"></div>
+                    <div class="chair"></div>
+                    <div class="chair"></div>
+                    <div class="chair"></div>
+                    <div class="chair"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <div class="stars">
+                @{
+                    int fullStars = (int)Math.Round(Model.Rating);
+                    for (int i = 0; i < 5; i++)
+                    {
+                        if (i < fullStars)
+                        {
+                            <span class="star">★</span>
+                        }
+                        else
+                        {
+                            <span class="star-empty">★</span>
+                        }
+                    }
+                }
+            </div>
+
+            <div class="detail-club-name">@Model.Name</div>
+
+            <div class="location">
+                <span class="location-icon">⦿</span>
+                <span>@Model.FullAddress</span>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.Phone) || !string.IsNullOrEmpty(Model.Email))
+            {
+                <div class="contact-info">
+                    @if (!string.IsNullOrEmpty(Model.Phone))
+                    {
+                        <span>📞 @Model.Phone</span>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.Email))
+                    {
+                        <span>✉ @Model.Email</span>
+                    }
+                </div>
+            }
+
+            <p class="description">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+                incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+                exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+            </p>
+
+            @if (Model.Tariffs.Count > 0)
+            {
+                var minPrice = Model.Tariffs.Min(t => t.PricePerHour);
+                <div class="price-block">
+                    <span class="price-from">від</span>
+                    <span class="price-value">@minPrice.ToString("0")</span>
+                    <span class="price-unit">грн / год</span>
+                </div>
+            }
+
+            <a asp-action="Booking" asp-route-id="@Model.Id" class="book-btn">Забронювати</a>
+        </div>
+    </div>
+
+    <!-- TARIFFS + WORK HOURS -->
+    <div class="bottom-grid">
+        <div>
+            <div class="section-title">Тарифи</div>
+            @if (Model.Tariffs.Count > 0)
+            {
+                <table class="tariff-table">
+                    <thead>
+                        <tr>
+                            <th style="text-align:left;">Назва</th>
+                            <th>Тип</th>
+                            <th>Ціна / год</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var tariff in Model.Tariffs)
+                        {
+                            var typeClass = tariff.Type switch
+                            {
+                                TariffType.Hourly => "tariff-type-hourly",
+                                TariffType.Night => "tariff-type-night",
+                                TariffType.Daily => "tariff-type-daily",
+                                TariffType.Weekend => "tariff-type-weekend",
+                                _ => ""
+                            };
+                            <tr>
+                                <td class="zone-label">@tariff.Name</td>
+                                <td><span class="@typeClass">@tariff.Type</span></td>
+                                <td><div class="price-main">@tariff.PricePerHour.ToString("0") грн/год</div></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p style="color: var(--muted); font-size: 14px;">Тарифи ще не додано.</p>
+            }
+        </div>
+
+        <div>
+            <div class="section-title">Графік роботи</div>
+            @if (Model.WorkHours.Count > 0)
+            {
+                <div class="work-hours-grid">
+                    @foreach (var wh in Model.WorkHours)
+                    {
+                        <div class="wh-chip">
+                            <strong>@wh.Key:</strong> @wh.Value
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p style="color: var(--muted); font-size: 14px;">Графік не вказано.</p>
+            }
+        </div>
+    </div>
+
+    <!-- HARDWARE -->
+    <div class="hardware-section">
+        <div class="section-title">Обладнання (@Model.Hardwares.Count)</div>
+
+        @if (Model.Hardwares.Count > 0)
+        {
+            var pcs = Model.Hardwares.Where(h => !h.PcNumber.StartsWith("CONSOLE", StringComparison.OrdinalIgnoreCase)).ToList();
+            var consoles = Model.Hardwares.Where(h => h.PcNumber.StartsWith("CONSOLE", StringComparison.OrdinalIgnoreCase)).ToList();
+
+            if (pcs.Count > 0)
+            {
+                <h4 style="color: var(--accent); font-family: 'Rajdhani', sans-serif; font-weight: 600; margin-bottom: 14px;">Комп'ютери</h4>
+                <div class="hw-grid">
+                    @foreach (var hw in pcs)
+                    {
+                        var badgeClass = hw.Status switch
+                        {
+                            HardwareStatus.Available => "hw-badge-available",
+                            HardwareStatus.Busy => "hw-badge-busy",
+                            HardwareStatus.Repair => "hw-badge-repair",
+                            _ => "hw-badge-offline"
+                        };
+                        var cardClass = hw.Status == HardwareStatus.Available ? "hw-card hw-card-available" : "hw-card";
+                        <div class="@cardClass">
+                            <div class="hw-header">
+                                <span class="hw-name">@hw.PcNumber</span>
+                                <span class="hw-badge @badgeClass">@hw.Status</span>
+                            </div>
+                            @if (hw.Specs.Count > 0)
+                            {
+                                <ul class="hw-specs">
+                                    @foreach (var spec in hw.Specs)
+                                    {
+                                        <li><strong>@spec.Key:</strong> @spec.Value</li>
+                                    }
+                                </ul>
+                            }
+                            @if (hw.Status == HardwareStatus.Available)
+                            {
+                                <a asp-action="Booking" asp-route-id="@Model.Id" asp-route-hardwareId="@hw.Id" class="hw-book-btn">Забронювати</a>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+
+            if (consoles.Count > 0)
+            {
+                <h4 style="color: var(--pink); font-family: 'Rajdhani', sans-serif; font-weight: 600; margin: 24px 0 14px;">Консолі</h4>
+                <div class="hw-grid">
+                    @foreach (var hw in consoles)
+                    {
+                        var badgeClass = hw.Status switch
+                        {
+                            HardwareStatus.Available => "hw-badge-available",
+                            HardwareStatus.Busy => "hw-badge-busy",
+                            HardwareStatus.Repair => "hw-badge-repair",
+                            _ => "hw-badge-offline"
+                        };
+                        var cardClass = hw.Status == HardwareStatus.Available ? "hw-card hw-card-available" : "hw-card";
+                        <div class="@cardClass">
+                            <div class="hw-header">
+                                <span class="hw-name">@hw.PcNumber</span>
+                                <span class="hw-badge @badgeClass">@hw.Status</span>
+                            </div>
+                            @if (hw.Specs.Count > 0)
+                            {
+                                <ul class="hw-specs">
+                                    @foreach (var spec in hw.Specs)
+                                    {
+                                        <li><strong>@spec.Key:</strong> @spec.Value</li>
+                                    }
+                                </ul>
+                            }
+                            @if (hw.Status == HardwareStatus.Available)
+                            {
+                                <a asp-action="Booking" asp-route-id="@Model.Id" asp-route-hardwareId="@hw.Id" class="hw-book-btn">Забронювати</a>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            <p style="color: var(--muted); font-size: 14px;">Обладнання ще не додано.</p>
+        }
+    </div>
+
+    <!-- MENU -->
+    <div class="menu-section">
+        <div class="section-title">Меню кафе (@Model.MenuItems.Count)</div>
+
+        @if (Model.MenuItems.Count > 0)
+        {
+            var categories = Model.MenuItems
+                .GroupBy(m => m.Category ?? "Інше")
+                .OrderBy(g => g.Key);
+
+            foreach (var group in categories)
+            {
+                <div class="menu-category-title">@group.Key</div>
+                <div class="menu-grid">
+                    @foreach (var item in group)
+                    {
+                        var unavailableClass = !item.IsAvailable ? "menu-unavailable" : "";
+                        <div class="menu-card @unavailableClass">
+                            <div class="menu-card-info">
+                                <div class="menu-card-name">@item.Name</div>
+                                @if (!string.IsNullOrEmpty(item.Description))
+                                {
+                                    <div class="menu-card-desc">@item.Description</div>
+                                }
+                                @if (!item.IsAvailable)
+                                {
+                                    <div class="menu-card-desc" style="color: var(--pink);">Немає в наявності</div>
+                                }
+                            </div>
+                            <div class="menu-card-price">@item.Price.ToString("0") ₴</div>
+                        </div>
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            <p style="color: var(--muted); font-size: 14px;">Меню ще не додано.</p>
+        }
+    </div>
+
+</div>
+
+</body>
+</html>

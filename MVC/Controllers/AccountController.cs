@@ -3,7 +3,6 @@ using MVC.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using MVC.Models;
 
 namespace MVC.Controllers;
 
@@ -86,7 +85,7 @@ public class AccountController : Controller
                 }
             }
 
-            ModelState.AddModelError(string.Empty, "Невірний email або пароль.");
+            ModelState.AddModelError(string.Empty, "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ email пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ.");
         }
 
         return View(model);
@@ -115,19 +114,19 @@ public class AccountController : Controller
                 string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "ClubRequests");
                 if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
 
-                string fileName = $"ЗАЯВКАКЛУБУ-{DateTime.Now:yyyyMMdd-HHmmss}.txt";
+                string fileName = $"пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ-{DateTime.Now:yyyyMMdd-HHmmss}.txt";
                 string filePath = Path.Combine(folderPath, fileName);
 
-                string content = $"Дата: {DateTime.Now}\nEmail: {model.Email}\nТелефон: {model.Phone}";
+                string content = $"пїЅпїЅпїЅпїЅ: {DateTime.Now}\nEmail: {model.Email}\nпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: {model.Phone}";
 
                 await System.IO.File.WriteAllTextAsync(filePath, content);
 
-                TempData["Message"] = "Заявку успішно надіслано!";
+                TempData["Message"] = "пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ!";
                 return View();
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", "Помилка при збереженні файлу: " + ex.Message);
+                ModelState.AddModelError("", "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ: " + ex.Message);
             }
         }
         return View(model);

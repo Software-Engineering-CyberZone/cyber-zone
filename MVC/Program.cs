@@ -2,6 +2,7 @@ using CyberZone.Domain.Entities;
 using CyberZone.Domain.Enums;
 using CyberZone.Infrastructure;
 using Microsoft.AspNetCore.Identity;
+using MVC.Middleware;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,11 +38,11 @@ using (var scope = app.Services.CreateScope())
             Phone = "+380991234567",
             Address = new CyberZone.Domain.ValueObjects.Address
             {
-                City = "Київ",
-                Street = "вул. Болоня",
-                State = "Київська обл.",
+                City = "РљРёС—РІ",
+                Street = "РІСѓР». РҐСЂРµС‰Р°С‚РёРє",
+                State = "РљРёС—РІСЃСЊРєР° РѕР±Р».",
                 ZipCode = "01000",
-                Country = "Україна"
+                Country = "РЈРєСЂР°С—РЅР°"
             }
         });
 
@@ -49,11 +50,11 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 app.UseSerilogRequestLogging();
 
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
@@ -70,4 +71,4 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
-app.Run();
+await app.RunAsync();

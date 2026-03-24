@@ -13,7 +13,7 @@ public class LoginViewModel
     public string Password { get; set; } = string.Empty;
 
     [Display(Name = "Remember me")]
-    public bool RememberMe { get; set; }
+    public bool RememberMe { get; set; } = false;
 
     public string? ReturnUrl { get; set; }
 }

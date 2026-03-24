@@ -1,0 +1,181 @@
+:root {
+    --bg-dark: #0B1222;
+    --card-bg: #1B2735;
+    --text-main: #EDEDED;
+    --text-muted: #93A0A9;
+    --accent-color: #D6FF3F;
+    --gradient-accent: linear-gradient(91.95deg, #D6FF3F 2.89%, #E05BBE 97.05%);
+}
+
+body.profile-page {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: 'Lato', sans-serif;
+    margin: 0;
+}
+
+.profile-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 84px); /* Висота екрану мінус хедер */
+    padding: 40px 20px;
+}
+
+.profile-card {
+    background: var(--card-bg);
+    border-radius: 10px;
+    width: 100%;
+    max-width: 704px;
+    padding-bottom: 40px;
+}
+
+/* Верхня частина з інфо */
+.profile-header-info {
+    display: flex;
+    align-items: center;
+    padding: 45px 50px 30px 50px;
+    gap: 45px;
+}
+
+.profile-avatar-large {
+    width: 136px;
+    height: 136px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #D6FF3F 0%, #E05BBE 100%);
+    flex-shrink: 0;
+}
+
+.profile-details {
+    flex-grow: 1;
+}
+
+.profile-name {
+    font-size: 32px;
+    font-weight: 300;
+    margin: 0 0 10px 0;
+}
+
+.profile-email {
+    font-size: 20px;
+    color: var(--text-muted);
+    margin: 0 0 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Іконка конверта (SVG) */
+.email-icon {
+    width: 16px;
+    height: 12px;
+    fill: var(--text-muted);
+}
+
+.profile-balance-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+
+.balance-label {
+    font-size: 20px;
+    font-weight: 300;
+}
+
+.balance-amount {
+    font-size: 24px;
+    color: var(--accent-color);
+}
+
+.btn-edit-profile {
+    width: 158px;
+    height: 35px;
+    background: var(--gradient-accent);
+    border-radius: 5px;
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: #1C2838;
+    cursor: pointer;
+    margin-top: -30px; /* Трохи піднімаємо, як у дизайні */
+    align-self: flex-start;
+}
+
+/* Розділювач */
+.divider {
+    height: 1px;
+    background: var(--text-muted);
+    width: 100%;
+    margin: 0;
+    opacity: 0.5;
+}
+
+.divider-short {
+    width: 85%;
+    margin: 0 auto;
+}
+
+/* Меню налаштувань */
+.profile-menu {
+    padding: 10px 0;
+}
+
+.menu-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 50px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+    .menu-item:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+.menu-text {
+    font-size: 24px;
+    font-weight: 500;
+}
+
+.menu-arrow {
+    width: 20px;
+    height: 20px;
+    border-right: 2px solid var(--text-main);
+    border-bottom: 2px solid var(--text-main);
+    transform: rotate(-45deg);
+}
+
+/* Кнопки внизу */
+.profile-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 30px 50px 0 50px;
+}
+
+.btn-profile-action {
+    width: 294px;
+    height: 56px;
+    border-radius: 5px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-to-clubs {
+    background: var(--gradient-accent);
+    color: #000000;
+}
+
+.btn-logout-large {
+    background: transparent;
+    border: 1px solid var(--text-muted);
+    color: var(--text-main);
+}

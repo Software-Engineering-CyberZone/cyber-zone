@@ -30,7 +30,9 @@
         <div class="user-controls">
             @if (SignInManager.IsSignedIn(User))
             {
-                <span class="username-label">@User.Identity?.Name</span>
+                <a asp-controller="Account" asp-action="Profile" class="username-label" style="text-decoration: none; cursor: pointer;">
+    @User.Identity?.Name
+</a>
                 <form asp-controller="Account" asp-action="Logout" method="post" class="logout-form">
                     <button type="submit" class="auth-sub-link logout-btn">Вийти</button>
                 </form>

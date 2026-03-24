@@ -3,6 +3,8 @@ using MVC.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using CyberZone.Application.Interfaces;
 
 namespace MVC.Controllers;
 
@@ -10,11 +12,16 @@ public class AccountController : Controller
 {
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
+    private readonly IUserService _userService;
 
-    public AccountController(UserManager<User> userManager, SignInManager<User> signInManager)
+    public AccountController(
+        UserManager<User> userManager, 
+        SignInManager<User> signInManager,
+        IUserService userService)
     {
         _userManager = userManager;
         _signInManager = signInManager;
+        _userService = userService; 
     }
 
     [HttpGet]
@@ -130,5 +137,20 @@ public class AccountController : Controller
             }
         }
         return View(model);
+    }
+
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> Profile()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (userId == null) return RedirectToAction("Login");
+
+        var userProfile = await _userService.GetUserProfileAsync(userId);
+
+        if (userProfile == null) return NotFound();
+
+        return View(userProfile);
     }
 }

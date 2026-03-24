@@ -48,6 +48,8 @@ public static class DependencyInjection
         // Services
         services.AddScoped<PaymentService>();
         services.AddScoped<IClubService, ClubService>();
+        services.AddScoped<PaymentService>();
+        services.AddScoped<CyberZone.Application.Interfaces.IUserService, CyberZone.Infrastructure.Services.UserService>();
         return services;
     }
 }

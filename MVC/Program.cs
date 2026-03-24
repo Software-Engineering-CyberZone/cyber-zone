@@ -13,7 +13,6 @@ builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));
 
 builder.Services.AddInfrastructure(builder.Configuration);
-
 var app = builder.Build();
 
 // Seed roles
@@ -50,8 +49,13 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+
 app.UseSerilogRequestLogging();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage(); // Додаємо це для детального виводу помилки
+}
 
 if (!app.Environment.IsDevelopment())
 {

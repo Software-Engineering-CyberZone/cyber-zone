@@ -6,5 +6,5 @@ public class UserProfileDto
     public string UserName { get; set; } = null!;
     public string Email { get; set; } = null!;
     public decimal Balance { get; set; }
-    // У майбутньому можна додати історію сесій, бронювань тощо
+    public List<TransactionDto> Transactions { get; set; } = new();
 }

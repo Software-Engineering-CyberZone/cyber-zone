@@ -1,0 +1,80 @@
+﻿@using CyberZone.Application.DTOs
+@model UserProfileDto
+
+@{
+    ViewData["Title"] = "Баланс";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/balance.css" asp-append-version="true" />
+}
+
+<div class="balance-page-container">
+    
+    <div class="side-nav-bar">
+        <div class="nav-dot"></div>
+        <div class="nav-dot"></div>
+        <div class="nav-dot"></div>
+        <div class="nav-dot active"></div> </div>
+
+    <div class="balance-content">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div style="background: rgba(41, 245, 0, 0.1); border: 1px solid var(--positive-color); color: var(--positive-color); padding: 15px; border-radius: 5px; margin-bottom: 20px; text-align: center;">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+        <div class="balance-main-card">
+            <div class="decor-line top-left"></div>
+            <div class="decor-line bottom-right"></div>
+            
+            <h3 class="balance-title">Поточний баланс:</h3>
+            <div class="balance-amount-large">@Model.Balance.ToString("N0") ₴</div>
+            <a asp-controller="Account" asp-action="TopUp" class="btn-topup" style="display: flex; align-items: center; justify-content: center; text-decoration: none;">Поповнити</a>
+        </div>
+
+        <div class="transactions-section">
+            <h3 class="transactions-title">Історія транзакцій</h3>
+            
+            <div class="transactions-list">
+                @if (Model.Transactions != null && Model.Transactions.Any())
+                {
+                    foreach (var tx in Model.Transactions)
+                    {
+                        // Визначаємо, чи це надходження (+), чи списання (-)
+                        bool isPositive = tx.Type == CyberZone.Domain.Enums.TransactionType.TopUp || 
+                                          tx.Type == CyberZone.Domain.Enums.TransactionType.Refund;
+            
+                        string sign = isPositive ? "+" : "-";
+                        string colorClass = isPositive ? "t-positive" : "t-negative";
+
+                        // Визначаємо назву операції
+                        string transactionName = tx.Type switch
+                        {
+                            CyberZone.Domain.Enums.TransactionType.TopUp => "Поповнення балансу",
+                            CyberZone.Domain.Enums.TransactionType.SessionCharge => "Оплата сесії",
+                            CyberZone.Domain.Enums.TransactionType.OrderPayment => "Оплата замовлення",
+                            CyberZone.Domain.Enums.TransactionType.Refund => "Повернення коштів",
+                            _ => "Транзакція"
+                        };
+
+                        // Якщо є кастомний опис в БД, пріоритет віддаємо йому
+                        string displayName = !string.IsNullOrEmpty(tx.Description) ? tx.Description : transactionName;
+
+                        <div class="transaction-item border-box">
+                            <span class="t-name">@displayName</span>
+                            <span class="t-amount @colorClass">@sign@tx.Amount.ToString("N0") грн</span>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center" style="color: var(--text-muted); padding: 20px;">
+                        У вас ще немає транзакцій
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>

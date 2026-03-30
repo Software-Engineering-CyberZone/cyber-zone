@@ -1,0 +1,50 @@
+@using MVC.Models
+@model List<SessionItemViewModel>
+
+@{
+    ViewData["Title"] = "Мої сесії";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/sessions.css" asp-append-version="true" />
+}
+
+<div class="sessions-page-container">
+    <h2 class="sessions-page-title">Сесії</h2>
+
+    <div class="sessions-list">
+        @foreach (var session in Model)
+        {
+            var activeClass = session.IsActive ? "active-session" : "inactive-session";
+
+            <div class="session-card @activeClass">
+                
+                <div class="s-col-info">
+                    <div class="s-club-name">@session.ClubName</div>
+                    <div class="s-time-row">
+                        <span>@session.Date</span>
+                        <span>@session.Duration</span>
+                        <span>@session.Time</span>
+                    </div>
+                </div>
+
+                <div class="s-col-address">
+                    <svg class="location-icon" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
+                    </svg>
+                    @session.Address
+                </div>
+
+                <div class="s-col-pc">
+                    @session.PcNumber
+                </div>
+
+                <div class="s-col-actions">
+                    <button class="btn-s-start" @(!session.IsActive ? "disabled" : "")>Розпочати</button>
+                    <button class="btn-s-cancel" @(!session.IsActive ? "disabled" : "")>Скасувати</button>
+                </div>
+
+            </div>
+        }
+    </div>
+</div>

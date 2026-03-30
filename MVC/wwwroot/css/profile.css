@@ -7,19 +7,20 @@
     --gradient-accent: linear-gradient(91.95deg, #D6FF3F 2.89%, #E05BBE 97.05%);
 }
 
-body.profile-page {
+/* Перевизначаємо фон для всієї сторінки, якщо це сторінка профілю */
+body {
     background-color: var(--bg-dark);
     color: var(--text-main);
     font-family: 'Lato', sans-serif;
-    margin: 0;
 }
 
 .profile-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: calc(100vh - 84px); /* Висота екрану мінус хедер */
-    padding: 40px 20px;
+    height: calc(100vh - 84px); /* Чітко фіксуємо висоту (екран мінус хедер) */
+    padding: 0 20px; /* Прибираємо вертикальні відступи (40px) */
+    overflow: hidden; /* Жорстко забороняємо будь-який скрол */
 }
 
 .profile-card {
@@ -28,6 +29,7 @@ body.profile-page {
     width: 100%;
     max-width: 704px;
     padding-bottom: 40px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
 /* Верхня частина з інфо */
@@ -35,7 +37,7 @@ body.profile-page {
     display: flex;
     align-items: center;
     padding: 45px 50px 30px 50px;
-    gap: 45px;
+    gap: 30px;
 }
 
 .profile-avatar-large {
@@ -44,6 +46,12 @@ body.profile-page {
     border-radius: 50%;
     background: linear-gradient(180deg, #D6FF3F 0%, #E05BBE 100%);
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    font-weight: 700;
+    color: #1C2838;
 }
 
 .profile-details {
@@ -54,6 +62,7 @@ body.profile-page {
     font-size: 32px;
     font-weight: 300;
     margin: 0 0 10px 0;
+    color: var(--text-main);
 }
 
 .profile-email {
@@ -65,27 +74,28 @@ body.profile-page {
     gap: 10px;
 }
 
-/* Іконка конверта (SVG) */
 .email-icon {
-    width: 16px;
-    height: 12px;
+    width: 18px;
+    height: 18px;
     fill: var(--text-muted);
 }
 
 .profile-balance-row {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 10px;
 }
 
 .balance-label {
     font-size: 20px;
     font-weight: 300;
+    color: var(--text-main);
 }
 
 .balance-amount {
     font-size: 24px;
     color: var(--accent-color);
+    font-weight: 400;
 }
 
 .btn-edit-profile {
@@ -98,14 +108,20 @@ body.profile-page {
     font-size: 13px;
     color: #1C2838;
     cursor: pointer;
-    margin-top: -30px; /* Трохи піднімаємо, як у дизайні */
     align-self: flex-start;
+    margin-top: 15px;
+    transition: opacity 0.2s;
 }
 
-/* Розділювач */
+    .btn-edit-profile:hover {
+        opacity: 0.9;
+    }
+
+/* Розділювачі */
 .divider {
     height: 1px;
     background: var(--text-muted);
+    border: none;
     width: 100%;
     margin: 0;
     opacity: 0.5;
@@ -137,11 +153,13 @@ body.profile-page {
 .menu-text {
     font-size: 24px;
     font-weight: 500;
+    font-family: 'Lato', sans-serif;
+    color: var(--text-main);
 }
 
 .menu-arrow {
-    width: 20px;
-    height: 20px;
+    width: 14px;
+    height: 14px;
     border-right: 2px solid var(--text-main);
     border-bottom: 2px solid var(--text-main);
     transform: rotate(-45deg);
@@ -155,6 +173,10 @@ body.profile-page {
     padding: 30px 50px 0 50px;
 }
 
+.logout-form-profile {
+    margin: 0;
+}
+
 .btn-profile-action {
     width: 294px;
     height: 56px;
@@ -165,17 +187,28 @@ body.profile-page {
     align-items: center;
     justify-content: center;
     text-decoration: none;
-    border: none;
     cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .btn-to-clubs {
     background: var(--gradient-accent);
     color: #000000;
+    border: none;
 }
+
+    .btn-to-clubs:hover {
+        opacity: 0.9;
+        color: #000000;
+    }
 
 .btn-logout-large {
     background: transparent;
     border: 1px solid var(--text-muted);
     color: var(--text-main);
 }
+
+    .btn-logout-large:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+    }

@@ -1,0 +1,157 @@
+:root {
+    --bg-dark: #0B1222;
+    --card-bg: #1B2735;
+    --text-main: #EDEDED;
+    --text-muted: #93A0A9;
+    --accent-color: #D6FF3F;
+    --gradient-accent: linear-gradient(91.95deg, #D6FF3F 2.89%, #E05BBE 97.05%);
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+}
+
+.sessions-page-container {
+    max-width: 1212px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.sessions-page-title {
+    font-family: 'Lato', sans-serif;
+    font-weight: 500;
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: var(--text-main);
+}
+
+.sessions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Відстань між картками */
+}
+
+.session-card {
+    background: var(--card-bg);
+    border-radius: 5px;
+    height: 99px;
+    display: grid;
+    grid-template-columns: 300px 1fr 100px auto; /* Сітка для колонок */
+    align-items: center;
+    padding: 0 25px;
+    box-sizing: border-box;
+    transition: all 0.3s;
+}
+
+/* --- Колонки з інформацією --- */
+.s-col-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px; /* Трохи зменшили відстань між назвою і датою */
+}
+
+.s-club-name {
+    font-family: 'Lato', sans-serif;
+    font-weight: 500;
+    font-size: 20px; /* Було 24px */
+    color: var(--text-main);
+}
+
+.s-time-row {
+    display: flex;
+    gap: 15px; /* Було 25px */
+    font-family: 'Lato', sans-serif;
+    font-weight: 500;
+    font-size: 16px; /* Було 24px - тепер точно все влізе */
+    color: var(--text-main);
+}
+
+.s-col-address {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 14px; /* Було 16px */
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.location-icon {
+    width: 14px;
+    height: 14px;
+    fill: var(--text-muted);
+}
+
+.s-col-pc {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 20px; /* Було 24px */
+    color: var(--accent-color);
+    text-align: center;
+}
+
+/* --- Кнопки --- */
+.s-col-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.btn-s-start, .btn-s-cancel {
+    height: 45px;
+    border-radius: 5px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.btn-s-start {
+    width: 200px;
+    background: var(--gradient-accent);
+    color: #1C2838;
+    border: none;
+}
+
+    .btn-s-start:hover:not(:disabled) {
+        opacity: 0.9;
+    }
+
+.btn-s-cancel {
+    width: 157px;
+    background: transparent;
+    border: 2px solid rgba(248, 0, 4, 0.83);
+    color: #FF0000;
+}
+
+    .btn-s-cancel:hover:not(:disabled) {
+        background: rgba(248, 0, 4, 0.1);
+    }
+
+/* ========================================= */
+/* СТИЛІ ДЛЯ НЕАКТИВНИХ (ІСТОРИЧНИХ) СЕСІЙ   */
+/* ========================================= */
+.inactive-session .s-club-name,
+.inactive-session .s-time-row {
+    color: rgba(237, 237, 237, 0.6);
+}
+
+.inactive-session .s-col-pc {
+    color: rgba(214, 255, 63, 0.6);
+}
+
+.inactive-session .btn-s-start {
+    background: rgba(147, 160, 169, 0.6);
+    color: #1C2838;
+    cursor: not-allowed;
+}
+
+.inactive-session .btn-s-cancel {
+    border-color: rgba(248, 0, 4, 0.4);
+    color: rgba(255, 0, 0, 0.4);
+    cursor: not-allowed;
+}

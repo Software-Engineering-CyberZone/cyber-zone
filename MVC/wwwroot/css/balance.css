@@ -1,0 +1,160 @@
+:root {
+    --bg-dark: #0B1222;
+    --card-bg: #0C1420;
+    --text-main: #EDEDED;
+    --accent-color: #D6FF3F;
+    --gradient-accent: linear-gradient(91.95deg, #D6FF3F 2.89%, #E05BBE 97.05%);
+    --positive-color: rgba(41, 245, 0, 0.82);
+    --negative-color: rgba(248, 0, 4, 0.83);
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+}
+
+.balance-page-container {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    padding: 60px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* --- Бокова навігація --- */
+.side-nav-bar {
+    width: 49px;
+    height: 161px;
+    background: var(--card-bg);
+    border-radius: 3px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    flex-shrink: 0;
+}
+
+.nav-dot {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Імітація порожніх кіл з макета */
+}
+
+    .nav-dot.active {
+        background: var(--accent-color);
+        border: none;
+    }
+
+/* --- Основний контент --- */
+.balance-content {
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+    width: 100%;
+    max-width: 756px; /* Максимальна ширина історії транзакцій */
+}
+
+/* --- Картка балансу --- */
+.balance-main-card {
+    background: var(--card-bg);
+    border-radius: 7px;
+    width: 100%;
+    max-width: 389px;
+    height: 226px;
+    margin: 0 auto; /* Відцентровуємо по горизонталі */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.balance-title {
+    font-family: 'Lato', sans-serif;
+    font-weight: 400;
+    font-size: 20px;
+    color: var(--text-main);
+    margin: 0 0 15px 0;
+}
+
+.balance-amount-large {
+    font-family: 'Lato', sans-serif;
+    font-weight: 400;
+    font-size: 32px;
+    color: var(--accent-color);
+    margin: 0 0 25px 0;
+}
+
+.btn-topup {
+    width: 200px;
+    height: 45px;
+    background: var(--gradient-accent);
+    border-radius: 5px;
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    color: #1C2838;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+    .btn-topup:hover {
+        opacity: 0.9;
+    }
+
+/* --- Історія транзакцій --- */
+.transactions-title {
+    font-family: 'Lato', sans-serif;
+    font-weight: 500;
+    font-size: 24px;
+    color: var(--text-main);
+    margin: 0 0 20px 0;
+}
+
+.transactions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.transaction-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 56px;
+    padding: 0 25px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    background: transparent;
+    transition: background 0.2s;
+}
+
+    .transaction-item:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+.t-name {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    color: var(--text-main);
+}
+
+.t-amount {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 20px;
+}
+
+.t-positive {
+    color: var(--positive-color);
+}
+
+.t-negative {
+    color: var(--negative-color);
+}

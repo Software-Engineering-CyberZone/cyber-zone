@@ -1,3 +1,4 @@
+using CyberZone.Application.DTOs;
 using CyberZone.Application.Interfaces;
 using CyberZone.Domain.Entities;
 using CyberZone.Infrastructure.Persistence;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MVC.Models;
+using SixLabors.ImageSharp;
 using System.Security.Claims;
 
 namespace MVC.Controllers;
@@ -18,19 +20,22 @@ public class AccountController : Controller
     private readonly IUserService _userService;
     private readonly PaymentService _paymentService;
     private readonly CyberZoneDbContext _context;
+    private readonly IWebHostEnvironment _environment;
 
     public AccountController(
-        UserManager<User> userManager, 
+        UserManager<User> userManager,
         SignInManager<User> signInManager,
         IUserService userService,
         PaymentService paymentService,
-        CyberZoneDbContext context)
+        CyberZoneDbContext context,
+        IWebHostEnvironment environment)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _userService = userService;
         _paymentService = paymentService;
         _context = context;
+        _environment = environment;
     }
 
     [HttpGet]
@@ -360,6 +365,151 @@ public class AccountController : Controller
 
         // Перекидаємо на сторінку сесій, щоб побачити результат
         return RedirectToAction("Sessions");
+    }
+
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> EditProfile()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null) return RedirectToAction("Login");
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null) return NotFound();
+
+        var model = new EditProfileViewModel
+        {
+            Email = user.Email ?? "",
+            FullName = user.FullName,
+            Bio = user.Bio,
+            Phone = user.Phone,
+            Location = user.Location,
+            WebsiteUrl = user.WebsiteUrl,
+            ExistingProfileImagePath = user.ProfileImagePath
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [Authorize]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditProfile(EditProfileViewModel model)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null) return RedirectToAction("Login");
+
+        if (!ModelState.IsValid)
+        {
+            model.ExistingProfileImagePath = (await _userManager.FindByIdAsync(userId))?.ProfileImagePath;
+            return View(model);
+        }
+
+        // HTML-санітизація біографії
+        string? sanitizedBio = model.Bio != null
+            ? System.Net.WebUtility.HtmlEncode(model.Bio)
+            : null;
+
+        // Обробка завантаження зображення
+        string? newImagePath = null;
+        if (model.ProfileImage != null && model.ProfileImage.Length > 0)
+        {
+            var validationError = ValidateImage(model.ProfileImage);
+            if (validationError != null)
+            {
+                ModelState.AddModelError("ProfileImage", validationError);
+                model.ExistingProfileImagePath = (await _userManager.FindByIdAsync(userId))?.ProfileImagePath;
+                return View(model);
+            }
+
+            newImagePath = await SaveProfileImageAsync(model.ProfileImage, userId);
+        }
+
+        var existingUser = await _userManager.FindByIdAsync(userId);
+        var oldImagePath = existingUser?.ProfileImagePath;
+
+        var dto = new EditUserProfileDto
+        {
+            UserId = userId,
+            Email = model.Email,
+            FullName = model.FullName,
+            Bio = sanitizedBio,
+            Phone = model.Phone,
+            Location = model.Location,
+            WebsiteUrl = model.WebsiteUrl,
+            ProfileImagePath = newImagePath ?? oldImagePath
+        };
+
+        var result = await _userService.UpdateUserProfileAsync(dto);
+
+        if (result.IsFailure)
+        {
+            // Якщо оновлення БД не вдалось, видаляємо щойно збережений файл
+            if (newImagePath != null)
+                DeleteProfileImage(newImagePath);
+
+            ModelState.AddModelError("", result.Error!);
+            model.ExistingProfileImagePath = oldImagePath;
+            return View(model);
+        }
+
+        // Якщо оновлення успішне і є нове фото — видаляємо старе
+        if (newImagePath != null && oldImagePath != null)
+            DeleteProfileImage(oldImagePath);
+
+        TempData["SuccessMessage"] = "Профіль успішно оновлено!";
+        return RedirectToAction("Profile");
+    }
+
+    private static string? ValidateImage(IFormFile file)
+    {
+        // Максимум 5 МБ
+        if (file.Length > 5 * 1024 * 1024)
+            return "Розмір файлу не може перевищувати 5 МБ.";
+
+        // Перевірка MIME-типу
+        var allowedMimeTypes = new[] { "image/jpeg", "image/png", "image/gif" };
+        if (!allowedMimeTypes.Contains(file.ContentType.ToLowerInvariant()))
+            return "Дозволені формати: JPG, PNG, GIF.";
+
+        // Перевірка розширення (захист від підміни MIME)
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+        if (!allowedExtensions.Contains(extension))
+            return "Дозволені формати: JPG, PNG, GIF.";
+
+        // Перевірка розмірів зображення
+        using var stream = file.OpenReadStream();
+        using var image = Image.Load(stream);
+        if (image.Width < 300 || image.Height < 300)
+            return "Мінімальний розмір зображення: 300x300 пікселів.";
+        if (image.Width > 2000 || image.Height > 2000)
+            return "Максимальний розмір зображення: 2000x2000 пікселів.";
+
+        return null;
+    }
+
+    private async Task<string> SaveProfileImageAsync(IFormFile file, string userId)
+    {
+        var uploadsDir = Path.Combine(_environment.WebRootPath, "images", "profiles");
+        if (!Directory.Exists(uploadsDir))
+            Directory.CreateDirectory(uploadsDir);
+
+        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+        var fileName = $"{userId}_{Guid.NewGuid():N}{extension}";
+        var filePath = Path.Combine(uploadsDir, fileName);
+
+        using var stream = new FileStream(filePath, FileMode.Create);
+        await file.CopyToAsync(stream);
+
+        return $"/images/profiles/{fileName}";
+    }
+
+    private void DeleteProfileImage(string relativePath)
+    {
+        var fullPath = Path.Combine(_environment.WebRootPath, relativePath.TrimStart('/'));
+        if (System.IO.File.Exists(fullPath))
+            System.IO.File.Delete(fullPath);
     }
 
 }

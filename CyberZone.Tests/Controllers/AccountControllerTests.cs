@@ -1,9 +1,15 @@
+using CyberZone.Application.Interfaces;
 using CyberZone.Domain.Entities;
+using CyberZone.Infrastructure.Persistence;
+using CyberZone.Infrastructure.Services;
 using FluentAssertions;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Moq;
 using MVC.Controllers;
 using MVC.Models;
@@ -29,7 +35,23 @@ public class AccountControllerTests
             new Mock<IUserClaimsPrincipalFactory<User>>().Object,
             null!, null!, null!, null!);
 
-        _controller = new AccountController(_mockUserManager.Object, _mockSignInManager.Object);
+        var mockUserService = new Mock<IUserService>();
+        var mockDbContext = new Mock<CyberZoneDbContext>(
+            new DbContextOptionsBuilder<CyberZoneDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options);
+        var mockPaymentService = new Mock<PaymentService>(
+            mockDbContext.Object,
+            new Mock<ILogger<PaymentService>>().Object);
+        var mockEnvironment = new Mock<IWebHostEnvironment>();
+
+        _controller = new AccountController(
+            _mockUserManager.Object,
+            _mockSignInManager.Object,
+            mockUserService.Object,
+            mockPaymentService.Object,
+            mockDbContext.Object,
+            mockEnvironment.Object);
 
         // Setup default HttpContext with unauthenticated user
         var httpContext = new DefaultHttpContext();

@@ -15,6 +15,21 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasPrecision(18, 2)
             .HasDefaultValue(0m);
 
+        builder.Property(u => u.Bio)
+            .HasMaxLength(500);
+
+        builder.Property(u => u.Phone)
+            .HasMaxLength(20);
+
+        builder.Property(u => u.Location)
+            .HasMaxLength(200);
+
+        builder.Property(u => u.WebsiteUrl)
+            .HasMaxLength(500);
+
+        builder.Property(u => u.ProfileImagePath)
+            .HasMaxLength(500);
+
         // JSONB for LinkedAccounts (Steam, Epic, Battle.net, etc.)
         builder.Property(u => u.LinkedAccounts)
             .HasColumnType("nvarchar(max)")

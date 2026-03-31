@@ -18,6 +18,12 @@ public class User : IdentityUser<Guid>, IAuditable
     /// </summary>
     public Dictionary<string, string> LinkedAccounts { get; set; } = [];
 
+    public string? Bio { get; set; }
+    public string? Phone { get; set; }
+    public string? Location { get; set; }
+    public string? WebsiteUrl { get; set; }
+    public string? ProfileImagePath { get; set; }
+
     public DateTime CreatedAt { get; set; }
     public string? CreatedBy { get; set; }
     public DateTime? UpdatedAt { get; set; }

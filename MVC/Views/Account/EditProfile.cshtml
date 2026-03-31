@@ -1,0 +1,115 @@
+@using MVC.Models
+@model EditProfileViewModel
+
+@{
+    ViewData["Title"] = "Редагування профілю";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/editprofile.css" asp-append-version="true" />
+}
+
+<div class="editprofile-container">
+    <div class="editprofile-card">
+        <h2 class="editprofile-title">Редагування профілю</h2>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="success-message">@TempData["SuccessMessage"]</div>
+        }
+
+        <form asp-action="EditProfile" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger" style="margin-bottom: 15px;"></div>
+
+            <!-- Аватар -->
+            <div class="avatar-upload-section">
+                <div class="avatar-preview-wrapper" onclick="document.getElementById('profileImageInput').click()">
+                    <div class="avatar-preview-inner">
+                        @if (!string.IsNullOrEmpty(Model.ExistingProfileImagePath))
+                        {
+                            <img id="avatarPreview" src="@Model.ExistingProfileImagePath" alt="Аватар" />
+                        }
+                        else
+                        {
+                            <img id="avatarPreview" style="display:none;" alt="Аватар" />
+                            <span id="avatarPlaceholder" class="avatar-placeholder-icon">&#128100;</span>
+                        }
+                    </div>
+                </div>
+                <label class="avatar-upload-label" for="profileImageInput">Змінити фото</label>
+                <input asp-for="ProfileImage" type="file" id="profileImageInput"
+                       class="avatar-file-input" accept="image/jpeg,image/png,image/gif" />
+                <span asp-validation-for="ProfileImage" class="text-danger"></span>
+                <div class="avatar-hint">JPG, PNG або GIF. 300x300 — 2000x2000 px. Макс. 5 МБ.</div>
+            </div>
+
+            <!-- Email -->
+            <div class="form-group">
+                <label class="form-label">Email *</label>
+                <input asp-for="Email" class="form-control-cyber" placeholder="your@email.com" type="email" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <!-- Повне ім'я -->
+            <div class="form-group">
+                <label class="form-label">Повне ім'я</label>
+                <input asp-for="FullName" class="form-control-cyber" placeholder="Ваше ім'я" />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+
+            <!-- Телефон -->
+            <div class="form-group">
+                <label class="form-label">Телефон</label>
+                <input asp-for="Phone" class="form-control-cyber" placeholder="+380 XX XXX XX XX" />
+                <span asp-validation-for="Phone" class="text-danger"></span>
+            </div>
+
+            <!-- Локація -->
+            <div class="form-group">
+                <label class="form-label">Локація</label>
+                <input asp-for="Location" class="form-control-cyber" placeholder="Місто, Країна" />
+                <span asp-validation-for="Location" class="text-danger"></span>
+            </div>
+
+            <!-- Веб-сайт -->
+            <div class="form-group">
+                <label class="form-label">Веб-сайт</label>
+                <input asp-for="WebsiteUrl" class="form-control-cyber" placeholder="https://example.com" />
+                <span asp-validation-for="WebsiteUrl" class="text-danger"></span>
+            </div>
+
+            <!-- Біографія -->
+            <div class="form-group">
+                <label class="form-label">Про себе</label>
+                <textarea asp-for="Bio" class="form-control-cyber textarea-cyber"
+                          placeholder="Розкажіть про себе..." maxlength="500"></textarea>
+                <span asp-validation-for="Bio" class="text-danger"></span>
+            </div>
+
+            <div class="editprofile-actions">
+                <button type="submit" class="btn-save-profile">Зберегти</button>
+                <a asp-action="Profile" class="btn-cancel-edit">Скасувати</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('profileImageInput').addEventListener('change', function (e) {
+            var file = e.target.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function (event) {
+                    var preview = document.getElementById('avatarPreview');
+                    var placeholder = document.getElementById('avatarPlaceholder');
+                    preview.src = event.target.result;
+                    preview.style.display = 'block';
+                    if (placeholder) placeholder.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+}

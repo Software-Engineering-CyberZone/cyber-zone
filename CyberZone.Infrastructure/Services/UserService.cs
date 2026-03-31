@@ -1,4 +1,5 @@
-﻿using CyberZone.Application.DTOs;
+﻿using CyberZone.Application.Common;
+using CyberZone.Application.DTOs;
 using CyberZone.Application.Interfaces;
 using CyberZone.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -45,11 +46,39 @@ public class UserService : IUserService
             Id = user.Id,
             UserName = user.UserName ?? "User",
             Email = user.Email ?? "",
+            FullName = user.FullName,
             Balance = user.Balance,
+            Bio = user.Bio,
+            Phone = user.Phone,
+            Location = user.Location,
+            WebsiteUrl = user.WebsiteUrl,
+            ProfileImagePath = user.ProfileImagePath,
             Transactions = transactions
         };
     }
 
+    public async Task<Result> UpdateUserProfileAsync(EditUserProfileDto dto)
+    {
+        var user = await _userManager.FindByIdAsync(dto.UserId);
+        if (user == null)
+            return Result.Failure("Користувача не знайдено.");
 
+        user.Email = dto.Email;
+        user.UserName = dto.Email;
+        user.FullName = dto.FullName;
+        user.Bio = dto.Bio;
+        user.Phone = dto.Phone;
+        user.Location = dto.Location;
+        user.WebsiteUrl = dto.WebsiteUrl;
+        user.ProfileImagePath = dto.ProfileImagePath;
 
+        var result = await _userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+        {
+            var errors = string.Join("; ", result.Errors.Select(e => e.Description));
+            return Result.Failure(errors);
+        }
+
+        return Result.Success();
+    }
 }

@@ -1,16 +1,13 @@
-﻿namespace CyberZone.Application.DTOs;
+namespace CyberZone.Application.DTOs;
 
-public class UserProfileDto
+public class EditUserProfileDto
 {
-    public Guid Id { get; set; }
-    public string UserName { get; set; } = null!;
+    public string UserId { get; set; } = null!;
     public string Email { get; set; } = null!;
     public string? FullName { get; set; }
-    public decimal Balance { get; set; }
     public string? Bio { get; set; }
     public string? Phone { get; set; }
     public string? Location { get; set; }
     public string? WebsiteUrl { get; set; }
     public string? ProfileImagePath { get; set; }
-    public List<TransactionDto> Transactions { get; set; } = new();
 }

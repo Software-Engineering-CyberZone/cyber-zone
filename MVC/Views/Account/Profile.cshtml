@@ -29,10 +29,15 @@
         
         <div class="profile-header-info">
             <div class="profile-avatar-large">
+                @if (!string.IsNullOrEmpty(Model.ProfileImagePath))
+                {
+                    <img src="@Model.ProfileImagePath" alt="Аватар"
+                         style="width:136px;height:136px;border-radius:50%;object-fit:cover;" />
+                }
                 </div>
-            
+
             <div class="profile-details">
-                <h2 class="profile-name">@Model.UserName</h2>
+                <h2 class="profile-name">@(Model.FullName ?? Model.UserName)</h2>
                 <p class="profile-email">
                     <svg class="email-icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M20 4H4C2.9 4 2.01 4.9 2.01 6L2 18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4ZM20 8L12 13L4 8V6L12 11L20 6V8Z"/>
@@ -45,7 +50,7 @@
                 </div>
             </div>
 
-            <button class="btn-edit-profile">Редагувати</button>
+            <a asp-action="EditProfile" class="btn-edit-profile" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">Редагувати</a>
         </div>
 
         <hr class="divider" />

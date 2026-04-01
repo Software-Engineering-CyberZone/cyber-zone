@@ -1,0 +1,212 @@
+:root {
+    --bg-dark: #0B1222;
+    --card-bg: #0C1420;
+    --input-bg: #1B2735;
+    --text-main: #EDEDED;
+    --text-muted: #93A0A9;
+    --accent-color: #D6FF3F;
+    --gradient-accent: linear-gradient(91.95deg, #D6FF3F 2.89%, #E05BBE 97.05%);
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+}
+
+.editprofile-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: calc(100vh - 120px);
+    padding: 40px 20px;
+}
+
+.editprofile-card {
+    background: var(--card-bg);
+    border-radius: 10px;
+    width: 100%;
+    max-width: 600px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.editprofile-title {
+    color: var(--text-main);
+    font-family: 'Lato', sans-serif;
+    font-size: 24px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+/* Avatar upload */
+.avatar-upload-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.avatar-preview-wrapper {
+    width: 136px;
+    height: 136px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #D6FF3F 0%, #E05BBE 100%);
+    padding: 3px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.avatar-preview-wrapper:hover {
+    opacity: 0.85;
+}
+
+.avatar-preview-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: var(--card-bg);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar-preview-inner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-placeholder-icon {
+    font-size: 36px;
+    color: var(--text-muted);
+}
+
+.avatar-upload-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: var(--accent-color);
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.avatar-upload-label:hover {
+    opacity: 0.8;
+}
+
+.avatar-file-input {
+    display: none;
+}
+
+.avatar-hint {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    text-align: center;
+}
+
+/* Form fields */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    color: var(--text-muted);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.form-control-cyber {
+    width: 100%;
+    height: 45px;
+    background: var(--input-bg);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 5px;
+    padding: 0 15px;
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+
+.form-control-cyber:focus {
+    border-color: var(--accent-color);
+}
+
+.form-control-cyber.textarea-cyber {
+    height: 100px;
+    padding: 12px 15px;
+    resize: vertical;
+    line-height: 1.5;
+}
+
+/* Buttons */
+.editprofile-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.btn-save-profile {
+    flex: 1;
+    height: 50px;
+    background: var(--gradient-accent);
+    border-radius: 5px;
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    color: #1C2838;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.btn-save-profile:hover {
+    opacity: 0.9;
+}
+
+.btn-cancel-edit {
+    flex: 1;
+    height: 50px;
+    background: transparent;
+    border: 1px solid var(--text-muted);
+    border-radius: 5px;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    color: var(--text-main);
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.btn-cancel-edit:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.text-danger {
+    color: #ff4d4d;
+    font-size: 12px;
+    margin-top: 5px;
+    display: block;
+}
+
+.success-message {
+    background: rgba(214, 255, 63, 0.1);
+    border: 1px solid rgba(214, 255, 63, 0.3);
+    border-radius: 5px;
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    color: var(--accent-color);
+    font-size: 14px;
+    text-align: center;
+}

@@ -25,7 +25,15 @@
     </div>
 
     <div class="header-right">
-        <div class="avatar-circle"></div>
+        @{
+            var appUser = SignInManager.IsSignedIn(User) ? await UserManager.GetUserAsync(User) : null;
+         }
+
+        @if (!string.IsNullOrEmpty(appUser?.ProfileImagePath)) {
+            <img src="@appUser.ProfileImagePath" alt="Аватар" class="avatar-circle" style="object-fit: cover;" />
+        } else {
+            <div class="avatar-circle"></div>
+        }
         
         <div class="user-controls">
             @if (SignInManager.IsSignedIn(User))

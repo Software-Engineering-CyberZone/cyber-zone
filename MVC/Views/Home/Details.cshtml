@@ -299,6 +299,58 @@
         }
     </div>
 
+    <!-- REVIEWS -->
+    <div class="reviews-section">
+        <div class="section-title">Відгуки (@Model.Reviews.Count)</div>
+
+        @if (Model.Reviews.Count > 0)
+        {
+            <div class="reviews-summary">
+                <span class="reviews-avg">
+                    @{
+                        var avgRating = Model.Reviews.Average(r => r.Rating);
+                    }
+                    <span class="reviews-avg-value">@avgRating.ToString("0.0")</span>
+                    <span class="star">★</span>
+                </span>
+                <span class="reviews-count">на основі @Model.Reviews.Count відгуків</span>
+            </div>
+
+            <div class="reviews-list">
+                @foreach (var review in Model.Reviews)
+                {
+                    <div class="review-card">
+                        <div class="review-header">
+                            <span class="review-username">@review.UserName</span>
+                            <span class="review-date">@review.CreatedAt.ToString("dd.MM.yyyy")</span>
+                        </div>
+                        <div class="review-rating">
+                            @for (int i = 0; i < 5; i++)
+                            {
+                                if (i < review.Rating)
+                                {
+                                    <span class="star">★</span>
+                                }
+                                else
+                                {
+                                    <span class="star-empty">★</span>
+                                }
+                            }
+                        </div>
+                        @if (!string.IsNullOrEmpty(review.Comment))
+                        {
+                            <p class="review-comment">@review.Comment</p>
+                        }
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p style="color: var(--muted); font-size: 14px;">Відгуків ще немає. Будьте першим!</p>
+        }
+    </div>
+
 </div>
 
 </body>

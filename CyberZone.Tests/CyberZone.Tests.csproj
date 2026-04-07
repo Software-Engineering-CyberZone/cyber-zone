@@ -25,7 +25,6 @@
     <ProjectReference Include="..\CyberZone.Domain\CyberZone.Domain.csproj" />
     <ProjectReference Include="..\CyberZone.Application\CyberZone.Application.csproj" />
     <ProjectReference Include="..\CyberZone.Infrastructure\CyberZone.Infrastructure.csproj" />
-    <ProjectReference Include="..\MVC\MVC.csproj" />
   </ItemGroup>
 
 </Project>

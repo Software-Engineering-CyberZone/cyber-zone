@@ -14,6 +14,7 @@ public class ClubDetailsDto
     public List<HardwareDto> Hardwares { get; set; } = [];
     public List<TariffDto> Tariffs { get; set; } = [];
     public List<MenuItemDto> MenuItems { get; set; } = [];
+    public List<ReviewDto> Reviews { get; set; } = [];
 }
 
 public class HardwareDto
@@ -41,4 +42,13 @@ public class MenuItemDto
     public decimal Price { get; set; }
     public string? Category { get; set; }
     public bool IsAvailable { get; set; }
+}
+
+public class ReviewDto
+{
+    public Guid Id { get; set; }
+    public string UserName { get; set; } = null!;
+    public int Rating { get; set; }
+    public string? Comment { get; set; }
+    public DateTime CreatedAt { get; set; }
 }

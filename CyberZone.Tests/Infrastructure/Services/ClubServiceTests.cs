@@ -2,32 +2,27 @@ using CyberZone.Application.Interfaces;
 using CyberZone.Domain.Entities;
 using CyberZone.Domain.Enums;
 using CyberZone.Domain.ValueObjects;
-using CyberZone.Infrastructure.Persistence;
+using CyberZone.Tests.Helpers;
 using FluentAssertions;
 using Infrastructure.Services;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace CyberZone.Tests.Infrastructure.Services;
 
-public class ClubServiceTests : IDisposable
+public class ClubServiceTests
 {
-    private readonly CyberZoneDbContext _context;
+    private readonly Mock<IApplicationDbContext> _mockContext;
     private readonly ClubService _clubService;
 
     public ClubServiceTests()
     {
-        var options = new DbContextOptionsBuilder<CyberZoneDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-
-        _context = new CyberZoneDbContext(options);
+        _mockContext = new Mock<IApplicationDbContext>();
         var logger = new Mock<ILogger<ClubService>>();
-        _clubService = new ClubService(_context, logger.Object);
+        _clubService = new ClubService(_mockContext.Object, logger.Object);
     }
 
-    private async Task<Club> SeedClubAsync()
+    private static Club CreateTestClub()
     {
         var club = new Club
         {
@@ -108,9 +103,13 @@ public class ClubServiceTests : IDisposable
             IsAvailable = true
         });
 
-        _context.Clubs.Add(club);
-        await _context.SaveChangesAsync();
         return club;
+    }
+
+    private void SetupClubs(List<Club> clubs)
+    {
+        var mockSet = MockDbSetHelper.CreateMockDbSet(clubs);
+        _mockContext.Setup(c => c.Clubs).Returns(mockSet.Object);
     }
 
     // --- GetClubDetailsAsync Success ---
@@ -118,13 +117,11 @@ public class ClubServiceTests : IDisposable
     [Fact]
     public async Task GetClubDetailsAsync_ExistingClub_ReturnsSuccess()
     {
-        // Arrange
-        var club = await SeedClubAsync();
+        var club = CreateTestClub();
+        SetupClubs([club]);
 
-        // Act
         var result = await _clubService.GetClubDetailsAsync(club.Id);
 
-        // Assert
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
     }
@@ -132,13 +129,11 @@ public class ClubServiceTests : IDisposable
     [Fact]
     public async Task GetClubDetailsAsync_ExistingClub_ReturnsCorrectBasicInfo()
     {
-        // Arrange
-        var club = await SeedClubAsync();
+        var club = CreateTestClub();
+        SetupClubs([club]);
 
-        // Act
         var result = await _clubService.GetClubDetailsAsync(club.Id);
 
-        // Assert
         var dto = result.Value;
         dto.Id.Should().Be(club.Id);
         dto.Name.Should().Be("CyberPro Arena");
@@ -150,13 +145,11 @@ public class ClubServiceTests : IDisposable
     [Fact]
     public async Task GetClubDetailsAsync_ExistingClub_ReturnsHardwares()
     {
-        // Arrange
-        var club = await SeedClubAsync();
+        var club = CreateTestClub();
+        SetupClubs([club]);
 
-        // Act
         var result = await _clubService.GetClubDetailsAsync(club.Id);
 
-        // Assert
         result.Value.Hardwares.Should().HaveCount(2);
         result.Value.Hardwares.Should().Contain(h => h.PcNumber == "PC-01" && h.Status == HardwareStatus.Available);
         result.Value.Hardwares.Should().Contain(h => h.PcNumber == "PC-02" && h.Status == HardwareStatus.Busy);
@@ -165,13 +158,11 @@ public class ClubServiceTests : IDisposable
     [Fact]
     public async Task GetClubDetailsAsync_ExistingClub_ReturnsTariffs()
     {
-        // Arrange
-        var club = await SeedClubAsync();
+        var club = CreateTestClub();
+        SetupClubs([club]);
 
-        // Act
         var result = await _clubService.GetClubDetailsAsync(club.Id);
 
-        // Assert
         result.Value.Tariffs.Should().HaveCount(2);
         result.Value.Tariffs.Should().Contain(t => t.Name == "Standard" && t.PricePerHour == 100m);
         result.Value.Tariffs.Should().Contain(t => t.Name == "Night Owl" && t.PricePerHour == 75m);
@@ -180,13 +171,11 @@ public class ClubServiceTests : IDisposable
     [Fact]
     public async Task GetClubDetailsAsync_ExistingClub_ReturnsMenuItems()
     {
-        // Arrange
-        var club = await SeedClubAsync();
+        var club = CreateTestClub();
+        SetupClubs([club]);
 
-        // Act
         var result = await _clubService.GetClubDetailsAsync(club.Id);
 
-        // Assert
         result.Value.MenuItems.Should().HaveCount(2);
         result.Value.MenuItems.Should().Contain(m => m.Name == "Coca-Cola" && m.Price == 35m);
         result.Value.MenuItems.Should().Contain(m => m.Name == "Pizza Margherita" && m.Price == 150m);
@@ -195,13 +184,11 @@ public class ClubServiceTests : IDisposable
     [Fact]
     public async Task GetClubDetailsAsync_ExistingClub_ReturnsHardwareSpecs()
     {
-        // Arrange
-        var club = await SeedClubAsync();
+        var club = CreateTestClub();
+        SetupClubs([club]);
 
-        // Act
         var result = await _clubService.GetClubDetailsAsync(club.Id);
 
-        // Assert
         var pc01 = result.Value.Hardwares.First(h => h.PcNumber == "PC-01");
         pc01.Specs.Should().ContainKey("CPU");
         pc01.Specs["GPU"].Should().Be("RTX 4070");
@@ -210,13 +197,11 @@ public class ClubServiceTests : IDisposable
     [Fact]
     public async Task GetClubDetailsAsync_ExistingClub_ReturnsWorkHours()
     {
-        // Arrange
-        var club = await SeedClubAsync();
+        var club = CreateTestClub();
+        SetupClubs([club]);
 
-        // Act
         var result = await _clubService.GetClubDetailsAsync(club.Id);
 
-        // Assert
         result.Value.WorkHours.Should().HaveCount(2);
         result.Value.WorkHours["Monday"].Should().Be("09:00-23:00");
     }
@@ -226,13 +211,10 @@ public class ClubServiceTests : IDisposable
     [Fact]
     public async Task GetClubDetailsAsync_NonExistentId_ReturnsFailure()
     {
-        // Arrange
-        var nonExistentId = Guid.NewGuid();
+        SetupClubs([]);
 
-        // Act
-        var result = await _clubService.GetClubDetailsAsync(nonExistentId);
+        var result = await _clubService.GetClubDetailsAsync(Guid.NewGuid());
 
-        // Assert
         result.IsSuccess.Should().BeFalse();
         result.IsFailure.Should().BeTrue();
         result.Error.Should().Contain("not found");
@@ -241,13 +223,10 @@ public class ClubServiceTests : IDisposable
     [Fact]
     public async Task GetClubDetailsAsync_NonExistentId_ValueAccessThrows()
     {
-        // Arrange
-        var nonExistentId = Guid.NewGuid();
+        SetupClubs([]);
 
-        // Act
-        var result = await _clubService.GetClubDetailsAsync(nonExistentId);
+        var result = await _clubService.GetClubDetailsAsync(Guid.NewGuid());
 
-        // Assert
         var act = () => result.Value;
         act.Should().Throw<InvalidOperationException>();
     }
@@ -257,13 +236,11 @@ public class ClubServiceTests : IDisposable
     [Fact]
     public async Task GetClubsForCatalogAsync_ReturnsSuccessWithClubs()
     {
-        // Arrange
-        await SeedClubAsync();
+        var club = CreateTestClub();
+        SetupClubs([club]);
 
-        // Act
         var result = await _clubService.GetClubsForCatalogAsync();
 
-        // Assert
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().HaveCount(1);
     }
@@ -271,10 +248,10 @@ public class ClubServiceTests : IDisposable
     [Fact]
     public async Task GetClubsForCatalogAsync_EmptyDb_ReturnsSuccessWithEmpty()
     {
-        // Act
+        SetupClubs([]);
+
         var result = await _clubService.GetClubsForCatalogAsync();
 
-        // Assert
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().BeEmpty();
     }
@@ -282,18 +259,48 @@ public class ClubServiceTests : IDisposable
     [Fact]
     public async Task GetClubsForCatalogAsync_ReturnsMinPrice()
     {
-        // Arrange
-        await SeedClubAsync();
+        var club = CreateTestClub();
+        SetupClubs([club]);
 
-        // Act
         var result = await _clubService.GetClubsForCatalogAsync();
 
-        // Assert
         result.Value.First().MinPrice.Should().Be(75m);
     }
 
-    public void Dispose()
+    // --- GetClubDetailsAsync Reviews ---
+
+    [Fact]
+    public async Task GetClubDetailsAsync_ExistingClub_ReturnsReviews()
     {
-        _context.Dispose();
+        var club = CreateTestClub();
+        var user = new User { Id = Guid.NewGuid(), UserName = "reviewer1", FullName = "Test Reviewer" };
+        club.Reviews.Add(new Review
+        {
+            UserId = user.Id,
+            User = user,
+            ClubId = club.Id,
+            Rating = 5,
+            Comment = "Excellent club!",
+            CreatedAt = DateTime.UtcNow
+        });
+        SetupClubs([club]);
+
+        var result = await _clubService.GetClubDetailsAsync(club.Id);
+
+        result.Value.Reviews.Should().HaveCount(1);
+        result.Value.Reviews.First().UserName.Should().Be("reviewer1");
+        result.Value.Reviews.First().Rating.Should().Be(5);
+        result.Value.Reviews.First().Comment.Should().Be("Excellent club!");
+    }
+
+    [Fact]
+    public async Task GetClubDetailsAsync_NoReviews_ReturnsEmptyList()
+    {
+        var club = CreateTestClub();
+        SetupClubs([club]);
+
+        var result = await _clubService.GetClubDetailsAsync(club.Id);
+
+        result.Value.Reviews.Should().BeEmpty();
     }
 }

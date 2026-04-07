@@ -424,6 +424,81 @@ body.details-page {
     margin-top: 50px;
 }
 
+/* REVIEWS SECTION */
+.reviews-section {
+    margin-top: 50px;
+}
+
+.reviews-summary {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.reviews-avg {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.reviews-avg-value {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.reviews-count {
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.review-card {
+    background: var(--bg3);
+    border-radius: 8px;
+    padding: 18px;
+    border: 1px solid var(--border);
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.review-username {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--accent);
+}
+
+.review-date {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.review-rating {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 8px;
+}
+
+.review-comment {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+}
+
 .menu-category-title {
     font-family: 'Rajdhani', sans-serif;
     font-size: 18px;

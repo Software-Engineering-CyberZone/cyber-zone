@@ -1,46 +1,37 @@
 using CyberZone.Application.DTOs;
+using CyberZone.Application.Interfaces;
 using CyberZone.Domain.Entities;
-using CyberZone.Infrastructure.Persistence;
+using CyberZone.Domain.Enums;
 using CyberZone.Infrastructure.Services;
+using CyberZone.Tests.Helpers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Moq;
 
 namespace CyberZone.Tests.Infrastructure.Services;
 
-public class UserServiceUpdateTests : IDisposable
+public class UserServiceUpdateTests
 {
-    private readonly CyberZoneDbContext _context;
+    private readonly Mock<IApplicationDbContext> _mockContext;
     private readonly Mock<UserManager<User>> _mockUserManager;
     private readonly UserService _service;
 
     public UserServiceUpdateTests()
     {
-        var options = new DbContextOptionsBuilder<CyberZoneDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-
-        _context = new CyberZoneDbContext(options);
-
+        _mockContext = new Mock<IApplicationDbContext>();
         var userStore = new Mock<IUserStore<User>>();
         _mockUserManager = new Mock<UserManager<User>>(
             userStore.Object, null!, null!, null!, null!, null!, null!, null!, null!);
-
-        _service = new UserService(_mockUserManager.Object, _context);
+        _service = new UserService(_mockUserManager.Object, _mockContext.Object);
     }
+
+    // --- UpdateUserProfileAsync ---
 
     [Fact]
     public async Task UpdateUserProfileAsync_ValidDto_ReturnsSuccess()
     {
         var user = CreateTestUser();
-
-        _mockUserManager.Setup(m => m.FindByIdAsync(user.Id.ToString()))
-            .ReturnsAsync(user);
-        _mockUserManager.Setup(m => m.UpdateAsync(It.IsAny<User>()))
-            .ReturnsAsync(IdentityResult.Success);
+        SetupUserManager(user);
 
         var dto = new EditUserProfileDto
         {
@@ -81,11 +72,7 @@ public class UserServiceUpdateTests : IDisposable
     public async Task UpdateUserProfileAsync_UpdatesAllFields()
     {
         var user = CreateTestUser();
-
-        _mockUserManager.Setup(m => m.FindByIdAsync(user.Id.ToString()))
-            .ReturnsAsync(user);
-        _mockUserManager.Setup(m => m.UpdateAsync(It.IsAny<User>()))
-            .ReturnsAsync(IdentityResult.Success);
+        SetupUserManager(user);
 
         var dto = new EditUserProfileDto
         {
@@ -136,6 +123,8 @@ public class UserServiceUpdateTests : IDisposable
         result.Error.Should().Contain("Duplicate email");
     }
 
+    // --- GetUserProfileAsync ---
+
     [Fact]
     public async Task GetUserProfileAsync_ReturnsNewFieldsInDto()
     {
@@ -149,6 +138,10 @@ public class UserServiceUpdateTests : IDisposable
         _mockUserManager.Setup(m => m.FindByIdAsync(user.Id.ToString()))
             .ReturnsAsync(user);
 
+        var transactions = new List<Transaction>();
+        var mockTransactions = MockDbSetHelper.CreateMockDbSet(transactions);
+        _mockContext.Setup(c => c.Transactions).Returns(mockTransactions.Object);
+
         var result = await _service.GetUserProfileAsync(user.Id.ToString());
 
         result.Should().NotBeNull();
@@ -160,6 +153,46 @@ public class UserServiceUpdateTests : IDisposable
         result.FullName.Should().Be("Test User");
     }
 
+    [Fact]
+    public async Task GetUserProfileAsync_NonExistentUser_ReturnsNull()
+    {
+        _mockUserManager.Setup(m => m.FindByIdAsync(It.IsAny<string>()))
+            .ReturnsAsync((User?)null);
+
+        var result = await _service.GetUserProfileAsync(Guid.NewGuid().ToString());
+
+        result.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task GetUserProfileAsync_WithTransactions_ReturnsTransactions()
+    {
+        var user = CreateTestUser();
+        _mockUserManager.Setup(m => m.FindByIdAsync(user.Id.ToString()))
+            .ReturnsAsync(user);
+
+        var transactions = new List<Transaction>
+        {
+            new() { UserId = user.Id, Type = TransactionType.TopUp, Amount = 100m, Description = "Top up", TransactionDate = DateTime.UtcNow },
+            new() { UserId = user.Id, Type = TransactionType.SessionCharge, Amount = 50m, Description = "Session", TransactionDate = DateTime.UtcNow }
+        };
+        var mockTransactions = MockDbSetHelper.CreateMockDbSet(transactions);
+        _mockContext.Setup(c => c.Transactions).Returns(mockTransactions.Object);
+
+        var result = await _service.GetUserProfileAsync(user.Id.ToString());
+
+        result.Should().NotBeNull();
+        result!.Transactions.Should().HaveCount(2);
+    }
+
+    private void SetupUserManager(User user)
+    {
+        _mockUserManager.Setup(m => m.FindByIdAsync(user.Id.ToString()))
+            .ReturnsAsync(user);
+        _mockUserManager.Setup(m => m.UpdateAsync(It.IsAny<User>()))
+            .ReturnsAsync(IdentityResult.Success);
+    }
+
     private static User CreateTestUser()
     {
         return new User
@@ -169,10 +202,5 @@ public class UserServiceUpdateTests : IDisposable
             Email = "test@test.com",
             FullName = "Test User"
         };
-    }
-
-    public void Dispose()
-    {
-        _context.Dispose();
     }
 }

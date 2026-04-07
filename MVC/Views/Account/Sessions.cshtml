@@ -1,8 +1,8 @@
-@using MVC.Models
+п»ї@using MVC.Models
 @model List<SessionItemViewModel>
 
 @{
-    ViewData["Title"] = "Мої сесії";
+    ViewData["Title"] = "РњРѕС— РЎРµСЃС–С—";
 }
 
 @section Styles {
@@ -11,7 +11,16 @@
 }
 
 <div class="sessions-page-container">
-    <h2 class="sessions-page-title">Сесії</h2>
+    <h2 class="sessions-page-title">РЎРµСЃС–С—</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="review-success-msg">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="review-error-msg">@TempData["Error"]</div>
+    }
 
     <div class="sessions-list">
         @foreach (var session in Model)
@@ -39,7 +48,7 @@
                         <div class="s-col-pc">@session.PcNumber</div>
 
                         <div class="s-col-actions">
-                            <div class="status-badge-started">Сесію розпочато</div>
+                            <div class="status-badge-started">Р—Р°СЂР°Р· Р’С–РґРІС–РґСѓС”</div>
                         </div>
                     </div>
 
@@ -53,10 +62,10 @@
                         <div class="s-expanded-actions">
                             <form asp-action="EndSession" method="post" style="margin: 0;">
                                 <input type="hidden" name="id" value="@session.Id" />
-                                <button type="submit" class="btn-s-gradient">Завершити</button>
+                                <button type="submit" class="btn-s-gradient">Р—Р°РІРµСЂС€РёС‚Рё</button>
                             </form>
-                            <button class="btn-s-gradient">Пауза</button>
-                            <a asp-controller="Order" asp-action="Bar" class="btn-s-gradient" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">Відкрити бар</a>
+                            <button class="btn-s-gradient">Р”РѕРґР°С‚Рё</button>
+                            <a asp-controller="Order" asp-action="Bar" class="btn-s-gradient" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">Р’С–РґРєСЂРёС‚Рё Р‘Р°СЂ</a>
                         </div>
                     </div>
                 </div>
@@ -89,20 +98,47 @@
                         {
                             <form asp-action="StartSession" method="post" style="margin: 0;">
                                 <input type="hidden" name="id" value="@session.Id" />
-                                <button type="submit" class="btn-s-start">Розпочати</button>
+                                <button type="submit" class="btn-s-start">Р РѕР·РїРѕС‡Р°С‚Рё</button>
                             </form>
     
                             <form asp-action="CancelSession" method="post" style="margin: 0;">
                                 <input type="hidden" name="id" value="@session.Id" />
-                                <button type="submit" class="btn-s-cancel">Скасувати</button>
+                                <button type="submit" class="btn-s-cancel">РЎРєР°СЃСѓРІР°С‚Рё</button>
                             </form>
                         }
                         else
                         {
-                            <button class="btn-s-start" disabled>Розпочати</button>
-                            <button class="btn-s-cancel" disabled>Скасувати</button>
+                            @if (session.HasReview)
+                            {
+                                <div class="status-badge-reviewed">Р’С–РґРіСѓРє Р—Р°Р»РёС€РµРЅРѕ</div>
+                            }
+                            else
+                            {
+                                <button type="button" class="btn-s-review" onclick="toggleReviewForm('@session.Id')">Р—Р°Р»РёС€РёС‚Рё Р’С–РґРіСѓРє</button>
+                            }
                         }
                     </div>
+
+                    @if (!session.HasReview && session.SessionState == "Completed")
+                    {
+                        <div class="review-form-wrapper" id="review-form-@session.Id" style="display:none;">
+                            <form asp-action="LeaveReview" method="post" class="review-inline-form">
+                                <input type="hidden" name="ClubId" value="@session.ClubId" />
+                                <div class="review-stars" id="stars-@session.Id">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <span class="star-btn" data-value="@i" onclick="setRating('@session.Id', @i)">&#9733;</span>
+                                    }
+                                </div>
+                                <input type="hidden" name="Rating" id="rating-@session.Id" value="0" />
+                                <textarea name="Comment" class="review-textarea" maxlength="500" placeholder="Р’Р°С€ РєРѕРјРµРЅС‚Р°СЂ... (РґРѕ 500 СЃРёРјРІРѕР»С–РІ)"></textarea>
+                                <div class="review-form-actions">
+                                    <button type="submit" class="btn-s-review-submit">Р’С–РґРїСЂР°РІРёС‚Рё</button>
+                                    <button type="button" class="btn-s-review-cancel" onclick="toggleReviewForm('@session.Id')">РЎРєР°СЃСѓРІР°С‚Рё</button>
+                                </div>
+                            </form>
+                        </div>
+                    }
                 </div>
             }
         }
@@ -117,12 +153,11 @@
             timers.forEach(function (timer) {
                 var targetTimeStr = timer.getAttribute('data-target-time');
                 var startTimeStr = timer.getAttribute('data-start-time');
-                var now = new Date(); // Поточний час
+                var now = new Date();
                 
                 var diffMs = 0;
 
                 if (targetTimeStr) {
-                    // РЕЖИМ 1: ЗВОРОТНИЙ ВІДЛІК (Countdown)
                     var targetTime = new Date(targetTimeStr);
                     diffMs = targetTime - now;
 
@@ -132,13 +167,11 @@
                         return;
                     }
                 } else {
-                    // РЕЖИМ 2: ПРЯМИЙ ВІДЛІК (Count-up)
                     var startTime = new Date(startTimeStr);
                     diffMs = now - startTime;
                     if (diffMs < 0) diffMs = 0;
                 }
                 
-                // Перетворюємо мілісекунди на Години:Хвилини:Секунди
                 var hours = Math.floor(diffMs / (1000 * 60 * 60));
                 var minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
                 var seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
@@ -151,5 +184,26 @@
                 timer.textContent = formattedTime;
             });
         }, 1000);
+
+        function toggleReviewForm(sessionId) {
+            var form = document.getElementById('review-form-' + sessionId);
+            if (form.style.display === 'none') {
+                form.style.display = 'block';
+            } else {
+                form.style.display = 'none';
+            }
+        }
+
+        function setRating(sessionId, value) {
+            document.getElementById('rating-' + sessionId).value = value;
+            var stars = document.querySelectorAll('#stars-' + sessionId + ' .star-btn');
+            stars.forEach(function (star, index) {
+                if (index < value) {
+                    star.classList.add('star-active');
+                } else {
+                    star.classList.remove('star-active');
+                }
+            });
+        }
     </script>
 }

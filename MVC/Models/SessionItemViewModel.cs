@@ -11,6 +11,8 @@ public class SessionItemViewModel
     public string PcNumber { get; set; } = string.Empty;
     public bool IsActive { get; set; }
     public string SessionState { get; set; } = "Pending";
+    public Guid ClubId { get; set; }
+    public bool HasReview { get; set; }
     public DateTime SortDate { get; set; }
     public string TargetTime { get; set; } = string.Empty;
 }

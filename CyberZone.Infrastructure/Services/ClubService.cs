@@ -46,6 +46,7 @@ public class ClubService : IClubService
             .Include(c => c.Hardwares)
             .Include(c => c.Tariffs)
             .Include(c => c.MenuItems)
+            .Include(c => c.Reviews).ThenInclude(r => r.User)
             .FirstOrDefaultAsync(c => c.Id == id);
 
         if (club is null)
@@ -86,7 +87,15 @@ public class ClubService : IClubService
                 Price = m.Price,
                 Category = m.Category,
                 IsAvailable = m.IsAvailable
-            }).ToList()
+            }).ToList(),
+            Reviews = club.Reviews.Select(r => new ReviewDto
+            {
+                Id = r.Id,
+                UserName = r.User?.UserName ?? "Користувач",
+                Rating = r.Rating,
+                Comment = r.Comment,
+                CreatedAt = r.CreatedAt
+            }).OrderByDescending(r => r.CreatedAt).ToList()
         };
 
         _logger.LogInformation("Fetched club details for {ClubName} ({ClubId})", club.Name, club.Id);

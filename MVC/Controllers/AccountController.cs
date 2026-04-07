@@ -21,6 +21,7 @@ public class AccountController : Controller
     private readonly PaymentService _paymentService;
     private readonly CyberZoneDbContext _context;
     private readonly IWebHostEnvironment _environment;
+    private readonly IReviewService _reviewService;
 
     public AccountController(
         UserManager<User> userManager,
@@ -28,7 +29,8 @@ public class AccountController : Controller
         IUserService userService,
         PaymentService paymentService,
         CyberZoneDbContext context,
-        IWebHostEnvironment environment)
+        IWebHostEnvironment environment,
+        IReviewService reviewService)
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -36,6 +38,7 @@ public class AccountController : Controller
         _paymentService = paymentService;
         _context = context;
         _environment = environment;
+        _reviewService = reviewService;
     }
 
     [HttpGet]
@@ -550,10 +553,17 @@ public class AccountController : Controller
             .Where(s => s.UserId == userId)
             .ToListAsync();
 
+        // Отримуємо ClubId-и, для яких є відгуки
+        var reviewedClubIds = await _context.Reviews
+            .Where(r => r.UserId == userId)
+            .Select(r => r.ClubId)
+            .ToListAsync();
+
         viewModels.AddRange(sessions.Select(s =>
         {
             // Переводимо UTC час у Київський для красивого відображення
             var localStartTime = TimeZoneInfo.ConvertTimeFromUtc(s.StartTime, kyivZone);
+            var clubId = s.Hardware?.Club?.Id ?? Guid.Empty;
 
             return new SessionItemViewModel
             {
@@ -570,6 +580,8 @@ public class AccountController : Controller
                     ? Math.Round((s.EndTime.Value - s.StartTime).TotalHours, 1).ToString() + " год."
                     : "Триває",
                 SessionState = s.Status == CyberZone.Domain.Enums.SessionStatus.Active ? "Active" : "Completed",
+                ClubId = clubId,
+                HasReview = reviewedClubIds.Contains(clubId),
 
                 // Для JS і сортування залишаємо оригінальний UTC (браузер сам його зрозуміє)
                 SortDate = s.StartTime,
@@ -604,6 +616,7 @@ public class AccountController : Controller
 
                 Duration = Math.Round((b.EndTime - b.StartTime).TotalHours, 1).ToString() + " год.",
                 SessionState = "Pending",
+                ClubId = b.Hardware?.Club?.Id ?? Guid.Empty,
                 SortDate = b.StartTime
             };
         }));
@@ -675,6 +688,24 @@ public class AccountController : Controller
 
             await _context.SaveChangesAsync();
         }
+
+        return RedirectToAction("Sessions");
+    }
+
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> LeaveReview(CreateReviewDto dto)
+    {
+        var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userIdStr == null || !Guid.TryParse(userIdStr, out Guid userId))
+            return RedirectToAction("Login");
+
+        var result = await _reviewService.AddReviewAsync(userId, dto);
+
+        if (result.IsFailure)
+            TempData["Error"] = result.Error;
+        else
+            TempData["SuccessMessage"] = "Відгук успішно залишено!";
 
         return RedirectToAction("Sessions");
     }

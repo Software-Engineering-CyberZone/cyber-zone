@@ -50,6 +50,7 @@ public static class DependencyInjection
         services.AddScoped<IClubService, ClubService>();
         services.AddScoped<PaymentService>();
         services.AddScoped<CyberZone.Application.Interfaces.IUserService, CyberZone.Infrastructure.Services.UserService>();
+        services.AddScoped<IReviewService, ReviewService>();
         return services;
     }
 }

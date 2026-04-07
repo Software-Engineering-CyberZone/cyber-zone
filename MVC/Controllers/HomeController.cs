@@ -32,7 +32,6 @@ public class HomeController : Controller
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
-    [Authorize]
     public async Task<IActionResult> Catalog()
     {
         var result = await _clubService.GetClubsForCatalogAsync();
@@ -45,7 +44,6 @@ public class HomeController : Controller
         return View(result.Value);
     }
 
-    [Authorize]
     public async Task<IActionResult> Details(Guid id)
     {
         var result = await _clubService.GetClubDetailsAsync(id);

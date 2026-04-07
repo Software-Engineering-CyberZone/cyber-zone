@@ -155,3 +155,75 @@ body {
     color: rgba(255, 0, 0, 0.4);
     cursor: not-allowed;
 }
+
+.expanded-session {
+    height: 314px;
+    display: flex;
+    flex-direction: column;
+    padding: 25px 25px 0 25px; /* Забираємо нижній padding, щоб кнопки стали як у фігмі */
+    align-items: stretch; /* Скасовуємо grid-вирівнювання з батьківського класу */
+}
+
+.expanded-top {
+    display: grid;
+    grid-template-columns: 300px 1fr 100px auto;
+    align-items: center;
+    width: 100%;
+}
+
+.status-badge-started {
+    width: 200px;
+    height: 45px;
+    border: 1px solid rgba(41, 245, 0, 0.82);
+    border-radius: 5px;
+    color: rgba(41, 245, 0, 0.82);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.s-expanded-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.s-timer-large {
+    font-family: 'Gemunu Libre', sans-serif;
+    font-size: 128px;
+    line-height: 139px;
+    margin-left: 25px;
+    /* Градієнт для тексту */
+    background: linear-gradient(180deg, #D6FF3F 0%, #E05BBE 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+}
+
+.s-expanded-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-right: 0;
+}
+
+.btn-s-gradient {
+    width: 200px;
+    height: 45px;
+    background: var(--gradient-accent);
+    border-radius: 5px;
+    border: none;
+    color: #1C2838;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+    .btn-s-gradient:hover {
+        opacity: 0.9;
+    }

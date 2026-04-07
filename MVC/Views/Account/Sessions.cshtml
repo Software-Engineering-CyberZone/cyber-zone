@@ -6,6 +6,7 @@
 }
 
 @section Styles {
+    <link href="https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/sessions.css" asp-append-version="true" />
 }
 
@@ -15,36 +16,140 @@
     <div class="sessions-list">
         @foreach (var session in Model)
         {
-            var activeClass = session.IsActive ? "active-session" : "inactive-session";
+            if (session.SessionState == "Active")
+            {
+                <div class="session-card expanded-session">
+                    <div class="s-top-info expanded-top">
+                        <div class="s-col-info">
+                            <div class="s-club-name">@session.ClubName</div>
+                            <div class="s-time-row">
+                                <span>@session.Date</span>
+                                <span>@session.Duration</span>
+                                <span>@session.Time</span>
+                            </div>
+                        </div>
 
-            <div class="session-card @activeClass">
-                
-                <div class="s-col-info">
-                    <div class="s-club-name">@session.ClubName</div>
-                    <div class="s-time-row">
-                        <span>@session.Date</span>
-                        <span>@session.Duration</span>
-                        <span>@session.Time</span>
+                        <div class="s-col-address">
+                            <svg class="location-icon" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
+                            </svg>
+                            @session.Address
+                        </div>
+
+                        <div class="s-col-pc">@session.PcNumber</div>
+
+                        <div class="s-col-actions">
+                            <div class="status-badge-started">Сесію розпочато</div>
+                        </div>
+                    </div>
+
+                    <div class="s-expanded-body">
+                        <div class="s-timer-large js-session-timer" 
+                             data-start-time="@session.SortDate.ToString("O")"
+                             data-target-time="@session.TargetTime">
+                            00:00:00
+                        </div>
+                        
+                        <div class="s-expanded-actions">
+                            <form asp-action="EndSession" method="post" style="margin: 0;">
+                                <input type="hidden" name="id" value="@session.Id" />
+                                <button type="submit" class="btn-s-gradient">Завершити</button>
+                            </form>
+                            <button class="btn-s-gradient">Пауза</button>
+                            <a asp-controller="Order" asp-action="Bar" class="btn-s-gradient" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">Відкрити бар</a>
+                        </div>
                     </div>
                 </div>
+            }
+            else
+            {
+                var cardClass = session.SessionState == "Pending" ? "" : "inactive-session";
+                
+                <div class="session-card @cardClass">
+                    <div class="s-col-info">
+                        <div class="s-club-name">@session.ClubName</div>
+                        <div class="s-time-row">
+                            <span>@session.Date</span>
+                            <span>@session.Duration</span>
+                            <span>@session.Time</span>
+                        </div>
+                    </div>
 
-                <div class="s-col-address">
-                    <svg class="location-icon" viewBox="0 0 16 16" fill="currentColor">
-                        <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
-                    </svg>
-                    @session.Address
+                    <div class="s-col-address">
+                        <svg class="location-icon" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
+                        </svg>
+                        @session.Address
+                    </div>
+
+                    <div class="s-col-pc">@session.PcNumber</div>
+
+                    <div class="s-col-actions">
+                        @if (session.SessionState == "Pending")
+                        {
+                            <form asp-action="StartSession" method="post" style="margin: 0;">
+                                <input type="hidden" name="id" value="@session.Id" />
+                                <button type="submit" class="btn-s-start">Розпочати</button>
+                            </form>
+    
+                            <form asp-action="CancelSession" method="post" style="margin: 0;">
+                                <input type="hidden" name="id" value="@session.Id" />
+                                <button type="submit" class="btn-s-cancel">Скасувати</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <button class="btn-s-start" disabled>Розпочати</button>
+                            <button class="btn-s-cancel" disabled>Скасувати</button>
+                        }
+                    </div>
                 </div>
-
-                <div class="s-col-pc">
-                    @session.PcNumber
-                </div>
-
-                <div class="s-col-actions">
-                    <button class="btn-s-start" @(!session.IsActive ? "disabled" : "")>Розпочати</button>
-                    <button class="btn-s-cancel" @(!session.IsActive ? "disabled" : "")>Скасувати</button>
-                </div>
-
-            </div>
+            }
         }
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        setInterval(function () {
+            var timers = document.querySelectorAll('.js-session-timer');
+            
+            timers.forEach(function (timer) {
+                var targetTimeStr = timer.getAttribute('data-target-time');
+                var startTimeStr = timer.getAttribute('data-start-time');
+                var now = new Date(); // Поточний час
+                
+                var diffMs = 0;
+
+                if (targetTimeStr) {
+                    // РЕЖИМ 1: ЗВОРОТНИЙ ВІДЛІК (Countdown)
+                    var targetTime = new Date(targetTimeStr);
+                    diffMs = targetTime - now;
+
+                    if (diffMs <= 0) {
+                        timer.textContent = "00:00:00"; 
+                        window.location.reload();
+                        return;
+                    }
+                } else {
+                    // РЕЖИМ 2: ПРЯМИЙ ВІДЛІК (Count-up)
+                    var startTime = new Date(startTimeStr);
+                    diffMs = now - startTime;
+                    if (diffMs < 0) diffMs = 0;
+                }
+                
+                // Перетворюємо мілісекунди на Години:Хвилини:Секунди
+                var hours = Math.floor(diffMs / (1000 * 60 * 60));
+                var minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
+                
+                var formattedTime = 
+                    String(hours).padStart(2, '0') + ':' + 
+                    String(minutes).padStart(2, '0') + ':' + 
+                    String(seconds).padStart(2, '0');
+                    
+                timer.textContent = formattedTime;
+            });
+        }, 1000);
+    </script>
+}

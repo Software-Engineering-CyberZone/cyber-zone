@@ -1,0 +1,82 @@
+@using MVC.Models
+@model BarViewModel
+
+@{
+    ViewData["Title"] = "Бар клубу";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/bar.css" asp-append-version="true" />
+}
+
+<div class="bar-page-container">
+    
+    <div class="bar-header">
+        <h2 class="bar-page-title">Меню бару</h2>
+        <div class="cart-icon-wrapper">
+            <svg class="cart-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+            </svg>
+            <span class="cart-dot"></span>
+        </div>
+    </div>
+
+    <div class="category-section">
+        <div class="category-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M6 8l2 12h8l2-12M4 8h16M14 3l-2 5"/>
+            </svg>
+            Напої
+        </div>
+        <hr class="category-divider" />
+
+        <div class="menu-grid">
+            @foreach (var item in Model.Drinks)
+            {
+                <div class="menu-card">
+                    <div class="menu-img-wrapper">
+                        <img src="@item.ImageUrl" alt="@item.Name" class="menu-img" />
+                    </div>
+                    <div class="menu-info">
+                        <div class="menu-name-row">
+                            <span class="menu-name">@item.Name</span>
+                            <span class="menu-desc">@item.Description</span>
+                        </div>
+                        <div class="menu-price">@item.Price.ToString("N0") грн</div>
+                        <button class="btn-add-cart">Додати у кошик</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="category-section" style="margin-top: 50px;">
+        <div class="category-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M6 8l2 12h8l2-12M4 8h16M14 3l-2 5"/>
+            </svg>
+            Снеки
+        </div>
+        <hr class="category-divider" />
+
+        <div class="menu-grid">
+            @foreach (var item in Model.Snacks)
+            {
+                <div class="menu-card">
+                    <div class="menu-img-wrapper">
+                        <img src="@item.ImageUrl" alt="@item.Name" class="menu-img" />
+                    </div>
+                    <div class="menu-info">
+                        <div class="menu-name-row">
+                            <span class="menu-name">@item.Name</span>
+                            <span class="menu-desc">@item.Description</span>
+                        </div>
+                        <div class="menu-price">@item.Price.ToString("N0") грн</div>
+                        <button class="btn-add-cart">Додати у кошик</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+</div>

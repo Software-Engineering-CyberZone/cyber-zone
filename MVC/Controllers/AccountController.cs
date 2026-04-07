@@ -232,107 +232,91 @@ public class AccountController : Controller
 
     [HttpGet]
     [Authorize]
-    public async Task<IActionResult> Sessions()
-    {
-        var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userIdStr == null || !Guid.TryParse(userIdStr, out Guid userId))
-            return RedirectToAction("Login");
-
-        // Дістаємо реальні сесії з бази даних
-        var realSessions = await _context.GamingSessions
-            .Include(s => s.Hardware) // Підтягуємо інфо про ПК/Консоль
-                .ThenInclude(h => h.Club) // В Hardware є прямий зв'язок з Club
-            .Include(s => s.Tariff) // Підтягуємо тариф для впевненості (опціонально)
-            .Where(s => s.UserId == userId)
-            .OrderByDescending(s => s.StartTime) // Найновіші сесії зверху
-            .ToListAsync();
-
-        // Перетворюємо їх у нашу ViewModel
-        var sessionViewModels = realSessions.Select(s => new SessionItemViewModel
-        {
-            Id = s.Id.GetHashCode(), // Або замініть Id в ViewModel на Guid, щоб передавати s.Id
-
-            // Беремо реальну назву клубу
-            ClubName = s.Hardware?.Club?.Name ?? "CyberZone Club",
-
-            // Якщо у ValueObject Address перевизначено ToString(), це спрацює ідеально.
-            // Якщо ні, напишіть: $"{s.Hardware?.Club?.Address.City}, {s.Hardware?.Club?.Address.Street}"
-            Address = s.Hardware?.Club?.Address?.ToString() ?? "Адреса не вказана",
-
-            // Використовуємо реальне поле PcNumber з Hardware (наприклад, "PC-01")
-            PcNumber = s.Hardware?.PcNumber ?? "N/A",
-
-            // Форматуємо дати та час
-            Date = s.StartTime.ToString("dd.MM.yyyy"),
-            Time = s.StartTime.ToString("HH:mm"),
-
-            // Вираховуємо тривалість. Якщо EndTime ще немає (сесія триває), рахуємо до поточного часу
-            Duration = s.EndTime.HasValue
-                ? Math.Round((s.EndTime.Value - s.StartTime).TotalHours, 1).ToString() + " год."
-                : Math.Round((DateTime.UtcNow - s.StartTime).TotalHours, 1).ToString() + " год. (триває)",
-
-            // Визначаємо, чи сесія зараз активна, використовуючи ваш enum SessionStatus.Active
-            IsActive = s.Status == CyberZone.Domain.Enums.SessionStatus.Active
-        }).ToList();
-
-        return View(sessionViewModels);
-    }
-
-    [HttpGet]
-    [Authorize]
     public async Task<IActionResult> SeedMockSessions()
     {
         var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userIdStr == null || !Guid.TryParse(userIdStr, out Guid userId))
             return RedirectToAction("Login");
 
-        // Перевіряємо, чи вже є сесії, щоб не створити дублікати
-        if (await _context.GamingSessions.AnyAsync(s => s.UserId == userId))
+        // 1. ПОВНЕ ОЧИЩЕННЯ: Видаляємо всі сесії та бронювання цього користувача
+        var oldSessions = await _context.GamingSessions.Where(s => s.UserId == userId).ToListAsync();
+        if (oldSessions.Any()) _context.GamingSessions.RemoveRange(oldSessions);
+
+        var oldBookings = await _context.Bookings.Where(b => b.UserId == userId).ToListAsync();
+        if (oldBookings.Any()) _context.Bookings.RemoveRange(oldBookings);
+
+        await _context.SaveChangesAsync();
+
+        // 2. ІДЕАЛЬНИЙ КЛУБ: З нормальною адресою
+        var club = await _context.Clubs.FirstOrDefaultAsync(c => c.Name == "Cyber Pro Arena");
+
+        var realAddress = new CyberZone.Domain.ValueObjects.Address("вул. Болоня, 51", "м. Київ", "Київ", "04210", "Україна");
+
+        if (club == null)
         {
-            return RedirectToAction("Sessions");
+            club = new CyberZone.Domain.Entities.Club
+            {
+                Name = "Cyber Pro Arena",
+                Address = realAddress, // Додаємо справжню адресу!
+                CreatedAt = DateTime.UtcNow
+            };
+            _context.Clubs.Add(club);
+        }
+        else if (string.IsNullOrWhiteSpace(club.Address.Street))
+        {
+            // Якщо клуб вже був створений раніше з кривою адресою — ми це виправимо
+            club.Address = realAddress;
         }
 
-        // 1. Створюємо фейковий Клуб
-        var club = new CyberZone.Domain.Entities.Club
+        // 3. ПРАВИЛЬНЕ ЗАЛІЗО
+        var hardware = await _context.Hardwares.FirstOrDefaultAsync(h => h.PcNumber == "PC-20");
+        if (hardware == null)
         {
-            Name = "Cyber Pro Arena",
-            CreatedAt = DateTime.UtcNow
-        };
-        _context.Clubs.Add(club);
-
-        // 2. Створюємо фейкове залізо (ПК)
-        var hardware = new CyberZone.Domain.Entities.Hardware
-        {
-            PcNumber = "PC-20",
-            Club = club, // EF сам зв'яже їхні ID
-            Status = CyberZone.Domain.Enums.HardwareStatus.Busy,
-            CreatedAt = DateTime.UtcNow
-        };
-        _context.Hardwares.Add(hardware);
-
-        // 3. Створюємо фейковий Тариф
-        var tariff = new CyberZone.Domain.Entities.Tariff
-        {
-            Name = "Standard",
-            PricePerHour = 75.00m,
-            CreatedAt = DateTime.UtcNow
-        };
-        club.Tariffs.Add(tariff); // Зв'язуємо тариф з клубом
-
-        // 4. Створюємо фейкові Сесії для поточного юзера
-        var sessions = new List<CyberZone.Domain.Entities.GamingSession>
-        {
-            // Активна сесія (почалася 1 годину тому і досі триває)
-            new CyberZone.Domain.Entities.GamingSession
+            hardware = new CyberZone.Domain.Entities.Hardware
             {
-                UserId = userId,
-                Hardware = hardware,
-                Tariff = tariff,
-                StartTime = DateTime.UtcNow.AddHours(-1),
-                Status = CyberZone.Domain.Enums.SessionStatus.Active,
+                PcNumber = "PC-20",
+                Club = club,
+                Status = CyberZone.Domain.Enums.HardwareStatus.Available, // Ставимо Available, бо сесія ще не почалася
                 CreatedAt = DateTime.UtcNow
-            },
-            // Завершена сесія вчора (грав 2 години)
+            };
+            _context.Hardwares.Add(hardware);
+        }
+        else
+        {
+            hardware.Status = CyberZone.Domain.Enums.HardwareStatus.Available; // Скидаємо статус
+        }
+
+        // 4. ТАРИФ
+        var tariff = await _context.Tariffs.FirstOrDefaultAsync(t => t.Name == "Standard");
+        if (tariff == null)
+        {
+            tariff = new CyberZone.Domain.Entities.Tariff
+            {
+                Name = "Standard",
+                PricePerHour = 75.00m,
+                CreatedAt = DateTime.UtcNow
+            };
+            club.Tariffs.Add(tariff);
+        }
+
+        await _context.SaveChangesAsync();
+
+        // 5. ІДЕАЛЬНЕ БРОНЮВАННЯ ДЛЯ ТЕСТУ (Pending)
+        var booking = new CyberZone.Domain.Entities.Booking
+        {
+            UserId = userId,
+            Hardware = hardware,
+            Tariff = tariff,
+            StartTime = DateTime.UtcNow, // Починається ПРЯМО ЗАРАЗ
+            EndTime = DateTime.UtcNow.AddHours(2), // Забукано рівно на 2 години
+            Status = CyberZone.Domain.Enums.BookingStatus.Pending,
+            CreatedAt = DateTime.UtcNow
+        };
+        _context.Bookings.Add(booking);
+
+        // 6. ІСТОРІЯ: Кілька старих завершених сесій для краси
+        var completedSessions = new List<CyberZone.Domain.Entities.GamingSession>
+        {
             new CyberZone.Domain.Entities.GamingSession
             {
                 UserId = userId,
@@ -344,7 +328,6 @@ public class AccountController : Controller
                 TotalCost = 150.00m,
                 CreatedAt = DateTime.UtcNow.AddDays(-1)
             },
-            // Ще одна завершена сесія позавчора (грав 3 години)
             new CyberZone.Domain.Entities.GamingSession
             {
                 UserId = userId,
@@ -357,13 +340,24 @@ public class AccountController : Controller
                 CreatedAt = DateTime.UtcNow.AddDays(-2)
             }
         };
-
-        _context.GamingSessions.AddRange(sessions);
-
-        // Зберігаємо всю цю красу в базу одним махом!
+        _context.GamingSessions.AddRange(completedSessions);
+#pragma warning disable S1075
+        // 7. СІДЕМО ТОВАРИ ДЛЯ БАРУ (MenuItems)
+        if (!await _context.MenuItems.AnyAsync())
+        {
+            var menuItems = new List<CyberZone.Domain.Entities.MenuItem>
+            {
+                new CyberZone.Domain.Entities.MenuItem { Name = "CocaCola", Description = "330 мл", Price = 50.00m, Category = "Drinks", ImageUrl = "/images/cocacola.png", IsAvailable = true, Club = club, CreatedAt = DateTime.UtcNow },
+                new CyberZone.Domain.Entities.MenuItem { Name = "Fanta", Description = "330 мл", Price = 50.00m, Category = "Drinks", ImageUrl = "/images/fanta.png", IsAvailable = true, Club = club, CreatedAt = DateTime.UtcNow },
+                new CyberZone.Domain.Entities.MenuItem { Name = "Sprite", Description = "330 мл", Price = 50.00m, Category = "Drinks", ImageUrl = "/images/sprite.png", IsAvailable = true, Club = club, CreatedAt = DateTime.UtcNow },
+                new CyberZone.Domain.Entities.MenuItem { Name = "Lay’s", Description = "120 гр", Price = 70.00m, Category = "Snacks", ImageUrl = "/images/lays.png", IsAvailable = true, Club = club, CreatedAt = DateTime.UtcNow },
+                new CyberZone.Domain.Entities.MenuItem { Name = "Doritos", Description = "100 гр", Price = 80.00m, Category = "Snacks", ImageUrl = "/images/doritos.png", IsAvailable = true, Club = club, CreatedAt = DateTime.UtcNow }
+            };
+            _context.MenuItems.AddRange(menuItems);
+        }
+#pragma warning restore S1075
         await _context.SaveChangesAsync();
 
-        // Перекидаємо на сторінку сесій, щоб побачити результат
         return RedirectToAction("Sessions");
     }
 
@@ -510,6 +504,179 @@ public class AccountController : Controller
         var fullPath = Path.Combine(_environment.WebRootPath, relativePath.TrimStart('/'));
         if (System.IO.File.Exists(fullPath))
             System.IO.File.Delete(fullPath);
+    }
+
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> Sessions()
+    {
+        var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userIdStr == null || !Guid.TryParse(userIdStr, out Guid userId))
+            return RedirectToAction("Login");
+
+        var expiredSessions = await _context.GamingSessions
+            .Include(s => s.Tariff)
+            .Include(s => s.Hardware)
+            .Where(s => s.UserId == userId
+                     && s.Status == CyberZone.Domain.Enums.SessionStatus.Active
+                     && s.EndTime.HasValue
+                     && s.EndTime.Value <= DateTime.UtcNow) // Якщо час завершення вже настав або минув
+            .ToListAsync();
+
+        if (expiredSessions.Any())
+        {
+            foreach (var session in expiredSessions)
+            {
+                session.EndSession(); // Викликаємо доменний метод (рахує гроші, міняє статус)
+
+                // Звільняємо ПК
+                if (session.Hardware != null)
+                    session.Hardware.Status = CyberZone.Domain.Enums.HardwareStatus.Available;
+            }
+            await _context.SaveChangesAsync(); // Зберігаємо зміни в базу
+        }
+
+        var viewModels = new List<SessionItemViewModel>();
+
+        // Отримуємо часовий пояс України (безпечний спосіб для Windows та Linux/Mac)
+        TimeZoneInfo kyivZone;
+        try { kyivZone = TimeZoneInfo.FindSystemTimeZoneById("FLE Standard Time"); } // Для Windows
+        catch { kyivZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Kyiv"); } // Для Linux/macOS
+
+        // 1. Тягнемо АКТИВНІ та ЗАВЕРШЕНІ сесії
+        var sessions = await _context.GamingSessions
+            .Include(s => s.Hardware).ThenInclude(h => h.Club)
+            .Include(s => s.Tariff)
+            .Where(s => s.UserId == userId)
+            .ToListAsync();
+
+        viewModels.AddRange(sessions.Select(s =>
+        {
+            // Переводимо UTC час у Київський для красивого відображення
+            var localStartTime = TimeZoneInfo.ConvertTimeFromUtc(s.StartTime, kyivZone);
+
+            return new SessionItemViewModel
+            {
+                Id = s.Id,
+                ClubName = s.Hardware?.Club?.Name ?? "CyberZone Club",
+                Address = s.Hardware?.Club?.Address?.ToString() ?? "Адреса не вказана",
+                PcNumber = s.Hardware?.PcNumber ?? "N/A",
+
+                // Використовуємо наш локальний час для тексту
+                Date = localStartTime.ToString("dd.MM.yyyy"),
+                Time = localStartTime.ToString("HH:mm"),
+
+                Duration = s.EndTime.HasValue
+                    ? Math.Round((s.EndTime.Value - s.StartTime).TotalHours, 1).ToString() + " год."
+                    : "Триває",
+                SessionState = s.Status == CyberZone.Domain.Enums.SessionStatus.Active ? "Active" : "Completed",
+
+                // Для JS і сортування залишаємо оригінальний UTC (браузер сам його зрозуміє)
+                SortDate = s.StartTime,
+                TargetTime = s.Status == CyberZone.Domain.Enums.SessionStatus.Active && s.EndTime.HasValue
+                    ? s.EndTime.Value.ToString("yyyy-MM-ddTHH:mm:ssZ")
+                    : ""
+            };
+        }));
+
+        // 2. Тягнемо ПЛАНОВАНІ сесії
+        var bookings = await _context.Bookings
+            .Include(b => b.Hardware).ThenInclude(h => h.Club)
+            .Include(b => b.Tariff)
+            .Where(b => b.UserId == userId && b.Status == CyberZone.Domain.Enums.BookingStatus.Pending)
+            .ToListAsync();
+
+        viewModels.AddRange(bookings.Select(b =>
+        {
+            // Переводимо UTC час у Київський для красивого відображення
+            var localStartTime = TimeZoneInfo.ConvertTimeFromUtc(b.StartTime, kyivZone);
+
+            return new SessionItemViewModel
+            {
+                Id = b.Id,
+                ClubName = b.Hardware?.Club?.Name ?? "CyberZone Club",
+                Address = b.Hardware?.Club?.Address?.ToString() ?? "Адреса не вказана",
+                PcNumber = b.Hardware?.PcNumber ?? "N/A",
+
+                // Використовуємо наш локальний час для тексту
+                Date = localStartTime.ToString("dd.MM.yyyy"),
+                Time = localStartTime.ToString("HH:mm"),
+
+                Duration = Math.Round((b.EndTime - b.StartTime).TotalHours, 1).ToString() + " год.",
+                SessionState = "Pending",
+                SortDate = b.StartTime
+            };
+        }));
+
+        viewModels = viewModels.OrderByDescending(v => v.SortDate).ToList();
+
+        return View(viewModels);
+    }
+
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> StartSession(Guid id)
+    {
+        var booking = await _context.Bookings
+            .Include(b => b.Hardware)
+            .FirstOrDefaultAsync(b => b.Id == id);
+
+        if (booking != null && booking.Status == CyberZone.Domain.Enums.BookingStatus.Pending)
+        {
+            booking.Status = CyberZone.Domain.Enums.BookingStatus.Confirmed;
+            var newSession = booking.TransitionToSession();
+
+            var plannedDuration = booking.EndTime - booking.StartTime;
+            newSession.EndTime = newSession.StartTime.Add(plannedDuration);
+
+            if (booking.Hardware != null)
+                booking.Hardware.Status = CyberZone.Domain.Enums.HardwareStatus.Busy;
+
+            _context.GamingSessions.Add(newSession);
+            await _context.SaveChangesAsync();
+        }
+
+        return RedirectToAction("Sessions");
+    }
+
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> CancelSession(Guid id)
+    {
+        // Для бронювань кнопка "Скасувати" просто міняє статус
+        var booking = await _context.Bookings.FindAsync(id);
+
+        if (booking != null && booking.Status == CyberZone.Domain.Enums.BookingStatus.Pending)
+        {
+            booking.Status = CyberZone.Domain.Enums.BookingStatus.Cancelled;
+            await _context.SaveChangesAsync();
+        }
+
+        return RedirectToAction("Sessions");
+    }
+
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> EndSession(Guid id)
+    {
+        // А це вже для АКТИВНОЇ сесії (велика картка)
+        var session = await _context.GamingSessions
+            .Include(s => s.Tariff)
+            .Include(s => s.Hardware)
+            .FirstOrDefaultAsync(s => s.Id == id);
+
+        if (session != null && session.Status == CyberZone.Domain.Enums.SessionStatus.Active)
+        {
+            session.EndSession(); // Викликаємо твій доменний метод розрахунку
+
+            // Звільняємо ПК
+            if (session.Hardware != null)
+                session.Hardware.Status = CyberZone.Domain.Enums.HardwareStatus.Available;
+
+            await _context.SaveChangesAsync();
+        }
+
+        return RedirectToAction("Sessions");
     }
 
 }

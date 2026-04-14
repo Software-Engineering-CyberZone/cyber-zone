@@ -13,11 +13,11 @@
     
     <div class="bar-header">
         <h2 class="bar-page-title">Меню бару</h2>
-        <div class="cart-icon-wrapper">
+        <div class="cart-icon-wrapper" onclick="openCart()">
             <svg class="cart-icon" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
             </svg>
-            <span class="cart-dot"></span>
+            <span class="cart-dot" id="cartBadge" style="display: none;"></span>
         </div>
     </div>
 
@@ -43,7 +43,7 @@
                             <span class="menu-desc">@item.Description</span>
                         </div>
                         <div class="menu-price">@item.Price.ToString("N0") грн</div>
-                        <button class="btn-add-cart">Додати у кошик</button>
+                        <button class="btn-add-cart" onclick="addToCart('@item.Id', '@item.Name', @item.Price.ToString(System.Globalization.CultureInfo.InvariantCulture))">Додати у кошик</button>
                     </div>
                 </div>
             }
@@ -72,7 +72,7 @@
                             <span class="menu-desc">@item.Description</span>
                         </div>
                         <div class="menu-price">@item.Price.ToString("N0") грн</div>
-                        <button class="btn-add-cart">Додати у кошик</button>
+                        <button class="btn-add-cart" onclick="addToCart('@item.Id', '@item.Name', @item.Price.ToString(System.Globalization.CultureInfo.InvariantCulture))">Додати у кошик</button>
                     </div>
                 </div>
             }
@@ -80,3 +80,193 @@
     </div>
 
 </div>
+
+<div id="cartModal" class="cart-modal-overlay" style="display: none;">
+    <div class="cart-modal">
+        <div class="cart-modal-header">
+            <h3>Ваше замовлення</h3>
+            <button class="cart-close-btn" onclick="closeCart()">&times;</button>
+        </div>
+        <div class="cart-modal-body" id="cartItemsContainer">
+        </div>
+        <div class="cart-modal-footer">
+            <div class="cart-total">Разом: <span id="cartTotalSum">0</span> грн</div>
+            <div id="cartError" class="cart-error-message"></div>
+            <div class="cart-actions">
+                <button class="btn-cancel" onclick="closeCart()">Скасувати</button>
+                <button class="btn-pay" onclick="checkout()" id="btnCheckout">Оплатити</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="successModal" class="cart-modal-overlay" style="display: none; z-index: 1000;">
+    <div class="cart-modal" style="text-align: center; max-width: 350px; padding: 40px 20px;">
+        <div class="success-icon-wrapper">
+            <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+        </div>
+        <h3 style="margin-bottom: 10px;">Оплата успішна!</h3>
+        <p id="successMessageText" style="color: #a0a0a0; margin-bottom: 30px; font-size: 14px;">
+            Ваше замовлення прийнято в роботу.
+        </p>
+        <button class="btn-pay" onclick="closeSuccessModal()" style="width: 100%;">Чудово!</button>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let cart = JSON.parse(localStorage.getItem('cyberzone_cart')) || [];
+
+        // ОНОВЛЕНО: Тепер функція додає кількість товарів всередину бейджа
+        function updateCartBadge() {
+            const badge = document.getElementById('cartBadge');
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+            if (totalItems > 0) {
+                badge.style.display = 'flex'; // Використовуємо flex для центрування тексту
+                badge.innerText = totalItems > 99 ? '99+' : totalItems; // Захист від занадто великих чисел
+            } else {
+                badge.style.display = 'none';
+                badge.innerText = '';
+            }
+        }
+
+        // НОВЕ: Функції для кастомного вікна успіху
+        function openSuccessModal(message) {
+            const msgElement = document.getElementById('successMessageText');
+            if (message) msgElement.innerText = message;
+            document.getElementById('successModal').style.display = 'flex';
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('successModal').style.display = 'none';
+        }
+
+        function addToCart(id, name, price) {
+            const existingItem = cart.find(i => i.id === id);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ id, name, price: parseFloat(price), quantity: 1 });
+            }
+            saveCart();
+            updateCartBadge();
+        }
+
+        function updateQuantity(id, delta) {
+            const item = cart.find(i => i.id === id);
+            if (item) {
+                item.quantity += delta;
+                if (item.quantity <= 0) {
+                    cart = cart.filter(i => i.id !== id);
+                }
+                saveCart();
+                renderCart();
+            }
+        }
+
+        function removeItem(id) {
+            cart = cart.filter(i => i.id !== id);
+            saveCart();
+            renderCart();
+        }
+
+        function saveCart() {
+            localStorage.setItem('cyberzone_cart', JSON.stringify(cart));
+            updateCartBadge();
+        }
+
+        function openCart() {
+            renderCart();
+            document.getElementById('cartError').innerText = '';
+            document.getElementById('cartModal').style.display = 'flex';
+        }
+
+        function closeCart() {
+            document.getElementById('cartModal').style.display = 'none';
+        }
+
+        function renderCart() {
+            const container = document.getElementById('cartItemsContainer');
+            const totalSpan = document.getElementById('cartTotalSum');
+            container.innerHTML = '';
+
+            if (cart.length === 0) {
+                container.innerHTML = '<p class="empty-cart-msg">Кошик порожній</p>';
+                totalSpan.innerText = '0';
+                document.getElementById('btnCheckout').disabled = true;
+                return;
+            }
+
+            document.getElementById('btnCheckout').disabled = false;
+            let total = 0;
+
+            cart.forEach(item => {
+                total += item.price * item.quantity;
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'cart-item';
+                itemDiv.innerHTML = `
+                    <div class="cart-item-info">
+                        <span class="cart-item-name">${item.name}</span>
+                        <span class="cart-item-price">${item.price} грн</span>
+                    </div>
+                    <div class="cart-item-controls">
+                        <button onclick="updateQuantity('${item.id}', -1)">-</button>
+                        <span>${item.quantity}</span>
+                        <button onclick="updateQuantity('${item.id}', 1)">+</button>
+                        <button class="btn-remove" onclick="removeItem('${item.id}')">
+                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(itemDiv);
+            });
+
+            totalSpan.innerText = total;
+        }
+
+        async function checkout() {
+            if (cart.length === 0) return;
+
+            const btn = document.getElementById('btnCheckout');
+            const errorDiv = document.getElementById('cartError');
+            btn.disabled = true;
+            btn.innerText = 'Обробка...';
+            errorDiv.innerText = '';
+
+            const payload = {
+                Items: cart.map(i => ({ MenuItemId: i.id, Quantity: i.quantity }))
+            };
+
+            try {
+                const response = await fetch('/Order/Checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    closeCart();
+                    openSuccessModal(data.message);
+
+                    cart = [];
+                    saveCart();
+                } else {
+                    errorDiv.innerText = data.message || 'Помилка при оплаті';
+                }
+            } catch (err) {
+                errorDiv.innerText = 'Помилка з\'єднання з сервером';
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Оплатити';
+            }
+        }
+
+        updateCartBadge();
+    </script>
+}

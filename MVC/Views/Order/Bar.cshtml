@@ -120,21 +120,19 @@
     <script>
         let cart = JSON.parse(localStorage.getItem('cyberzone_cart')) || [];
 
-        // ОНОВЛЕНО: Тепер функція додає кількість товарів всередину бейджа
         function updateCartBadge() {
             const badge = document.getElementById('cartBadge');
             const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
             if (totalItems > 0) {
-                badge.style.display = 'flex'; // Використовуємо flex для центрування тексту
-                badge.innerText = totalItems > 99 ? '99+' : totalItems; // Захист від занадто великих чисел
+                badge.style.display = 'flex';
+                badge.innerText = totalItems > 99 ? '99+' : totalItems;
             } else {
                 badge.style.display = 'none';
                 badge.innerText = '';
             }
         }
 
-        // НОВЕ: Функції для кастомного вікна успіху
         function openSuccessModal(message) {
             const msgElement = document.getElementById('successMessageText');
             if (message) msgElement.innerText = message;

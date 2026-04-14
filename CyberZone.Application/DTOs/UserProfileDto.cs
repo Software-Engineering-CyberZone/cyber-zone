@@ -13,4 +13,14 @@ public class UserProfileDto
     public string? WebsiteUrl { get; set; }
     public string? ProfileImagePath { get; set; }
     public List<TransactionDto> Transactions { get; set; } = new();
+    public List<UserReviewDto> Reviews { get; set; } = new();
+}
+
+public class UserReviewDto
+{
+    public Guid ClubId { get; set; }
+    public string ClubName { get; set; } = null!;
+    public int Rating { get; set; }
+    public string? Comment { get; set; }
+    public DateTime CreatedAt { get; set; }
 }

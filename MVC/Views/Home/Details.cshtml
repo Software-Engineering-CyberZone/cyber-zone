@@ -66,6 +66,14 @@
                         }
                     }
                 }
+                @if (Model.ReviewCount > 0)
+                {
+                    <span class="rating-text">@Model.Rating.ToString("0.0") (@Model.ReviewCount відг.)</span>
+                }
+                else
+                {
+                    <span class="rating-text no-reviews">Немає відгуків</span>
+                }
             </div>
 
             <div class="detail-club-name">@Model.Name</div>
@@ -307,13 +315,10 @@
         {
             <div class="reviews-summary">
                 <span class="reviews-avg">
-                    @{
-                        var avgRating = Model.Reviews.Average(r => r.Rating);
-                    }
-                    <span class="reviews-avg-value">@avgRating.ToString("0.0")</span>
+                    <span class="reviews-avg-value">@Model.Rating.ToString("0.0")</span>
                     <span class="star">★</span>
                 </span>
-                <span class="reviews-count">на основі @Model.Reviews.Count відгуків</span>
+                <span class="reviews-count">на основі @Model.ReviewCount відгуків</span>
             </div>
 
             <div class="reviews-list">

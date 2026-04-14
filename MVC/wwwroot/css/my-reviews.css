@@ -1,0 +1,135 @@
+:root {
+    --bg-dark: #0B1222;
+    --card-bg: #1B2735;
+    --text-main: #EDEDED;
+    --text-muted: #93A0A9;
+    --accent-color: #D6FF3F;
+    --accent-pink: #E05BBE;
+    --gradient-accent: linear-gradient(91.95deg, #D6FF3F 2.89%, #E05BBE 97.05%);
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+}
+
+.my-reviews-container {
+    max-width: 1212px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.my-reviews-title {
+    font-family: 'Lato', sans-serif;
+    font-weight: 500;
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: var(--text-main);
+}
+
+.my-reviews-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+    font-size: 16px;
+}
+
+.btn-to-catalog {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 10px 28px;
+    background: var(--gradient-accent);
+    color: #0B1222;
+    font-weight: 600;
+    font-size: 14px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+.btn-to-catalog:hover {
+    opacity: 0.85;
+}
+
+.my-reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.my-review-card {
+    background: var(--card-bg);
+    border-radius: 5px;
+    padding: 20px 24px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: border-color 0.2s;
+}
+
+.my-review-card:hover {
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.my-review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.my-review-club-name {
+    font-family: 'Gemunu Libre', sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.my-review-club-name:hover {
+    color: var(--accent-pink);
+}
+
+.my-review-date {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.my-review-rating {
+    display: flex;
+    gap: 3px;
+    margin-bottom: 10px;
+}
+
+.my-review-rating .star-filled {
+    color: var(--accent-color);
+    font-size: 18px;
+}
+
+.my-review-rating .star-empty {
+    color: var(--text-muted);
+    font-size: 18px;
+}
+
+.my-review-comment {
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+@media (max-width: 600px) {
+    .my-reviews-container {
+        padding: 0 16px;
+        margin: 20px auto;
+    }
+
+    .my-review-card {
+        padding: 16px;
+    }
+
+    .my-review-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+}

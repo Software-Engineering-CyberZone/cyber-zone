@@ -165,6 +165,7 @@ body.details-page {
 .stars {
     display: flex;
     gap: 3px;
+    align-items: center;
 }
 
 .star {
@@ -175,6 +176,17 @@ body.details-page {
 .star-empty {
     color: var(--muted);
     font-size: 18px;
+}
+
+.rating-text {
+    font-size: 14px;
+    color: var(--muted);
+    margin-left: 8px;
+}
+
+.rating-text.no-reviews {
+    color: var(--muted);
+    font-style: italic;
 }
 
 .detail-club-name {

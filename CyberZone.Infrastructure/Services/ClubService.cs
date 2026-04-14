@@ -23,12 +23,14 @@ public class ClubService : IClubService
 
         var clubs = await _context.Clubs
             .Include(c => c.Tariffs)
+            .Include(c => c.Reviews)
             .Select(c => new ClubCatalogDto
             {
                 Id = c.Id,
                 Name = c.Name,
                 FullAddress = $"{c.Address.City}, {c.Address.Street}, {c.Address.ZipCode}",
-                Rating = c.Rating,
+                Rating = c.Reviews.Any() ? c.Reviews.Average(r => (double)r.Rating) : 0,
+                ReviewCount = c.Reviews.Count,
                 ImageUrl = "/images/welcome_gaming.png",
                 MinPrice = c.Tariffs.Any() ? c.Tariffs.Min(t => t.PricePerHour) : 0
             })
@@ -62,7 +64,8 @@ public class ClubService : IClubService
             FullAddress = $"{club.Address.City}, {club.Address.Street}, {club.Address.ZipCode}",
             Phone = club.Phone,
             Email = club.Email,
-            Rating = club.Rating,
+            Rating = club.Reviews.Any() ? club.Reviews.Average(r => (double)r.Rating) : 0,
+            ReviewCount = club.Reviews.Count,
             WorkHours = club.WorkHours,
             Hardwares = club.Hardwares.Select(h => new HardwareDto
             {

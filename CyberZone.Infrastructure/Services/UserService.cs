@@ -41,6 +41,20 @@ public class UserService : IUserService
             })
             .ToListAsync();
 
+        var reviews = await _context.Reviews
+            .Where(r => r.UserId == parsedUserId)
+            .Include(r => r.Club)
+            .OrderByDescending(r => r.CreatedAt)
+            .Select(r => new UserReviewDto
+            {
+                ClubId = r.ClubId,
+                ClubName = r.Club.Name,
+                Rating = r.Rating,
+                Comment = r.Comment,
+                CreatedAt = r.CreatedAt
+            })
+            .ToListAsync();
+
         return new UserProfileDto
         {
             Id = user.Id,
@@ -53,7 +67,8 @@ public class UserService : IUserService
             Location = user.Location,
             WebsiteUrl = user.WebsiteUrl,
             ProfileImagePath = user.ProfileImagePath,
-            Transactions = transactions
+            Transactions = transactions,
+            Reviews = reviews
         };
     }
 

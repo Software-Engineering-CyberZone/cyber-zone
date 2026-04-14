@@ -1,0 +1,54 @@
+@using CyberZone.Application.DTOs
+@model List<UserReviewDto>
+
+@{
+    ViewData["Title"] = "Мої Відгуки";
+}
+
+@section Styles {
+    <link href="https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/my-reviews.css" asp-append-version="true" />
+}
+
+<div class="my-reviews-container">
+    <h2 class="my-reviews-title">Мої Відгуки</h2>
+
+    @if (Model.Count == 0)
+    {
+        <div class="my-reviews-empty">
+            <p>Ви ще не залишили жодного відгуку.</p>
+            <a asp-controller="Home" asp-action="Catalog" class="btn-to-catalog">Переглянути клуби</a>
+        </div>
+    }
+    else
+    {
+        <div class="my-reviews-list">
+            @foreach (var review in Model)
+            {
+                <div class="my-review-card">
+                    <div class="my-review-header">
+                        <a asp-controller="Home" asp-action="Details" asp-route-id="@review.ClubId" class="my-review-club-name">@review.ClubName</a>
+                        <span class="my-review-date">@review.CreatedAt.ToString("dd.MM.yyyy")</span>
+                    </div>
+                    <div class="my-review-rating">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            if (i <= review.Rating)
+                            {
+                                <span class="star-filled">&#9733;</span>
+                            }
+                            else
+                            {
+                                <span class="star-empty">&#9733;</span>
+                            }
+                        }
+                    </div>
+                    @if (!string.IsNullOrEmpty(review.Comment))
+                    {
+                        <p class="my-review-comment">@review.Comment</p>
+                    }
+                </div>
+            }
+        </div>
+    }
+</div>

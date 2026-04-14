@@ -62,10 +62,15 @@
                             </div>
                             <div class="club-address">@club.FullAddress</div>
                             <div class="club-rating">
-                                @{
+                                @if (club.ReviewCount > 0)
+                                {
                                     string stars = new string('⭐', (int)global::System.Math.Round(club.Rating));
+                                    @stars @club.Rating.ToString("0.0") <span class="club-review-count">(@club.ReviewCount відг.)</span>
                                 }
-                                @stars (@club.Rating.ToString("0.0"))
+                                else
+                                {
+                                    <span class="club-no-reviews">Немає відгуків</span>
+                                }
                             </div>
                         </div>
                         <div class="card-buttons">

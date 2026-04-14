@@ -139,7 +139,6 @@ public class ClubServiceTests
         dto.Name.Should().Be("CyberPro Arena");
         dto.Phone.Should().Be("+380991234567");
         dto.Email.Should().Be("info@cyberpro.ua");
-        dto.Rating.Should().Be(4.8);
     }
 
     [Fact]
@@ -302,5 +301,61 @@ public class ClubServiceTests
         var result = await _clubService.GetClubDetailsAsync(club.Id);
 
         result.Value.Reviews.Should().BeEmpty();
+    }
+
+    // --- Rating Engine ---
+
+    [Fact]
+    public async Task GetClubDetailsAsync_WithReviews_ReturnsComputedAverageRating()
+    {
+        var club = CreateTestClub();
+        var user1 = new User { Id = Guid.NewGuid(), UserName = "user1", FullName = "User 1" };
+        var user2 = new User { Id = Guid.NewGuid(), UserName = "user2", FullName = "User 2" };
+        club.Reviews.Add(new Review { UserId = user1.Id, User = user1, ClubId = club.Id, Rating = 5, CreatedAt = DateTime.UtcNow });
+        club.Reviews.Add(new Review { UserId = user2.Id, User = user2, ClubId = club.Id, Rating = 3, CreatedAt = DateTime.UtcNow });
+        SetupClubs([club]);
+
+        var result = await _clubService.GetClubDetailsAsync(club.Id);
+
+        result.Value.Rating.Should().Be(4.0);
+        result.Value.ReviewCount.Should().Be(2);
+    }
+
+    [Fact]
+    public async Task GetClubDetailsAsync_NoReviews_ReturnsZeroRating()
+    {
+        var club = CreateTestClub();
+        SetupClubs([club]);
+
+        var result = await _clubService.GetClubDetailsAsync(club.Id);
+
+        result.Value.Rating.Should().Be(0);
+        result.Value.ReviewCount.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task GetClubsForCatalogAsync_WithReviews_ReturnsComputedRating()
+    {
+        var club = CreateTestClub();
+        club.Reviews.Add(new Review { UserId = Guid.NewGuid(), ClubId = club.Id, Rating = 4, CreatedAt = DateTime.UtcNow });
+        club.Reviews.Add(new Review { UserId = Guid.NewGuid(), ClubId = club.Id, Rating = 2, CreatedAt = DateTime.UtcNow });
+        SetupClubs([club]);
+
+        var result = await _clubService.GetClubsForCatalogAsync();
+
+        result.Value.First().Rating.Should().Be(3.0);
+        result.Value.First().ReviewCount.Should().Be(2);
+    }
+
+    [Fact]
+    public async Task GetClubsForCatalogAsync_NoReviews_ReturnsZeroRating()
+    {
+        var club = CreateTestClub();
+        SetupClubs([club]);
+
+        var result = await _clubService.GetClubsForCatalogAsync();
+
+        result.Value.First().Rating.Should().Be(0);
+        result.Value.First().ReviewCount.Should().Be(0);
     }
 }

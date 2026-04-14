@@ -173,6 +173,19 @@ public class AccountController : Controller
 
     [HttpGet]
     [Authorize]
+    public async Task<IActionResult> MyReviews()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null) return RedirectToAction("Login");
+
+        var userProfile = await _userService.GetUserProfileAsync(userId);
+        if (userProfile == null) return NotFound();
+
+        return View(userProfile.Reviews);
+    }
+
+    [HttpGet]
+    [Authorize]
     public async Task<IActionResult> Balance()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

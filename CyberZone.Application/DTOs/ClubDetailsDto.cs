@@ -10,6 +10,7 @@ public class ClubDetailsDto
     public string? Phone { get; set; }
     public string? Email { get; set; }
     public double Rating { get; set; }
+    public int ReviewCount { get; set; }
     public Dictionary<string, string> WorkHours { get; set; } = [];
     public List<HardwareDto> Hardwares { get; set; } = [];
     public List<TariffDto> Tariffs { get; set; } = [];

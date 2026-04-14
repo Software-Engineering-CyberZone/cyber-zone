@@ -13,5 +13,6 @@ public class ClubCatalogDto
     public string FullAddress { get; set; } = null!;
     public decimal MinPrice { get; set; }
     public double Rating { get; set; }
+    public int ReviewCount { get; set; }
     public string? ImageUrl { get; set; }
 }

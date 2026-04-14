@@ -142,6 +142,10 @@ public class UserServiceUpdateTests
         var mockTransactions = MockDbSetHelper.CreateMockDbSet(transactions);
         _mockContext.Setup(c => c.Transactions).Returns(mockTransactions.Object);
 
+        var reviews = new List<Review>();
+        var mockReviews = MockDbSetHelper.CreateMockDbSet(reviews);
+        _mockContext.Setup(c => c.Reviews).Returns(mockReviews.Object);
+
         var result = await _service.GetUserProfileAsync(user.Id.ToString());
 
         result.Should().NotBeNull();
@@ -179,10 +183,66 @@ public class UserServiceUpdateTests
         var mockTransactions = MockDbSetHelper.CreateMockDbSet(transactions);
         _mockContext.Setup(c => c.Transactions).Returns(mockTransactions.Object);
 
+        var reviews = new List<Review>();
+        var mockReviews = MockDbSetHelper.CreateMockDbSet(reviews);
+        _mockContext.Setup(c => c.Reviews).Returns(mockReviews.Object);
+
         var result = await _service.GetUserProfileAsync(user.Id.ToString());
 
         result.Should().NotBeNull();
         result!.Transactions.Should().HaveCount(2);
+    }
+
+    // --- GetUserProfileAsync Reviews ---
+
+    [Fact]
+    public async Task GetUserProfileAsync_WithReviews_ReturnsUserReviews()
+    {
+        var user = CreateTestUser();
+        _mockUserManager.Setup(m => m.FindByIdAsync(user.Id.ToString()))
+            .ReturnsAsync(user);
+
+        var club = new Club { Id = Guid.NewGuid(), Name = "CyberPro Arena" };
+        var transactions = new List<Transaction>();
+        var mockTransactions = MockDbSetHelper.CreateMockDbSet(transactions);
+        _mockContext.Setup(c => c.Transactions).Returns(mockTransactions.Object);
+
+        var reviews = new List<Review>
+        {
+            new() { UserId = user.Id, ClubId = club.Id, Club = club, Rating = 5, Comment = "Great!", CreatedAt = DateTime.UtcNow },
+            new() { UserId = user.Id, ClubId = club.Id, Club = club, Rating = 3, Comment = "OK", CreatedAt = DateTime.UtcNow.AddDays(-1) }
+        };
+        var mockReviews = MockDbSetHelper.CreateMockDbSet(reviews);
+        _mockContext.Setup(c => c.Reviews).Returns(mockReviews.Object);
+
+        var result = await _service.GetUserProfileAsync(user.Id.ToString());
+
+        result.Should().NotBeNull();
+        result!.Reviews.Should().HaveCount(2);
+        result.Reviews.First().ClubName.Should().Be("CyberPro Arena");
+        result.Reviews.First().Rating.Should().Be(5);
+        result.Reviews.First().Comment.Should().Be("Great!");
+    }
+
+    [Fact]
+    public async Task GetUserProfileAsync_NoReviews_ReturnsEmptyReviewsList()
+    {
+        var user = CreateTestUser();
+        _mockUserManager.Setup(m => m.FindByIdAsync(user.Id.ToString()))
+            .ReturnsAsync(user);
+
+        var transactions = new List<Transaction>();
+        var mockTransactions = MockDbSetHelper.CreateMockDbSet(transactions);
+        _mockContext.Setup(c => c.Transactions).Returns(mockTransactions.Object);
+
+        var reviews = new List<Review>();
+        var mockReviews = MockDbSetHelper.CreateMockDbSet(reviews);
+        _mockContext.Setup(c => c.Reviews).Returns(mockReviews.Object);
+
+        var result = await _service.GetUserProfileAsync(user.Id.ToString());
+
+        result.Should().NotBeNull();
+        result!.Reviews.Should().BeEmpty();
     }
 
     private void SetupUserManager(User user)

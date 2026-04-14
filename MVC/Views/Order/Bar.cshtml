@@ -82,26 +82,41 @@
 </div>
 
 <div id="cartModal" class="cart-modal-overlay" style="display: none;">
-    <div class="cart-modal">
-        <div class="cart-modal-header">
-            <h3>Ваше замовлення</h3>
-            <button class="cart-close-btn" onclick="closeCart()">&times;</button>
+    <div class="cart-modal new-design-modal">
+
+        <div class="cart-modal-header-centered">
+            <h3>Кошик</h3>
+            <p class="cart-subtitle">будь ласка, перевірте своє замовлення перед підтвердженням</p>
         </div>
+
         <div class="cart-modal-body" id="cartItemsContainer">
         </div>
+
         <div class="cart-modal-footer">
-            <div class="cart-total">Разом: <span id="cartTotalSum">0</span> грн</div>
+            <div class="cart-total-row">
+                <span class="cart-total-label">Разом</span>
+                <div class="dotted-leader"></div>
+                <span class="cart-total-sum"><span id="cartTotalSum">0</span> грн</span>
+            </div>
+
+            <p class="cart-warning">
+                Увага!<br>
+                Кошти за товар будуть списані з вашого внутрішнього гаманця.<br>
+                Якщо ви хочете обрати інший спосіб оплати, пройдіть в бар, будь ласка
+            </p>
+
             <div id="cartError" class="cart-error-message"></div>
-            <div class="cart-actions">
-                <button class="btn-cancel" onclick="closeCart()">Скасувати</button>
-                <button class="btn-pay" onclick="checkout()" id="btnCheckout">Оплатити</button>
+
+            <div class="cart-actions-vertical">
+                <button class="btn-order-gradient" onclick="checkout()" id="btnCheckout">Замовити</button>
+                <button class="btn-cancel-outline" onclick="closeCart()">Скасувати</button>
             </div>
         </div>
     </div>
 </div>
 
 <div id="successModal" class="cart-modal-overlay" style="display: none; z-index: 1000;">
-    <div class="cart-modal" style="text-align: center; max-width: 350px; padding: 40px 20px;">
+    <div class="cart-modal new-design-modal" style="text-align: center; max-width: 350px; padding: 40px 20px;">
         <div class="success-icon-wrapper">
             <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
@@ -112,7 +127,7 @@
         <p id="successMessageText" style="color: #a0a0a0; margin-bottom: 30px; font-size: 14px;">
             Ваше замовлення прийнято в роботу.
         </p>
-        <button class="btn-pay" onclick="closeSuccessModal()" style="width: 100%;">Чудово!</button>
+        <button class="btn-order-gradient" onclick="closeSuccessModal()">Чудово!</button>
     </div>
 </div>
 

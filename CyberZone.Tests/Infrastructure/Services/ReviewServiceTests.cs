@@ -106,6 +106,114 @@ public class ReviewServiceTests
         result.IsSuccess.Should().BeTrue();
     }
 
+    [Fact]
+    public async Task UpdateReviewAsync_ValidData_ReturnsSuccessAndUpdatesFields()
+    {
+        // Arrange
+        var reviewId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var review = new Review
+        {
+            Id = reviewId,
+            UserId = userId,
+            ClubId = Guid.NewGuid(),
+            Rating = 3,
+            Comment = "Old comment",
+            CreatedAt = DateTime.UtcNow
+        };
+        _reviews.Add(review);
+
+        var mockReviews = MockDbSetHelper.CreateMockDbSet(_reviews);
+        _mockContext.Setup(c => c.Reviews).Returns(mockReviews.Object);
+
+        // Act
+        var result = await _service.UpdateReviewAsync(reviewId, userId, 5, "New comment");
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        review.Rating.Should().Be(5);
+        review.Comment.Should().Be("New comment");
+        review.UpdatedAt.Should().NotBeNull();
+        _mockContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task UpdateReviewAsync_ReviewNotFoundOrWrongUser_ReturnsFailure()
+    {
+        // Arrange
+        var reviewId = Guid.NewGuid();
+        var userId = Guid.NewGuid(); // User attempting the update
+        var actualOwnerId = Guid.NewGuid(); // Actual owner of the review
+        var review = new Review
+        {
+            Id = reviewId,
+            UserId = actualOwnerId,
+            ClubId = Guid.NewGuid(),
+            Rating = 3
+        };
+        _reviews.Add(review);
+
+        var mockReviews = MockDbSetHelper.CreateMockDbSet(_reviews);
+        _mockContext.Setup(c => c.Reviews).Returns(mockReviews.Object);
+
+        // Act
+        var result = await _service.UpdateReviewAsync(reviewId, userId, 5, "New comment");
+
+        // Assert
+        result.IsFailure.Should().BeTrue();
+        result.Error.Should().Contain("не знайдено або у вас немає прав");
+        _mockContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    // --- DeleteReviewAsync ---
+
+    [Fact]
+    public async Task DeleteReviewAsync_ValidData_ReturnsSuccessAndRemovesReview()
+    {
+        // Arrange
+        var reviewId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var review = new Review
+        {
+            Id = reviewId,
+            UserId = userId,
+            ClubId = Guid.NewGuid(),
+            Rating = 5
+        };
+        _reviews.Add(review);
+
+        var mockReviews = MockDbSetHelper.CreateMockDbSet(_reviews);
+        _mockContext.Setup(c => c.Reviews).Returns(mockReviews.Object);
+
+        // Act
+        var result = await _service.DeleteReviewAsync(reviewId, userId);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        mockReviews.Verify(m => m.Remove(review), Times.Once);
+        _mockContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task DeleteReviewAsync_ReviewNotFoundOrWrongUser_ReturnsFailure()
+    {
+        // Arrange
+        var reviewId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+
+        var mockReviews = MockDbSetHelper.CreateMockDbSet(_reviews);
+        _mockContext.Setup(c => c.Reviews).Returns(mockReviews.Object);
+
+        // Act
+        var result = await _service.DeleteReviewAsync(reviewId, userId);
+
+        // Assert
+        result.IsFailure.Should().BeTrue();
+        result.Error.Should().Contain("не знайдено або у вас немає прав");
+        mockReviews.Verify(m => m.Remove(It.IsAny<Review>()), Times.Never);
+        _mockContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
+
     // --- Rating validation ---
 
     [Theory]

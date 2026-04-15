@@ -51,4 +51,32 @@ public class ReviewService : IReviewService
         _logger.LogInformation("Review created for club {ClubId} by user {UserId}", dto.ClubId, userId);
         return Result.Success();
     }
+    public async Task<Result> UpdateReviewAsync(Guid reviewId, Guid userId, int rating, string? comment)
+    {
+        var review = await _context.Reviews
+            .FirstOrDefaultAsync(r => r.Id == reviewId && r.UserId == userId);
+
+        if (review == null)
+            return Result.Failure("Відгук не знайдено або у вас немає прав на його редагування.");
+
+        review.Rating = rating;
+        review.Comment = comment;
+        review.UpdatedAt = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync();
+        return Result.Success();
+    }
+
+    public async Task<Result> DeleteReviewAsync(Guid reviewId, Guid userId)
+    {
+        var review = await _context.Reviews
+            .FirstOrDefaultAsync(r => r.Id == reviewId && r.UserId == userId);
+
+        if (review == null)
+            return Result.Failure("Відгук не знайдено або у вас немає прав на його видалення.");
+
+        _context.Reviews.Remove(review);
+        await _context.SaveChangesAsync();
+        return Result.Success();
+    }
 }

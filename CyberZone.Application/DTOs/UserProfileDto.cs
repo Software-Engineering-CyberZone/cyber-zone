@@ -18,6 +18,7 @@ public class UserProfileDto
 
 public class UserReviewDto
 {
+    public Guid Id { get; set; }
     public Guid ClubId { get; set; }
     public string ClubName { get; set; } = null!;
     public int Rating { get; set; }

@@ -25,30 +25,88 @@
         <div class="my-reviews-list">
             @foreach (var review in Model)
             {
-                <div class="my-review-card">
-                    <div class="my-review-header">
-                        <a asp-controller="Home" asp-action="Details" asp-route-id="@review.ClubId" class="my-review-club-name">@review.ClubName</a>
-                        <span class="my-review-date">@review.CreatedAt.ToString("dd.MM.yyyy")</span>
-                    </div>
-                    <div class="my-review-rating">
-                        @for (int i = 1; i <= 5; i++)
-                        {
-                            if (i <= review.Rating)
+                <div class="my-review-card" id="card-@review.Id">
+                    
+                    <div id="display-@review.Id" class="review-display-mode">
+                        <div class="my-review-header">
+                            <div>
+                                <a asp-controller="Home" asp-action="Details" asp-route-id="@review.ClubId" class="my-review-club-name">@review.ClubName</a>
+                                <div class="my-review-date">@review.CreatedAt.ToString("dd.MM.yyyy HH:mm")</div>
+                            </div>
+                            
+                            <div class="review-actions" style="display: flex; gap: 10px; align-items: center;">
+                                <button type="button" class="btn-s-edit" onclick="toggleEdit('@review.Id')">Редагувати</button>
+                                
+                                <form asp-action="DeleteReview" method="post" style="margin: 0;" onsubmit="return confirm('Ви точно хочете видалити цей відгук?');">
+                                    <input type="hidden" name="id" value="@review.Id" />
+                                    <button type="submit" class="btn-s-delete">Видалити</button>
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <div class="my-review-rating">
+                            @for (int i = 1; i <= 5; i++)
                             {
-                                <span class="star-filled">&#9733;</span>
+                                if (i <= review.Rating)
+                                {
+                                    <span class="star-filled">★</span>
+                                }
+                                else
+                                {
+                                    <span class="star-empty">★</span>
+                                }
                             }
-                            else
-                            {
-                                <span class="star-empty">&#9733;</span>
-                            }
-                        }
-                    </div>
-                    @if (!string.IsNullOrEmpty(review.Comment))
-                    {
+                        </div>
                         <p class="my-review-comment">@review.Comment</p>
-                    }
+                    </div>
+
+                    <div id="edit-@review.Id" class="review-edit-mode" style="display: none;">
+                        <form asp-action="EditReview" method="post" class="edit-review-form">
+                            <input type="hidden" name="id" value="@review.Id" />
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <span class="my-review-club-name">@review.ClubName (Редагування)</span>
+                                
+                                <div class="rating-selection" style="display: flex; align-items: center; gap: 10px;">
+                                    <label style="color: #93A0A9; font-size: 14px; margin: 0;">Оцінка:</label>
+                                    <div class="star-rating-input">
+                                        @for (int i = 5; i >= 1; i--)
+                                        {
+                                            <input type="radio" id="star-@i-@review.Id" name="rating" value="@i" @(review.Rating == i ? "checked" : "") />
+                                            <label for="star-@i-@review.Id" title="@i зірок">★</label>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                            <textarea name="comment" rows="3" class="edit-comment-input">@review.Comment</textarea>
+                            
+                            <div class="edit-actions" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px;">
+                                <button type="button" class="btn-s-cancel" onclick="toggleEdit('@review.Id')">Скасувати</button>
+                                <button type="submit" class="btn-s-save">Зберегти</button>
+                            </div>
+                        </form>
+                    </div>
+
                 </div>
             }
         </div>
     }
 </div>
+
+@section Scripts {
+    <script>
+        function toggleEdit(id) {
+            var displayDiv = document.getElementById('display-' + id);
+            var editDiv = document.getElementById('edit-' + id);
+            
+            if (displayDiv.style.display === 'none') {
+                displayDiv.style.display = 'block';
+                editDiv.style.display = 'none';
+            } else {
+                displayDiv.style.display = 'none';
+                editDiv.style.display = 'block';
+            }
+        }
+    </script>
+}

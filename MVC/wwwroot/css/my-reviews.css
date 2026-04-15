@@ -133,3 +133,92 @@ body {
         gap: 4px;
     }
 }
+
+
+/* Кнопки */
+.btn-s-edit, .btn-s-cancel {
+    background: transparent;
+    border: 1px solid rgba(214, 255, 63, 0.6);
+    color: #D6FF3F;
+    border-radius: 5px;
+    padding: 5px 15px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+    .btn-s-edit:hover, .btn-s-cancel:hover {
+        background: rgba(214, 255, 63, 0.1);
+    }
+
+.btn-s-delete {
+    background: transparent;
+    border: 1px solid rgba(248, 0, 4, 0.6);
+    color: #FF0000;
+    border-radius: 5px;
+    padding: 5px 15px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+    .btn-s-delete:hover {
+        background: rgba(248, 0, 4, 0.1);
+    }
+
+.btn-s-save {
+    background: linear-gradient(91.95deg, #D6FF3F 2.89%, #E05BBE 97.05%);
+    border: none;
+    color: #1C2838;
+    border-radius: 5px;
+    padding: 8px 20px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* Інпут відгуку */
+.edit-comment-input {
+    width: 100%;
+    background: #0C1420;
+    border: 1px solid #4D4D4D;
+    color: #EDEDED;
+    padding: 12px;
+    border-radius: 5px;
+    margin-top: 10px;
+    resize: vertical;
+    font-family: 'Inter', sans-serif;
+}
+
+    .edit-comment-input:focus {
+        outline: none;
+        border-color: #D6FF3F;
+    }
+
+/* Інтерактивні зірки для редагування */
+.star-rating-input {
+    display: flex;
+    flex-direction: row-reverse; /* Щоб ховер працював зліва направо */
+    justify-content: flex-end;
+}
+
+    .star-rating-input input {
+        display: none;
+    }
+
+    .star-rating-input label {
+        font-size: 28px;
+        color: #4D4D4D;
+        cursor: pointer;
+        transition: color 0.2s;
+        padding-right: 5px;
+    }
+
+        .star-rating-input input:checked ~ label,
+        .star-rating-input label:hover,
+        .star-rating-input label:hover ~ label {
+            color: #D6FF3F;
+        }

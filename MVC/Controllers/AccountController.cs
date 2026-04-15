@@ -723,4 +723,29 @@ public class AccountController : Controller
         return RedirectToAction("Sessions");
     }
 
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> EditReview(Guid id, int rating, string comment)
+    {
+        var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (Guid.TryParse(userIdStr, out Guid userId))
+        {
+            await _reviewService.UpdateReviewAsync(id, userId, rating, comment);
+        }
+
+        return RedirectToAction("MyReviews");
+    }
+
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> DeleteReview(Guid id)
+    {
+        var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (Guid.TryParse(userIdStr, out Guid userId))
+        {
+            await _reviewService.DeleteReviewAsync(id, userId);
+        }
+
+        return RedirectToAction("MyReviews");
+    }
 }

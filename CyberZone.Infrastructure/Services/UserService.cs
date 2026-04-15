@@ -47,6 +47,7 @@ public class UserService : IUserService
             .OrderByDescending(r => r.CreatedAt)
             .Select(r => new UserReviewDto
             {
+                Id = r.Id,
                 ClubId = r.ClubId,
                 ClubName = r.Club.Name,
                 Rating = r.Rating,

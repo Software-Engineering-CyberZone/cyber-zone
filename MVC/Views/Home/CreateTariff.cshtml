@@ -1,0 +1,57 @@
+@model CyberZone.Application.DTOs.CreateTariffDto
+
+@{
+    ViewData["Title"] = "Створити новий тариф";
+}
+
+<style>
+    .tariff-form-wrapper { padding: 60px 0; color: #fff; }
+    .tariff-card { background: #1a1a1a; padding: 30px; border-radius: 12px; max-width: 500px; margin: 0 auto; border: 1px solid #333;}
+    .cz-form-control, .cz-select {
+        width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #333; background: #0B1222; color: #fff; margin-bottom: 5px;
+    }
+    .cz-btn-submit {
+        background: linear-gradient(91.95deg, #D6FF3F 2.89%, #E05BBE 97.05%);
+        color: #1C2838; font-weight: bold; width: 100%; padding: 12px; border-radius: 8px; border: none; cursor: pointer;
+    }
+</style>
+
+<div class="container tariff-form-wrapper">
+    <div class="tariff-card">
+        <h3 class="mb-4 text-center">Новий Тариф</h3>
+        <form asp-action="CreateTariff" method="post">
+            <input type="hidden" asp-for="ClubId" />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="Name">Назва</label>
+                <input asp-for="Name" class="cz-form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Type">Тип тарифу</label>
+                <select asp-for="Type" class="cz-select" asp-items="Html.GetEnumSelectList<CyberZone.Domain.Enums.TariffType>()"></select>
+                <span asp-validation-for="Type" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="PricePerHour">Ціна (₴)</label>
+                <input asp-for="PricePerHour" type="number" step="0.01" class="cz-form-control" />
+                <span asp-validation-for="PricePerHour" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Description">Опис</label>
+                <textarea asp-for="Description" class="cz-form-control" rows="3"></textarea>
+            </div>
+
+            <button type="submit" class="cz-btn-submit mt-3">Зберегти та Додати</button>
+            <a asp-action="Details" asp-route-id="@Model.ClubId" class="btn btn-outline-light w-100 mt-2">Скасувати</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

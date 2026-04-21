@@ -7,6 +7,7 @@ namespace CyberZone.Domain.Entities;
 public class Club : EntityBase, IAuditable
 {
     public string Name { get; set; } = string.Empty;
+    public string? Description { get; set; }
     public Address Address { get; set; } = new();
     public string? Phone { get; set; }
     public string? Email { get; set; }
@@ -26,4 +27,5 @@ public class Club : EntityBase, IAuditable
     public ICollection<Tariff> Tariffs { get; set; } = new List<Tariff>();
     public ICollection<MenuItem> MenuItems { get; set; } = [];
     public ICollection<Review> Reviews { get; set; } = [];
+    public ICollection<User> StaffMembers { get; set; } = [];
 }

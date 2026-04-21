@@ -61,6 +61,7 @@ public class ClubService : IClubService
         {
             Id = club.Id,
             Name = club.Name,
+            Description = club.Description,
             FullAddress = $"{club.Address.City}, {club.Address.Street}, {club.Address.ZipCode}",
             Phone = club.Phone,
             Email = club.Email,
@@ -103,5 +104,135 @@ public class ClubService : IClubService
 
         _logger.LogInformation("Fetched club details for {ClubName} ({ClubId})", club.Name, club.Id);
         return Result.Success(dto);
+    }
+
+    public async Task<Result<EditClubDto>> GetClubForEditAsync(Guid id)
+    {
+        _logger.LogInformation("Fetching club details for edit {ClubId}", id);
+
+        var club = await _context.Clubs.FirstOrDefaultAsync(c => c.Id == id);
+        
+        if (club is null)
+        {
+            _logger.LogWarning("Club {ClubId} not found", id);
+            return Result.Failure<EditClubDto>($"Club with ID '{id}' was not found.");
+        }
+
+        var editDto = new EditClubDto
+        {
+            Id = club.Id,
+            Name = club.Name,
+            Description = club.Description,
+            Phone = club.Phone,
+            Email = club.Email,
+            Street = club.Address.Street,
+            City = club.Address.City,
+            State = club.Address.State,
+            ZipCode = club.Address.ZipCode,
+            Country = club.Address.Country,
+            WorkHours = club.WorkHours
+        };
+
+        return Result.Success(editDto);
+    }
+
+    public async Task<Result<bool>> UpdateClubAsync(Guid id, EditClubDto dto)
+    {
+        _logger.LogInformation("Updating club details for {ClubId}", id);
+
+        var club = await _context.Clubs.FirstOrDefaultAsync(c => c.Id == id);
+        
+        if (club is null)
+        {
+            _logger.LogWarning("Club {ClubId} not found for update", id);
+            return Result.Failure<bool>($"Club with ID '{id}' was not found.");
+        }
+
+        club.Name = dto.Name;
+        club.Description = dto.Description;
+        club.Phone = dto.Phone;
+        club.Email = dto.Email;
+        
+        club.Address = new CyberZone.Domain.ValueObjects.Address
+        {
+            Street = dto.Street,
+            City = dto.City,
+            State = dto.State,
+            ZipCode = dto.ZipCode,
+            Country = dto.Country
+        };
+
+        if (dto.WorkHours != null)
+        {
+            club.WorkHours = dto.WorkHours;
+        }
+
+        await _context.SaveChangesAsync();
+        _logger.LogInformation("Successfully updated club details for {ClubId}", id);
+
+        return Result.Success(true);
+    }
+
+    public async Task<Result<bool>> AddTariffAsync(CreateTariffDto dto)
+    {
+        var club = await _context.Clubs.FindAsync(dto.ClubId);
+        if (club == null) return Result.Failure<bool>("Club not found");
+
+        var tariff = new CyberZone.Domain.Entities.Tariff
+        {
+            Name = dto.Name,
+            Type = dto.Type,
+            PricePerHour = dto.PricePerHour,
+            Description = dto.Description,
+            ClubId = dto.ClubId
+        };
+
+        _context.Tariffs.Add(tariff);
+        await _context.SaveChangesAsync();
+
+        return Result.Success(true);
+    }
+
+    public async Task<Result<EditTariffDto>> GetTariffForEditAsync(Guid id)
+    {
+        var tariff = await _context.Tariffs.FindAsync(id);
+        if (tariff == null) return Result.Failure<EditTariffDto>("Tariff not found");
+
+        var dto = new EditTariffDto
+        {
+            Id = tariff.Id,
+            ClubId = tariff.ClubId,
+            Name = tariff.Name,
+            Type = tariff.Type,
+            PricePerHour = tariff.PricePerHour,
+            Description = tariff.Description
+        };
+
+        return Result.Success(dto);
+    }
+
+    public async Task<Result<bool>> UpdateTariffAsync(Guid id, EditTariffDto dto)
+    {
+        var tariff = await _context.Tariffs.FindAsync(id);
+        if (tariff == null) return Result.Failure<bool>("Tariff not found");
+
+        tariff.Name = dto.Name;
+        tariff.Type = dto.Type;
+        tariff.PricePerHour = dto.PricePerHour;
+        tariff.Description = dto.Description;
+
+        await _context.SaveChangesAsync();
+        return Result.Success(true);
+    }
+
+    public async Task<Result<bool>> DeleteTariffAsync(Guid id)
+    {
+        var tariff = await _context.Tariffs.FindAsync(id);
+        if (tariff == null) return Result.Failure<bool>("Tariff not found");
+
+        _context.Tariffs.Remove(tariff);
+        await _context.SaveChangesAsync();
+        
+        return Result.Success(true);
     }
 }

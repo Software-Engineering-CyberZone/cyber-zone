@@ -1,6 +1,6 @@
 @model MVC.Models.ClubPartnerViewModel
 @{
-    ViewData["Title"] = "Для власників клубів";
+    ViewData["Title"] = "пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ";
 }
 
 <!DOCTYPE html>
@@ -34,7 +34,7 @@
     <main class="auth-wrapper">
         <div class="auth-card" style="height: auto; min-height: 478px;">
             
-            <h1 class="auth-title">Долучайтеся до наших парнерів!</h1>
+            <h1 class="auth-title">пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ!</h1>
 
             @if (TempData["Message"] != null)
             {
@@ -51,17 +51,17 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="auth-label" asp-for="Phone">Номер телефону</label>
+                    <label class="auth-label" asp-for="Phone">пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ</label>
                     <input type="text" class="auth-input" asp-for="Phone" placeholder="+380..." />
                     <span asp-validation-for="Phone" class="text-danger" style="font-size: 11px;"></span>
                 </div>
 
-                <button type="submit" class="auth-btn btn-register" style="margin-top: 35px;">Надіслати заявку</button>
-                <a asp-controller="Home" asp-action="Index" class="auth-btn btn-cancel">Скасувати</a>
+                <button type="submit" class="auth-btn btn-register" style="margin-top: 35px;">пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ</button>
+                <a asp-controller="Home" asp-action="Index" class="auth-btn btn-cancel">пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ</a>
             </form>
 
             <p class="partner-footer-note">
-                Ми дуже цінуємо Ваше бажання співпрацювати з нами! З Вами обов’язково зв’яжеться наш менеджер для уточнення деталей.
+                пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ! пїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
             </p>
         </div>
     </main>

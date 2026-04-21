@@ -1,10 +1,25 @@
 @using CyberZone.Application.DTOs
 @using CyberZone.Domain.Enums
+@using Microsoft.AspNetCore.Identity
+@using CyberZone.Domain.Entities
+@inject UserManager<User> UserManager
+
 @model ClubDetailsDto
 
 @{
     ViewData["Title"] = Model.Name;
     Layout = null;
+
+    bool canEdit = false;
+    if (User.Identity?.IsAuthenticated == true)
+    {
+        var dbUser = await UserManager.GetUserAsync(User);
+        if (dbUser != null)
+        {
+            canEdit = await UserManager.IsInRoleAsync(dbUser, "Admin") || 
+                      (await UserManager.IsInRoleAsync(dbUser, "Staff") && dbUser.ManagedClubId == Model.Id);
+        }
+    }
 }
 
 <!DOCTYPE html>
@@ -97,11 +112,14 @@
                 </div>
             }
 
-            <p class="description">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-            </p>
+            @if (!string.IsNullOrEmpty(Model.Description))
+            {
+                <p class="description">@Model.Description</p>
+            }
+            else
+            {
+                <p class="description" style="color: #666; font-style: italic;">Опис відсутній.</p>
+            }
 
             @if (Model.Tariffs.Count > 0)
             {
@@ -113,14 +131,33 @@
                 </div>
             }
 
-            <a asp-action="Booking" asp-route-id="@Model.Id" class="book-btn">Забронювати</a>
+            @if (!User.IsInRole("Admin") && !User.IsInRole("Staff"))
+            {
+                <a asp-action="Booking" asp-route-id="@Model.Id" class="book-btn">Забронювати</a>
+            }
+
+            @if (canEdit)
+            {
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="edit-club-btn" style="display: block; margin-top: 10px; padding: 12px 24px; font-weight: 600; font-size: 16px; text-decoration: none; background: linear-gradient(91.95deg, #D6FF3F 2.89%, #E05BBE 97.05%); border-radius: 5px; color: #1C2838; text-align: center;">
+                    Змінити дані
+                </a>
+            }
         </div>
     </div>
 
     <!-- TARIFFS + WORK HOURS -->
     <div class="bottom-grid">
         <div>
-            <div class="section-title">Тарифи</div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="section-title">Тарифи</div>
+                @if (canEdit)
+                {
+                    <a asp-action="CreateTariff" asp-route-clubId="@Model.Id" class="btn btn-sm btn-outline-light" style="border: 1px solid #D6FF3F; color: #D6FF3F; text-decoration: none; padding: 4px 10px; border-radius: 4px; font-size: 13px;">
+                        + Додати
+                    </a>
+                }
+            </div>
+            
             @if (Model.Tariffs.Count > 0)
             {
                 <table class="tariff-table">
@@ -129,6 +166,10 @@
                             <th style="text-align:left;">Назва</th>
                             <th>Тип</th>
                             <th>Ціна / год</th>
+                            @if (canEdit)
+                            {
+                                <th>Дії</th>
+                            }
                         </tr>
                     </thead>
                     <tbody>
@@ -146,6 +187,19 @@
                                 <td class="zone-label">@tariff.Name</td>
                                 <td><span class="@typeClass">@tariff.Type</span></td>
                                 <td><div class="price-main">@tariff.PricePerHour.ToString("0") грн/год</div></td>
+                                @if (canEdit)
+                                {
+                                    <td>
+                                        <div style="display: flex; gap: 5px; align-items: center;">
+                                            <a asp-action="EditTariff" asp-route-id="@tariff.Id" style="color: #007bff; text-decoration: none; font-size: 13px;">Редагувати</a>
+                                            <form asp-action="DeleteTariff" method="post" style="margin: 0; padding: 0;" onsubmit="return confirm('Дійсно видалити тариф?');">
+                                                <input type="hidden" name="id" value="@tariff.Id" />
+                                                <input type="hidden" name="clubId" value="@Model.Id" />
+                                                <button type="submit" style="background: none; border: none; color: #dc3545; cursor: pointer; font-size: 13px; text-decoration: underline;">Видалити</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                }
                             </tr>
                         }
                     </tbody>

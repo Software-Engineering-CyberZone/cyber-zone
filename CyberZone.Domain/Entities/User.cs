@@ -30,6 +30,8 @@ public class User : IdentityUser<Guid>, IAuditable
     public string? UpdatedBy { get; set; }
 
     // Navigation properties
+    public Guid? ManagedClubId { get; set; }
+    public Club? ManagedClub { get; set; }
     public ICollection<Booking> Bookings { get; set; } = [];
     public ICollection<GamingSession> GamingSessions { get; set; } = [];
     public ICollection<Order> Orders { get; set; } = [];

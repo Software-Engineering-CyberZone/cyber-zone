@@ -415,6 +415,7 @@ body.details-page {
 .hw-book-btn {
     display: block;
     width: 100%;
+    box-sizing: border-box;
     padding: 8px;
     background: var(--accent);
     color: #0B1222;

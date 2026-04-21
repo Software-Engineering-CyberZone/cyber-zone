@@ -15,6 +15,9 @@ public interface IApplicationDbContext
     DbSet<Order> Orders { get; }
     DbSet<OrderItem> OrderItems { get; }
     DbSet<Review> Reviews { get; }
+    DbSet<ClubMap> ClubMaps { get; }
+    DbSet<ClubMapZone> ClubMapZones { get; }
+    DbSet<ClubMapElement> ClubMapElements { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

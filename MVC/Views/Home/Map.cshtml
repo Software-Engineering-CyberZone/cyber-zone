@@ -1,0 +1,226 @@
+@using CyberZone.Application.DTOs
+@using CyberZone.Domain.Enums
+@using Microsoft.AspNetCore.Html
+
+@model ClubMapDto
+
+@{
+    ViewData["Title"] = $"{Model.ClubName} — Інтерактивна мапа";
+    Layout = null;
+
+    string StatusClass(HardwareStatus? s) => s switch
+    {
+        HardwareStatus.Available => "available",
+        HardwareStatus.Busy => "busy",
+        HardwareStatus.Repair => "repair",
+        HardwareStatus.Offline => "offline",
+        _ => "offline"
+    };
+
+    string StatusText(HardwareStatus? s) => s switch
+    {
+        HardwareStatus.Available => "Вільний",
+        HardwareStatus.Busy => "Зайнятий",
+        HardwareStatus.Repair => "На ремонті",
+        HardwareStatus.Offline => "Офлайн",
+        _ => "Недоступно"
+    };
+
+    IHtmlContent SvgText(string cssClass, int x, int y, string content) =>
+        new HtmlString($"<text class=\"{System.Net.WebUtility.HtmlEncode(cssClass)}\" x=\"{x}\" y=\"{y}\">{System.Net.WebUtility.HtmlEncode(content)}</text>");
+}
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CyberZone</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/clubmap.css" asp-append-version="true" />
+</head>
+<body class="map-page">
+
+<partial name="_Header" />
+
+<div class="breadcrumb-bar">
+    <a asp-action="Catalog">Каталог клубів</a>
+    <span class="breadcrumb-sep">›</span>
+    <a asp-action="Details" asp-route-id="@Model.ClubId">@Model.ClubName</a>
+    <span class="breadcrumb-sep">›</span>
+    <span class="breadcrumb-current">Інтерактивна мапа</span>
+</div>
+
+<div class="map-container">
+    <div style="position: relative; width: 100%; max-width: 1100px;">
+        <div class="map-frame">
+            <svg class="map-svg"
+                 viewBox="0 -30 @Model.Width @(Model.Height + 30)"
+                 preserveAspectRatio="xMidYMid meet"
+                 xmlns="http://www.w3.org/2000/svg">
+
+                @* Zones: walls + labels *@
+                @foreach (var zone in Model.Zones)
+                {
+                    <rect class="map-wall"
+                          x="@zone.X" y="@zone.Y"
+                          width="@zone.Width" height="@zone.Height"
+                          rx="4" />
+
+                    var isPinkLabel = string.Equals(zone.LabelColor, "pink", StringComparison.OrdinalIgnoreCase);
+                    var labelClass = isPinkLabel ? "map-zone-label pink" : "map-zone-label";
+                    @SvgText(labelClass, zone.X + 14, zone.Y - 10, "Зона " + zone.Name)
+                }
+
+                @* Elements: PCs, decor, door *@
+                @foreach (var el in Model.Elements)
+                {
+                    switch (el.ElementType)
+                    {
+                        case ClubMapElementType.Pc:
+                        case ClubMapElementType.Console:
+                            {
+                                var cls = StatusClass(el.HardwareStatus);
+                                var cx = el.X + el.Width / 2;
+                                var cy = el.Y + el.Height / 2;
+                                var chairY = el.Y + el.Height + 2;
+
+                                <g class="pc-slot @cls"
+                                   data-hardware-id="@(el.HardwareId?.ToString() ?? "")"
+                                   data-pc="@el.PcNumber"
+                                   data-status="@(el.HardwareStatus?.ToString() ?? "Offline")"
+                                   data-status-text="@StatusText(el.HardwareStatus)"
+                                   data-price="@(el.MinPricePerHour?.ToString("0") ?? "")"
+                                   data-club-id="@Model.ClubId">
+                                    <rect class="pc-slot-rect"
+                                          x="@el.X" y="@el.Y"
+                                          width="@el.Width" height="@el.Height" />
+                                    @SvgText("pc-label", cx, cy + 4, el.PcNumber ?? el.Label ?? "")
+                                    <rect class="pc-chair"
+                                          x="@(el.X + 6)" y="@chairY"
+                                          width="@(el.Width - 12)" height="6"
+                                          rx="2" />
+                                </g>
+                                break;
+                            }
+
+                        case ClubMapElementType.Bar:
+                            {
+                                <rect class="map-bar"
+                                      x="@el.X" y="@el.Y"
+                                      width="@el.Width" height="@el.Height"
+                                      rx="3" />
+                                @* Bar stools: 4 circles under the bar *@
+                                @for (int i = 0; i < 4; i++)
+                                {
+                                    var sx = el.X + 14 + i * ((el.Width - 28) / 3);
+                                    var sy = el.Y + el.Height + 14;
+                                    <circle class="map-barstool" cx="@sx" cy="@sy" r="8" />
+                                }
+                                break;
+                            }
+
+                        case ClubMapElementType.Door:
+                            {
+                                // Opening in the wall: clear the bottom edge, draw the opening arc
+                                // swinging inward (upward) from the left jamb, plus the door leaf.
+                                var r = el.Width;
+                                var hingeX = el.X;
+                                var hingeY = el.Y + el.Height;
+                                var arcEndX = el.X + r;
+                                var arcEndY = el.Y + el.Height - r;
+                                <rect x="@el.X" y="@(el.Y + el.Height - 2)"
+                                      width="@el.Width" height="4"
+                                      fill="#0f1f2d" stroke="none" />
+                                <path class="map-door"
+                                      d="M @hingeX @hingeY A @r @r 0 0 1 @arcEndX @arcEndY" />
+                                <line class="map-door-leaf"
+                                      x1="@hingeX" y1="@hingeY"
+                                      x2="@arcEndX" y2="@arcEndY" />
+                                break;
+                            }
+
+                        case ClubMapElementType.Wall:
+                            {
+                                <rect class="map-wall"
+                                      x="@el.X" y="@el.Y"
+                                      width="@el.Width" height="@el.Height" />
+                                break;
+                            }
+                    }
+                }
+            </svg>
+        </div>
+
+        <div class="map-legend">
+            <span class="legend-chip"><span class="legend-swatch available"></span> Вільно</span>
+            <span class="legend-chip"><span class="legend-swatch busy"></span> Зайнято</span>
+            <span class="legend-chip"><span class="legend-swatch offline"></span> Недоступно</span>
+        </div>
+
+        <div id="pc-tooltip" class="pc-tooltip" style="display:none;">
+            <div class="pc-tooltip-title" id="tt-title"></div>
+            <div class="pc-tooltip-meta" id="tt-meta"></div>
+            <a id="tt-btn" class="pc-tooltip-btn" href="#">Забронювати</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const tooltip = document.getElementById('pc-tooltip');
+        const ttTitle = document.getElementById('tt-title');
+        const ttMeta = document.getElementById('tt-meta');
+        const ttBtn = document.getElementById('tt-btn');
+        let activeEl = null;
+
+        function hide() {
+            tooltip.style.display = 'none';
+            activeEl = null;
+        }
+
+        document.querySelectorAll('.pc-slot').forEach(function (node) {
+            node.addEventListener('click', function (ev) {
+                ev.stopPropagation();
+                const rect = node.getBoundingClientRect();
+                const containerRect = tooltip.parentElement.getBoundingClientRect();
+                const pc = node.dataset.pc || '—';
+                const status = node.dataset.status;
+                const statusText = node.dataset.statusText;
+                const price = node.dataset.price;
+                const hwId = node.dataset.hardwareId;
+                const clubId = node.dataset.clubId;
+
+                ttTitle.textContent = 'ПК ' + pc;
+                ttMeta.textContent = statusText + (price ? ' · від ' + price + ' грн/год' : '');
+
+                if (status === 'Available' && hwId) {
+                    ttBtn.classList.remove('disabled');
+                    ttBtn.removeAttribute('aria-disabled');
+                    ttBtn.textContent = 'Забронювати';
+                    ttBtn.href = '/Home/Booking/' + clubId + '?hardwareId=' + hwId;
+                } else {
+                    ttBtn.classList.add('disabled');
+                    ttBtn.setAttribute('aria-disabled', 'true');
+                    ttBtn.textContent = 'Недоступно';
+                    ttBtn.href = 'javascript:void(0)';
+                }
+
+                tooltip.style.display = 'block';
+                const top = rect.top - containerRect.top - tooltip.offsetHeight - 10;
+                const left = rect.left - containerRect.left + rect.width / 2 - tooltip.offsetWidth / 2;
+                tooltip.style.top = Math.max(10, top) + 'px';
+                tooltip.style.left = Math.max(10, left) + 'px';
+                activeEl = node;
+            });
+        });
+
+        document.addEventListener('click', function (ev) {
+            if (!tooltip.contains(ev.target)) hide();
+        });
+        window.addEventListener('resize', hide);
+    })();
+</script>
+
+</body>
+</html>

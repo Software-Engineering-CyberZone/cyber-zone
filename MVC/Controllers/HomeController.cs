@@ -11,11 +11,13 @@ namespace MVC.Controllers;
 public class HomeController : Controller
 {
     private readonly IClubService _clubService;
+    private readonly IClubMapService _clubMapService;
     private readonly UserManager<User> _userManager;
 
-    public HomeController(IClubService clubService, UserManager<User> userManager)
+    public HomeController(IClubService clubService, IClubMapService clubMapService, UserManager<User> userManager)
     {
         _clubService = clubService;
+        _clubMapService = clubMapService;
         _userManager = userManager;
     }
 
@@ -57,6 +59,24 @@ public class HomeController : Controller
         }
 
         return View(result.Value);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Map(Guid id)
+    {
+        var result = await _clubMapService.GetMapByClubIdAsync(id);
+        if (result.IsFailure)
+        {
+            return NotFound();
+        }
+
+        return View(result.Value);
+    }
+
+    [HttpGet]
+    public IActionResult Booking(Guid id, Guid? hardwareId)
+    {
+        return RedirectToAction(nameof(Map), new { id });
     }
 
     [Authorize(Roles = "Admin, Staff")]

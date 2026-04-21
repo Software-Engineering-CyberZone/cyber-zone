@@ -28,4 +28,5 @@ public class Hardware : EntityBase, IAuditable
     // Navigation properties
     public ICollection<Booking> Bookings { get; set; } = [];
     public ICollection<GamingSession> GamingSessions { get; set; } = [];
+    public ClubMapElement? MapElement { get; set; }
 }

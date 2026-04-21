@@ -133,7 +133,7 @@
 
             @if (!User.IsInRole("Admin") && !User.IsInRole("Staff"))
             {
-                <a asp-action="Booking" asp-route-id="@Model.Id" class="book-btn">Забронювати</a>
+                <a asp-action="Map" asp-route-id="@Model.Id" class="book-btn">Забронювати</a>
             }
 
             @if (canEdit)
@@ -270,7 +270,7 @@
                             }
                             @if (hw.Status == HardwareStatus.Available)
                             {
-                                <a asp-action="Booking" asp-route-id="@Model.Id" asp-route-hardwareId="@hw.Id" class="hw-book-btn">Забронювати</a>
+                                <a asp-action="Map" asp-route-id="@Model.Id" class="hw-book-btn">Забронювати</a>
                             }
                         </div>
                     }
@@ -307,7 +307,7 @@
                             }
                             @if (hw.Status == HardwareStatus.Available)
                             {
-                                <a asp-action="Booking" asp-route-id="@Model.Id" asp-route-hardwareId="@hw.Id" class="hw-book-btn">Забронювати</a>
+                                <a asp-action="Map" asp-route-id="@Model.Id" class="hw-book-btn">Забронювати</a>
                             }
                         </div>
                     }

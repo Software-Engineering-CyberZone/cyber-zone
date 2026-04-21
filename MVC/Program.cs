@@ -47,6 +47,8 @@ using (var scope = app.Services.CreateScope())
 
         await dbContext.SaveChangesAsync();
     }
+
+    await CyberZone.Infrastructure.Persistence.ClubMapSeeder.SeedAsync(dbContext);
 }
 
 

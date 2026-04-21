@@ -1,0 +1,239 @@
+/* Interactive club map */
+.map-page {
+    background: #0b1720;
+    color: #e4ecf4;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+}
+
+.map-page .breadcrumb-bar {
+    padding: 16px 40px;
+    background: #0b1720;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: 14px;
+}
+
+.map-page .breadcrumb-bar a {
+    color: #9fb1c6;
+    text-decoration: none;
+}
+
+.map-page .breadcrumb-bar a:hover {
+    color: #d6ff3f;
+}
+
+.map-page .breadcrumb-sep {
+    margin: 0 8px;
+    color: #5e7388;
+}
+
+.map-page .breadcrumb-current {
+    color: #e4ecf4;
+}
+
+.map-container {
+    padding: 28px 40px 60px;
+    display: flex;
+    justify-content: center;
+}
+
+.map-frame {
+    width: 100%;
+    max-width: 1100px;
+    background: #0f1f2d;
+    border: 2px solid #3fb8ff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 0 0 1px rgba(63, 184, 255, 0.15), 0 0 40px rgba(63, 184, 255, 0.08);
+}
+
+.map-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Walls (zone borders) */
+.map-wall {
+    fill: none;
+    stroke: #3a4b5f;
+    stroke-width: 2.5;
+}
+
+.map-zone-label {
+    fill: #d6ff3f;
+    font-family: 'Rajdhani', 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    pointer-events: none;
+}
+
+.map-zone-label.pink {
+    fill: #e05bbe;
+}
+
+/* PC slots */
+.pc-slot {
+    cursor: pointer;
+    transition: transform 0.12s ease, filter 0.12s ease;
+}
+
+.pc-slot:hover {
+    filter: drop-shadow(0 0 6px rgba(214, 255, 63, 0.7));
+    transform: translateY(-1px);
+}
+
+.pc-slot-rect {
+    stroke-width: 1.6;
+    rx: 4;
+}
+
+.pc-slot.available .pc-slot-rect {
+    fill: #1a2f20;
+    stroke: #44c26f;
+}
+
+.pc-slot.available .pc-label {
+    fill: #6fe895;
+}
+
+.pc-slot.busy {
+    cursor: not-allowed;
+}
+
+.pc-slot.busy .pc-slot-rect {
+    fill: #3a1a22;
+    stroke: #e0556f;
+}
+
+.pc-slot.busy .pc-label {
+    fill: #ff8699;
+}
+
+.pc-slot.repair .pc-slot-rect,
+.pc-slot.offline .pc-slot-rect {
+    fill: #2a2a2a;
+    stroke: #6b6b6b;
+}
+
+.pc-slot.repair .pc-label,
+.pc-slot.offline .pc-label {
+    fill: #a0a0a0;
+}
+
+.pc-label {
+    font-family: 'Rajdhani', 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-anchor: middle;
+    pointer-events: none;
+}
+
+.pc-chair {
+    fill: #263646;
+    stroke: #3a4b5f;
+    stroke-width: 1;
+}
+
+/* Decor */
+.map-bar {
+    fill: #1a2836;
+    stroke: #3a4b5f;
+    stroke-width: 2;
+}
+
+.map-barstool {
+    fill: #253442;
+    stroke: #3a4b5f;
+    stroke-width: 1.5;
+}
+
+.map-door {
+    fill: none;
+    stroke: #3a4b5f;
+    stroke-width: 2;
+    stroke-dasharray: 4 3;
+}
+
+.map-door-leaf {
+    stroke: #3a4b5f;
+    stroke-width: 2;
+}
+
+/* Legend */
+.map-legend {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    padding: 18px 0 0;
+    color: #9fb1c6;
+    font-size: 13px;
+    flex-wrap: wrap;
+}
+
+.legend-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.legend-swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    border: 1.5px solid transparent;
+}
+
+.legend-swatch.available { background: #1a2f20; border-color: #44c26f; }
+.legend-swatch.busy { background: #3a1a22; border-color: #e0556f; }
+.legend-swatch.offline { background: #2a2a2a; border-color: #6b6b6b; }
+
+/* Tooltip / booking popover */
+.pc-tooltip {
+    position: absolute;
+    background: #132433;
+    border: 1px solid #3fb8ff;
+    border-radius: 8px;
+    padding: 12px 14px;
+    color: #e4ecf4;
+    font-size: 13px;
+    min-width: 180px;
+    pointer-events: auto;
+    z-index: 40;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.pc-tooltip-title {
+    font-family: 'Rajdhani', 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: #d6ff3f;
+    margin-bottom: 4px;
+}
+
+.pc-tooltip-meta {
+    color: #9fb1c6;
+    margin-bottom: 10px;
+}
+
+.pc-tooltip-btn {
+    display: block;
+    text-align: center;
+    padding: 8px 12px;
+    background: linear-gradient(91.95deg, #D6FF3F 2.89%, #E05BBE 97.05%);
+    color: #0b1720;
+    border: none;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.pc-tooltip-btn[disabled],
+.pc-tooltip-btn.disabled {
+    background: #3a4b5f;
+    color: #9fb1c6;
+    cursor: not-allowed;
+}

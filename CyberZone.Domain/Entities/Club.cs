@@ -28,4 +28,5 @@ public class Club : EntityBase, IAuditable
     public ICollection<MenuItem> MenuItems { get; set; } = [];
     public ICollection<Review> Reviews { get; set; } = [];
     public ICollection<User> StaffMembers { get; set; } = [];
+    public ClubMap? Map { get; set; }
 }

@@ -24,6 +24,9 @@ public class CyberZoneDbContext : IdentityDbContext<User, IdentityRole<Guid>, Gu
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
     public DbSet<Review> Reviews => Set<Review>();
+    public DbSet<ClubMap> ClubMaps => Set<ClubMap>();
+    public DbSet<ClubMapZone> ClubMapZones => Set<ClubMapZone>();
+    public DbSet<ClubMapElement> ClubMapElements => Set<ClubMapElement>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

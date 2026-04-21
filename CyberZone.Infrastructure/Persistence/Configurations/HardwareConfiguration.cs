@@ -15,7 +15,7 @@ public class HardwareConfiguration : IEntityTypeConfiguration<Hardware>
             .IsRequired()
    .HasMaxLength(50);
 
-        builder.HasIndex(h => h.PcNumber)
+        builder.HasIndex(h => new { h.ClubId, h.PcNumber })
             .IsUnique();
 
         builder.Property(h => h.Status)

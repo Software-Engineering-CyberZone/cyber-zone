@@ -19,7 +19,7 @@ public class ClubServiceTests
     {
         _mockContext = new Mock<IApplicationDbContext>();
         var logger = new Mock<ILogger<ClubService>>();
-        _clubService = new ClubService(_mockContext.Object, logger.Object);
+        _clubService = new ClubService(_mockContext.Object, logger.Object, new NoOpCacheService(), CacheTestHelper.DefaultOptions());
     }
 
     private static Club CreateTestClub()

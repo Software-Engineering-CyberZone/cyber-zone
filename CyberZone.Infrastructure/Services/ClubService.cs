@@ -3,6 +3,7 @@ using CyberZone.Application.DTOs;
 using CyberZone.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Services;
 
@@ -10,16 +11,34 @@ public class ClubService : IClubService
 {
     private readonly IApplicationDbContext _context;
     private readonly ILogger<ClubService> _logger;
+    private readonly ICacheService _cache;
+    private readonly CacheOptions _cacheOptions;
 
-    public ClubService(IApplicationDbContext context, ILogger<ClubService> logger)
+    public ClubService(
+        IApplicationDbContext context,
+        ILogger<ClubService> logger,
+        ICacheService cache,
+        IOptions<CacheOptions> cacheOptions)
     {
         _context = context;
         _logger = logger;
+        _cache = cache;
+        _cacheOptions = cacheOptions.Value;
     }
 
     public async Task<Result<IEnumerable<ClubCatalogDto>>> GetClubsForCatalogAsync()
     {
-        _logger.LogInformation("Fetching clubs for catalog");
+        var cached = await _cache.GetOrSetAsync(
+            CacheKeys.ClubCatalog,
+            LoadCatalogAsync,
+            TimeSpan.FromMinutes(_cacheOptions.ClubCatalogMinutes));
+
+        return Result.Success<IEnumerable<ClubCatalogDto>>(cached ?? []);
+    }
+
+    private async Task<List<ClubCatalogDto>?> LoadCatalogAsync()
+    {
+        _logger.LogInformation("Fetching clubs for catalog from DB");
 
         var clubs = await _context.Clubs
             .Include(c => c.Tariffs)
@@ -37,12 +56,24 @@ public class ClubService : IClubService
             .ToListAsync();
 
         _logger.LogInformation("Fetched {Count} clubs for catalog", clubs.Count);
-        return Result.Success<IEnumerable<ClubCatalogDto>>(clubs);
+        return clubs;
     }
 
     public async Task<Result<ClubDetailsDto>> GetClubDetailsAsync(Guid id)
     {
-        _logger.LogInformation("Fetching club details for {ClubId}", id);
+        var cached = await _cache.GetOrSetAsync(
+            CacheKeys.ClubDetails(id),
+            () => LoadDetailsAsync(id),
+            TimeSpan.FromMinutes(_cacheOptions.ClubDetailsMinutes));
+
+        return cached is null
+            ? Result.Failure<ClubDetailsDto>($"Club with ID '{id}' was not found.")
+            : Result.Success(cached);
+    }
+
+    private async Task<ClubDetailsDto?> LoadDetailsAsync(Guid id)
+    {
+        _logger.LogInformation("Fetching club details for {ClubId} from DB", id);
 
         var club = await _context.Clubs
             .Include(c => c.Hardwares)
@@ -54,10 +85,10 @@ public class ClubService : IClubService
         if (club is null)
         {
             _logger.LogWarning("Club {ClubId} not found", id);
-            return Result.Failure<ClubDetailsDto>($"Club with ID '{id}' was not found.");
+            return null;
         }
 
-        var dto = new ClubDetailsDto
+        return new ClubDetailsDto
         {
             Id = club.Id,
             Name = club.Name,
@@ -101,9 +132,6 @@ public class ClubService : IClubService
                 CreatedAt = r.CreatedAt
             }).OrderByDescending(r => r.CreatedAt).ToList()
         };
-
-        _logger.LogInformation("Fetched club details for {ClubName} ({ClubId})", club.Name, club.Id);
-        return Result.Success(dto);
     }
 
     public async Task<Result<EditClubDto>> GetClubForEditAsync(Guid id)
@@ -170,6 +198,7 @@ public class ClubService : IClubService
         await _context.SaveChangesAsync();
         _logger.LogInformation("Successfully updated club details for {ClubId}", id);
 
+        InvalidateClubCaches(id);
         return Result.Success(true);
     }
 
@@ -190,6 +219,7 @@ public class ClubService : IClubService
         _context.Tariffs.Add(tariff);
         await _context.SaveChangesAsync();
 
+        InvalidateClubCaches(dto.ClubId);
         return Result.Success(true);
     }
 
@@ -222,6 +252,7 @@ public class ClubService : IClubService
         tariff.Description = dto.Description;
 
         await _context.SaveChangesAsync();
+        InvalidateClubCaches(tariff.ClubId);
         return Result.Success(true);
     }
 
@@ -230,9 +261,18 @@ public class ClubService : IClubService
         var tariff = await _context.Tariffs.FindAsync(id);
         if (tariff == null) return Result.Failure<bool>("Tariff not found");
 
+        var clubId = tariff.ClubId;
         _context.Tariffs.Remove(tariff);
         await _context.SaveChangesAsync();
-        
+
+        InvalidateClubCaches(clubId);
         return Result.Success(true);
+    }
+
+    private void InvalidateClubCaches(Guid clubId)
+    {
+        _cache.Remove(CacheKeys.ClubCatalog);
+        _cache.Remove(CacheKeys.ClubDetails(clubId));
+        _cache.Remove(CacheKeys.ClubMap(clubId));
     }
 }

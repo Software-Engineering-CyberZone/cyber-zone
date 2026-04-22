@@ -18,7 +18,7 @@ public class ClubMapServiceTests
     {
         _mockContext = new Mock<IApplicationDbContext>();
         var logger = new Mock<ILogger<ClubMapService>>();
-        _service = new ClubMapService(_mockContext.Object, logger.Object);
+        _service = new ClubMapService(_mockContext.Object, logger.Object, new NoOpCacheService(), CacheTestHelper.DefaultOptions());
     }
 
     private static (Club club, ClubMap map, Hardware hwAvailable, Hardware hwBusy) CreateTestMap()

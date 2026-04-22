@@ -1,3 +1,4 @@
+using CyberZone.Application.Common;
 using CyberZone.Application.Interfaces;
 using CyberZone.Domain.Entities;
 using CyberZone.Infrastructure.Persistence;
@@ -23,6 +24,11 @@ public static class DependencyInjection
         // Register DbContext as IApplicationDbContext
         services.AddScoped<IApplicationDbContext>(provider =>
             provider.GetRequiredService<CyberZoneDbContext>());
+
+        // In-memory cache
+        services.AddMemoryCache();
+        services.Configure<CacheOptions>(configuration.GetSection(CacheOptions.SectionName));
+        services.AddSingleton<ICacheService, MemoryCacheService>();
 
         // ASP.NET Core Identity
         services.AddIdentity<User, IdentityRole<Guid>>(options =>

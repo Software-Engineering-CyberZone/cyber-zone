@@ -52,7 +52,8 @@ using (var scope = app.Services.CreateScope())
 }
 
 
-app.UseSerilogRequestLogging();
+app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+app.UseMiddleware<RequestLoggingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {

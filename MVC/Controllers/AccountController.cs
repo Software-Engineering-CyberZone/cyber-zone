@@ -257,7 +257,7 @@ public class AccountController : Controller
         if (userIdStr == null || !Guid.TryParse(userIdStr, out Guid userId))
             return RedirectToAction("Login");
 
-        // 1. РџРћР’РќР• РћР§РР©Р•РќРќРЇ: Р’РёРґР°Р»СЏС”РјРѕ РІСЃС– СЃРµСЃС–С— С‚Р° Р±СЂРѕРЅСЋРІР°РЅРЅСЏ С†СЊРѕРіРѕ РєРѕСЂРёСЃС‚СѓРІР°С‡Р°
+       
         var oldSessions = await _context.GamingSessions.Where(s => s.UserId == userId).ToListAsync();
         if (oldSessions.Any()) _context.GamingSessions.RemoveRange(oldSessions);
 
@@ -266,7 +266,7 @@ public class AccountController : Controller
 
         await _context.SaveChangesAsync();
 
-        // 2. ІДЕАЛЬНИЙ КЛУБ: З нормальною адресою
+
         var user = await _userManager.FindByIdAsync(userIdStr);
         var targetClubId = user?.ManagedClubId;
         
@@ -300,7 +300,7 @@ public class AccountController : Controller
             }
         }
 
-        // 3. РџР РђР’РР›Р¬РќР• Р—РђР›Р†Р—Рћ
+
         var hardware = await _context.Hardwares.FirstOrDefaultAsync(h => h.PcNumber == "PC-20");
         if (hardware == null)
         {
@@ -308,17 +308,17 @@ public class AccountController : Controller
             {
                 PcNumber = "PC-20",
                 Club = club!,
-                Status = CyberZone.Domain.Enums.HardwareStatus.Available, // РЎС‚Р°РІРёРјРѕ Available, Р±Рѕ СЃРµСЃС–СЏ С‰Рµ РЅРµ РїРѕС‡Р°Р»Р°СЃСЏ
+                Status = CyberZone.Domain.Enums.HardwareStatus.Available,
                 CreatedAt = DateTime.UtcNow
             };
             _context.Hardwares.Add(hardware);
         }
         else
         {
-            hardware.Status = CyberZone.Domain.Enums.HardwareStatus.Available; // РЎРєРёРґР°С”РјРѕ СЃС‚Р°С‚СѓСЃ
+            hardware.Status = CyberZone.Domain.Enums.HardwareStatus.Available; 
         }
 
-        // 4. РўРђР РР¤
+
         var tariff = await _context.Tariffs.FirstOrDefaultAsync(t => t.Name == "Standard");
         if (tariff == null)
         {
@@ -333,20 +333,19 @@ public class AccountController : Controller
 
         await _context.SaveChangesAsync();
 
-        // 5. Р†Р”Р•РђР›Р¬РќР• Р‘Р РћРќР®Р’РђРќРќРЇ Р”Р›РЇ РўР•РЎРўРЈ (Pending)
         var booking = new CyberZone.Domain.Entities.Booking
         {
             UserId = userId,
             Hardware = hardware,
             Tariff = tariff,
-            StartTime = DateTime.UtcNow, // РџРѕС‡РёРЅР°С”С‚СЊСЃСЏ РџР РЇРњРћ Р—РђР РђР—
-            EndTime = DateTime.UtcNow.AddHours(2), // Р—Р°Р±СѓРєР°РЅРѕ СЂС–РІРЅРѕ РЅР° 2 РіРѕРґРёРЅРё
+            StartTime = DateTime.UtcNow, 
+            EndTime = DateTime.UtcNow.AddHours(2), 
             Status = CyberZone.Domain.Enums.BookingStatus.Pending,
             CreatedAt = DateTime.UtcNow
         };
         _context.Bookings.Add(booking);
 
-        // 6. Р†РЎРўРћР Р†РЇ: РљС–Р»СЊРєР° СЃС‚Р°СЂРёС… Р·Р°РІРµСЂС€РµРЅРёС… СЃРµСЃС–Р№ РґР»СЏ РєСЂР°СЃРё
+
         var completedSessions = new List<CyberZone.Domain.Entities.GamingSession>
         {
             new CyberZone.Domain.Entities.GamingSession
@@ -374,16 +373,15 @@ public class AccountController : Controller
         };
         _context.GamingSessions.AddRange(completedSessions);
 #pragma warning disable S1075
-        // 7. РЎР†Р”Р•РњРћ РўРћР’РђР Р Р”Р›РЇ Р‘РђР РЈ (MenuItems)
         if (!await _context.MenuItems.AnyAsync())
         {
             var menuItems = new List<CyberZone.Domain.Entities.MenuItem>
             {
-                new CyberZone.Domain.Entities.MenuItem { Name = "CocaCola", Description = "330 РјР»", Price = 50.00m, Category = "Drinks", ImageUrl = "/images/cocacola.png", IsAvailable = true, Club = club!, CreatedAt = DateTime.UtcNow },
-                new CyberZone.Domain.Entities.MenuItem { Name = "Fanta", Description = "330 РјР»", Price = 50.00m, Category = "Drinks", ImageUrl = "/images/fanta.png", IsAvailable = true, Club = club!, CreatedAt = DateTime.UtcNow },
-                new CyberZone.Domain.Entities.MenuItem { Name = "Sprite", Description = "330 РјР»", Price = 50.00m, Category = "Drinks", ImageUrl = "/images/sprite.png", IsAvailable = true, Club = club!, CreatedAt = DateTime.UtcNow },
-                new CyberZone.Domain.Entities.MenuItem { Name = "LayвЂ™s", Description = "120 РіСЂ", Price = 70.00m, Category = "Snacks", ImageUrl = "/images/lays.png", IsAvailable = true, Club = club!, CreatedAt = DateTime.UtcNow },
-                new CyberZone.Domain.Entities.MenuItem { Name = "Doritos", Description = "100 РіСЂ", Price = 80.00m, Category = "Snacks", ImageUrl = "/images/doritos.png", IsAvailable = true, Club = club!, CreatedAt = DateTime.UtcNow }
+                new CyberZone.Domain.Entities.MenuItem { Name = "CocaCola", Description = "330»", Price = 50.00m, Category = "Drinks", ImageUrl = "/images/cocacola.png", IsAvailable = true, Club = club!, CreatedAt = DateTime.UtcNow },
+                new CyberZone.Domain.Entities.MenuItem { Name = "Fanta", Description = "330»", Price = 50.00m, Category = "Drinks", ImageUrl = "/images/fanta.png", IsAvailable = true, Club = club!, CreatedAt = DateTime.UtcNow },
+                new CyberZone.Domain.Entities.MenuItem { Name = "Sprite", Description = "330»", Price = 50.00m, Category = "Drinks", ImageUrl = "/images/sprite.png", IsAvailable = true, Club = club!, CreatedAt = DateTime.UtcNow },
+                new CyberZone.Domain.Entities.MenuItem { Name = "LayвЂ™s", Description = "120", Price = 70.00m, Category = "Snacks", ImageUrl = "/images/lays.png", IsAvailable = true, Club = club!, CreatedAt = DateTime.UtcNow },
+                new CyberZone.Domain.Entities.MenuItem { Name = "Doritos", Description = "100", Price = 80.00m, Category = "Snacks", ImageUrl = "/images/doritos.png", IsAvailable = true, Club = club!, CreatedAt = DateTime.UtcNow }
             };
             _context.MenuItems.AddRange(menuItems);
         }
@@ -579,14 +577,13 @@ public class AccountController : Controller
                 if (relatedBooking != null)
                     relatedBooking.Status = CyberZone.Domain.Enums.BookingStatus.Completed;
             }
-<<<<<<< Updated upstream
+
             await _context.SaveChangesAsync(); // Зберігаємо зміни в базу
 
             foreach (var clubId in affectedClubs)
                 _cache.Remove(CyberZone.Application.Interfaces.CacheKeys.ClubMap(clubId));
-=======
             await _context.SaveChangesAsync(); // Р—Р±РµСЂС–РіР°С”РјРѕ Р·РјС–РЅРё РІ Р±Р°Р·Сѓ
->>>>>>> Stashed changes
+
         }
 
         var viewModels = new List<SessionItemViewModel>();
@@ -729,7 +726,6 @@ public class AccountController : Controller
     [Authorize]
     public async Task<IActionResult> EndSession(Guid id)
     {
-        // Рђ С†Рµ РІР¶Рµ РґР»СЏ РђРљРўРР’РќРћР‡ СЃРµСЃС–С— (РІРµР»РёРєР° РєР°СЂС‚РєР°)
         var session = await _context.GamingSessions
             .Include(s => s.Tariff)
             .Include(s => s.Hardware)
@@ -737,14 +733,10 @@ public class AccountController : Controller
 
         if (session != null && session.Status == CyberZone.Domain.Enums.SessionStatus.Active)
         {
-            session.EndSession(); // Р’РёРєР»РёРєР°С”РјРѕ С‚РІС–Р№ РґРѕРјРµРЅРЅРёР№ РјРµС‚РѕРґ СЂРѕР·СЂР°С…СѓРЅРєСѓ
+            session.EndSession(); 
 
-<<<<<<< Updated upstream
             Guid? clubId = null;
-            // Звільняємо ПК
-=======
-            // Р—РІС–Р»СЊРЅСЏС”РјРѕ РџРљ
->>>>>>> Stashed changes
+
             if (session.Hardware != null)
             {
                 session.Hardware.Status = CyberZone.Domain.Enums.HardwareStatus.Available;

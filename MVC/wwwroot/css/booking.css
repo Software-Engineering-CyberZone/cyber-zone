@@ -1,0 +1,142 @@
+.booking-container {
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.booking-card {
+    width: 100%;
+    max-width: 560px;
+    background: #0f1f2d;
+    border: 2px solid #3fb8ff;
+    border-radius: 12px;
+    padding: 28px 32px;
+    color: #e4ecf4;
+    box-shadow: 0 0 40px rgba(63, 184, 255, 0.08);
+}
+
+.booking-header h1 {
+    font-family: 'Rajdhani', 'Inter', sans-serif;
+    font-size: 28px;
+    margin: 0 0 6px;
+    color: #d6ff3f;
+}
+
+.booking-sub {
+    color: #9fb1c6;
+    font-size: 14px;
+    margin-bottom: 24px;
+}
+
+.booking-alert {
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin-bottom: 18px;
+    font-size: 14px;
+}
+
+.booking-alert.error {
+    background: rgba(224, 91, 111, 0.12);
+    border: 1px solid rgba(224, 91, 111, 0.4);
+    color: #ff8699;
+}
+
+.booking-alert:empty {
+    display: none;
+}
+
+.form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.form-row label {
+    font-size: 13px;
+    color: #9fb1c6;
+    font-weight: 600;
+}
+
+.form-input {
+    background: #132433;
+    border: 1px solid #2a3b4f;
+    color: #e4ecf4;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #3fb8ff;
+}
+
+textarea.form-input {
+    resize: vertical;
+    min-height: 48px;
+}
+
+.field-error {
+    color: #ff8699;
+    font-size: 12px;
+}
+
+.booking-summary {
+    background: #132433;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 20px 0;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 14px;
+    color: #9fb1c6;
+}
+
+.summary-value {
+    color: #e4ecf4;
+    font-weight: 600;
+}
+
+.booking-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.btn-primary,
+.btn-ghost {
+    padding: 10px 22px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+    font-family: 'Inter', sans-serif;
+}
+
+.btn-primary {
+    background: linear-gradient(91.95deg, #D6FF3F 2.89%, #E05BBE 97.05%);
+    color: #0b1720;
+}
+
+.btn-primary:hover { opacity: 0.9; }
+
+.btn-ghost {
+    background: transparent;
+    border: 1px solid #3a4b5f;
+    color: #9fb1c6;
+}
+
+.btn-ghost:hover {
+    border-color: #3fb8ff;
+    color: #e4ecf4;
+}

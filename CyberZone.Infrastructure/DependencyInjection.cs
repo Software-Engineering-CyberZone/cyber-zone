@@ -53,8 +53,10 @@ public static class DependencyInjection
 
         // Services
         services.AddScoped<PaymentService>();
+        services.AddScoped<IPaymentService>(sp => sp.GetRequiredService<PaymentService>());
         services.AddScoped<IClubService, ClubService>();
         services.AddScoped<IClubMapService, ClubMapService>();
+        services.AddScoped<IBookingService, BookingService>();
         services.AddScoped<PaymentService>();
         services.AddScoped<CyberZone.Application.Interfaces.IUserService, CyberZone.Infrastructure.Services.UserService>();
         services.AddScoped<IReviewService, ReviewService>();

@@ -73,12 +73,6 @@ public class HomeController : Controller
         return View(result.Value);
     }
 
-    [HttpGet]
-    public IActionResult Booking(Guid id, Guid? hardwareId)
-    {
-        return RedirectToAction(nameof(Map), new { id });
-    }
-
     [Authorize(Roles = "Admin, Staff")]
     [HttpGet]
     public async Task<IActionResult> Edit(Guid id)

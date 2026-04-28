@@ -3,6 +3,7 @@ using CyberZone.Application.DTOs;
 using CyberZone.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MVC.Filters;
 
 namespace MVC.Controllers;
 
@@ -34,6 +35,7 @@ public class BookingController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [RateLimit(5)]  // max 5 booking attempts per minute per IP
     public async Task<IActionResult> Create(BookNowDto dto)
     {
         var userId = GetUserId();

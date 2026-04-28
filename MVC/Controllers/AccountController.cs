@@ -216,6 +216,7 @@ public class AccountController : Controller
 
     [HttpPost]
     [Authorize]
+    [MVC.Filters.RateLimit(3)]  // max 3 top-up attempts per minute per IP
     public async Task<IActionResult> TopUp(TopUpViewModel model)
     {
         if (!ModelState.IsValid) return View(model);

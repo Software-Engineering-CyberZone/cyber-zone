@@ -1,0 +1,144 @@
+@model IEnumerable<CyberZone.Application.DTOs.OrderDto>
+@{
+    ViewData["Title"] = "Замовлення Бару";
+}
+
+<style>
+    body {
+        background-color: #0B1222;
+        color: #EDEDED;
+        font-family: 'Lato', sans-serif;
+    }
+    .bar-container {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 20px;
+    }
+    .cyber-top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+    .cyber-panel {
+        background: #1C2838;
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid #93A0A9;
+    }
+    .cyber-table {
+        width: 100%;
+        color: #EDEDED;
+        border-collapse: collapse;
+    }
+    .cyber-table th {
+        text-align: left;
+        padding: 15px 10px;
+        color: #93A0A9;
+        font-weight: 500;
+        border-bottom: 1px solid #2A3B52;
+    }
+    .cyber-table td {
+        padding: 15px 10px;
+        border-bottom: 1px solid #2A3B52;
+        vertical-align: middle;
+    }
+    .cyber-input {
+        background: #0C1420;
+        border: 1px solid #2A3B52;
+        color: #EDEDED;
+        border-radius: 6px;
+        padding: 8px 12px;
+        outline: none;
+    }
+    .cyber-input:focus {
+        border-color: #D6FF3F;
+    }
+    .status-label {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+        display: inline-block;
+        text-align: center;
+        min-width: 100px;
+    }
+    .status-Completed {
+        background: rgba(214, 255, 63, 0.1);
+        color: #D6FF3F;
+        border: 1px solid #D6FF3F;
+    }
+    .status-Pending {
+        background: rgba(224, 91, 190, 0.1);
+        color: #E05BBE;
+        border: 1px solid #E05BBE;
+    }
+    .status-InProgress {
+        background: rgba(147, 160, 169, 0.1);
+        color: #93A0A9;
+        border: 1px solid #93A0A9;
+    }
+</style>
+
+<div class="bar-container">
+    <div class="cyber-top-bar">
+        <h2 style="margin: 0;">@ViewData["Title"]</h2>
+    </div>
+
+    <div class="cyber-panel">
+        @if (!Model.Any())
+        {
+            <div style="text-align: center; color: #93A0A9; padding: 40px;">
+                <h4>Замовлень наразі немає</h4>
+            </div>
+        }
+        else
+        {
+            <table class="cyber-table">
+                <thead>
+                    <tr>
+                        <th>Замовлення #</th>
+                        <th>Клієнт</th>
+                        <th>Комп'ютер</th>
+                        <th>Позиції</th>
+                        <th>Загальна сума</th>
+                        <th>Статус</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model)
+                    {
+                        <tr>
+                            <td><strong>@order.Id.ToString().Substring(0, 8)</strong></td>
+                            <td>@(order.UserName ?? order.UserId.ToString().Substring(0, 8))</td>
+                            <td>@(order.PcNumber ?? "-")</td>
+                            <td>
+                                <ul style="margin: 0; padding-left: 20px; color: #93A0A9;">
+                                    @foreach (var item in order.Items)
+                                    {
+                                        <li>@item.MenuItemName x @item.Quantity</li>
+                                    }
+                                </ul>
+                            </td>
+                            <td><strong style="color: #D6FF3F;">₴@order.TotalAmount.ToString("F2")</strong></td>
+                            <td>
+                                @if (order.Status.ToString() != "Completed")
+                                {
+                                    <form asp-action="CompleteOrder" method="post" style="margin: 0;">
+                                        <input type="hidden" name="id" value="@order.Id" />
+                                        <button type="submit" class="status-label status-@(order.Status.ToString())" style="cursor: pointer;">
+                                            Завершити ➔
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span class="status-label status-Completed">✅ Виконано</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>

@@ -1,4 +1,4 @@
-@using Microsoft.AspNetCore.Identity
+Ôªø@using Microsoft.AspNetCore.Identity
 @using CyberZone.Domain.Entities
 @inject SignInManager<User> SignInManager
 @inject UserManager<User> UserManager
@@ -11,15 +11,20 @@
         </a>
         @if (SignInManager.IsSignedIn(User))
         {
-            <a asp-controller="Home" asp-action="Catalog" class="nav-badge"> ÎÛ·Ë</a>
+            <a asp-controller="Home" asp-action="Catalog" class="nav-badge">–ö–ª—É–±–∏</a>
+            @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
+            {
+                <a asp-controller="BarAdmin" asp-action="Index" class="nav-badge">–ë–∞—Ä –ú–µ–Ω—é</a>
+                <a asp-controller="BarAdmin" asp-action="Orders" class="nav-badge">–ë–∞—Ä –ó–∞–º–æ–≤–ª–µ–Ω–Ω—è</a>
+            }
         }
     </div>
 
     <div class="header-center">
-        @if (SignInManager.IsSignedIn(User))
+        @if (SignInManager.IsSignedIn(User) && !User.IsInRole("Staff") && !User.IsInRole("Admin"))
             {
                 <div class="search-wrapper">
-                    <input type="text" class="search-box" placeholder="œÓ¯ÛÍ ÔÓ Ì‡Á‚≥ ÍÎÛ·Û" />
+                    <input type="text" class="search-box" placeholder="–ü–æ—à—É–∫ –ø–æ –Ω–∞–∑–≤—ñ –∫–ª—É–±—É" />
                 </div>
             }
     </div>
@@ -30,7 +35,7 @@
          }
 
         @if (!string.IsNullOrEmpty(appUser?.ProfileImagePath)) {
-            <img src="@appUser.ProfileImagePath" alt="¿‚‡Ú‡" class="avatar-circle" style="object-fit: cover;" />
+            <img src="@appUser.ProfileImagePath" alt="–ê–≤–∞—Ç–∞—Ä" class="avatar-circle" style="object-fit: cover;" />
         } else {
             <div class="avatar-circle"></div>
         }
@@ -42,13 +47,13 @@
     @User.Identity?.Name
 </a>
                 <form asp-controller="Account" asp-action="Logout" method="post" class="logout-form">
-                    <button type="submit" class="auth-sub-link logout-btn">¬ËÈÚË</button>
+                    <button type="submit" class="auth-sub-link logout-btn">–í–∏–π—Ç–∏</button>
                 </form>
             }
             else
             {
-                <span class="username-label">√≥ÒÚ¸</span>
-                <a asp-controller="Account" asp-action="Login" class="auth-sub-link login-btn">”‚≥ÈÚË</a>
+                <span class="username-label">–ì—ñ—Å—Ç—å</span>
+                <a asp-controller="Account" asp-action="Login" class="auth-sub-link login-btn">–£–≤—ñ–π—Ç–∏</a>
             }
         </div>
     </div>

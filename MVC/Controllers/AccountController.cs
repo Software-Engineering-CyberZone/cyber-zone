@@ -264,7 +264,7 @@ public class AccountController : Controller
         await _context.SaveChangesAsync();
 
         // 2. ІДЕАЛЬНИЙ КЛУБ: З нормальною адресою
-        var club = await _context.Clubs.FirstOrDefaultAsync(c => c.Name == "Cyber Pro Arena");
+        var club = await _context.Clubs.FirstOrDefaultAsync(c => c.Name == "Cyberclub");
 
         var realAddress = new CyberZone.Domain.ValueObjects.Address("вул. Болоня, 51", "м. Київ", "Київ", "04210", "Україна");
 
@@ -272,7 +272,7 @@ public class AccountController : Controller
         {
             club = new CyberZone.Domain.Entities.Club
             {
-                Name = "Cyber Pro Arena",
+                Name = "Cyberclub",
                 Address = realAddress, // Додаємо справжню адресу!
                 CreatedAt = DateTime.UtcNow
             };

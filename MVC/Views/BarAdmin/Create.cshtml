@@ -1,0 +1,122 @@
+@model CyberZone.Application.DTOs.CreateBarMenuItemDto
+@{
+    ViewData["Title"] = "Додати позицію в Меню";
+}
+
+<style>
+    body {
+        background-color: #0B1222;
+        color: #EDEDED;
+        font-family: 'Lato', sans-serif;
+    }
+    .bar-container {
+        max-width: 600px;
+        margin: 40px auto;
+        padding: 20px;
+    }
+    .cyber-panel {
+        background: #1C2838;
+        border-radius: 12px;
+        padding: 30px;
+        border: 1px solid #93A0A9;
+    }
+    .form-label {
+        color: #93A0A9;
+        font-weight: 500;
+        margin-bottom: 8px;
+        display: block;
+    }
+    .cyber-input {
+        background: #0C1420;
+        border: 1px solid #2A3B52;
+        color: #EDEDED;
+        border-radius: 6px;
+        padding: 10px 12px;
+        width: 100%;
+        box-sizing: border-box;
+        outline: none;
+        margin-bottom: 20px;
+        font-family: inherit;
+    }
+    .cyber-input:focus {
+        border-color: #D6FF3F;
+    }
+    .cyber-btn-success {
+        background: linear-gradient(91.95deg, #D6FF3F 2.89%, #E05BBE 97.05%);
+        color: #0B1222;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity 0.2s;
+        font-size: 16px;
+        width: 100%;
+    }
+    .cyber-btn-success:hover {
+        opacity: 0.9;
+    }
+    .cyber-btn-back {
+        display: block;
+        text-align: center;
+        color: #93A0A9;
+        margin-top: 15px;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+    .cyber-btn-back:hover {
+        color: #EDEDED;
+        text-decoration: underline;
+    }
+    .checkbox-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 25px;
+    }
+    .cyber-checkbox {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+    }
+</style>
+
+<div class="bar-container">
+    <h2 style="margin-bottom: 25px;">@ViewData["Title"]</h2>
+
+    <div class="cyber-panel">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" style="color: #E05BBE; margin-bottom: 15px;"></div>
+
+            <input type="hidden" asp-for="ClubId" />
+
+            <label asp-for="Name" class="form-label">Назва</label>
+            <input asp-for="Name" class="cyber-input" placeholder="Наприклад: Кока-Кола 0.5" />
+            <span asp-validation-for="Name" style="color: #E05BBE; font-size: 0.9em;"></span>
+
+            <label asp-for="Category" class="form-label">Категорія</label>
+            <select asp-for="Category" class="cyber-input" style="cursor: pointer;">
+                <option value="Снеки">🍔 Снеки</option>
+                <option value="Напої">🥤 Напої</option>
+            </select>
+
+            <label asp-for="Description" class="form-label">Опис (необов'язково)</label>
+            <textarea asp-for="Description" class="cyber-input" rows="3" placeholder="Деталі позиції..."></textarea>
+
+            <label asp-for="Price" class="form-label">Ціна (₴)</label>
+            <input asp-for="Price" type="number" step="0.01" class="cyber-input" />
+            <span asp-validation-for="Price" style="color: #E05BBE; font-size: 0.9em;"></span>
+
+            <label asp-for="StockQuantity" class="form-label">Початковий залишок (шт)</label>
+            <input asp-for="StockQuantity" type="number" class="cyber-input" value="0" />
+
+            <div class="checkbox-container">
+                <input asp-for="IsActive" class="cyber-checkbox" />
+                <label asp-for="IsActive" style="color: #EDEDED; cursor: pointer;">Активно (показувати клієнтам)</label>
+            </div>
+
+            <button type="submit" class="cyber-btn-success">Створити позицію</button>
+            <a asp-action="Index" class="cyber-btn-back">← Назад до Меню</a>
+        </form>
+    </div>
+</div>

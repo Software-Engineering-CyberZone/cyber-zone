@@ -9,6 +9,8 @@ public class MenuItem : EntityBase, IAuditable
     public decimal Price { get; set; }
     public string? Category { get; set; }
     public bool IsAvailable { get; set; } = true;
+    public int StockQuantity { get; set; }
+    public bool IsActive { get; set; } = true;
     public string? ImageUrl { get; set; }
     public Guid ClubId { get; set; }
     public Club Club { get; set; } = null!;

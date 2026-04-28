@@ -1,0 +1,110 @@
+@{
+    ViewData["Title"] = "Занадто багато запитів";
+    Layout = null;
+    var retryAfter = ViewData["RetryAfter"] as int? ?? 60;
+}
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CyberZone</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        body {
+            background: #0b1720;
+            color: #e4ecf4;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .rl-card {
+            max-width: 520px;
+            background: #0f1f2d;
+            border: 2px solid #e05bbe;
+            border-radius: 12px;
+            padding: 36px 40px;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(224, 91, 190, 0.12);
+        }
+
+        .rl-icon {
+            font-size: 56px;
+            margin-bottom: 12px;
+        }
+
+        .rl-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 26px;
+            color: #e05bbe;
+            margin: 0 0 10px;
+        }
+
+        .rl-body {
+            color: #9fb1c6;
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 0 0 20px;
+        }
+
+        .rl-retry {
+            background: #132433;
+            border: 1px solid #2a3b4f;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin: 16px 0;
+            font-size: 13px;
+            color: #e4ecf4;
+        }
+
+        .rl-retry strong { color: #d6ff3f; }
+
+        .rl-back {
+            display: inline-block;
+            padding: 10px 22px;
+            border-radius: 6px;
+            background: linear-gradient(91.95deg, #D6FF3F 2.89%, #E05BBE 97.05%);
+            color: #0b1720;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .rl-back:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+    <div class="rl-card">
+        <div class="rl-icon">⏱️</div>
+        <h1 class="rl-title">Занадто багато запитів</h1>
+        <p class="rl-body">
+            Ви перевищили ліміт запитів до цієї дії. Це захист від випадкових подвійних
+            натискань та зловживань. Будь ласка, зачекайте і спробуйте знову.
+        </p>
+        <div class="rl-retry">
+            Повторіть через <strong id="rl-seconds">@retryAfter</strong> сек.
+        </div>
+        <a href="/" class="rl-back">На головну</a>
+    </div>
+
+    <script>
+        (function () {
+            const el = document.getElementById('rl-seconds');
+            let remaining = Number(el.textContent) || 60;
+            const timer = setInterval(() => {
+                remaining -= 1;
+                if (remaining <= 0) {
+                    clearInterval(timer);
+                    el.textContent = '0';
+                    return;
+                }
+                el.textContent = remaining;
+            }, 1000);
+        })();
+    </script>
+</body>
+</html>

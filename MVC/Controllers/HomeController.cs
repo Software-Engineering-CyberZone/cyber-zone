@@ -38,6 +38,14 @@ public class HomeController : Controller
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult RateLimited(int retryAfter = 60)
+    {
+        Response.StatusCode = StatusCodes.Status429TooManyRequests;
+        ViewData["RetryAfter"] = retryAfter;
+        return View();
+    }
+
     public async Task<IActionResult> Catalog()
     {
         var result = await _clubService.GetClubsForCatalogAsync();

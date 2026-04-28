@@ -1,5 +1,6 @@
 using CyberZone.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using MVC.Filters;
 
 namespace MVC.Controllers;
 
@@ -13,6 +14,7 @@ public class DealsController : Controller
     }
 
     [HttpGet]
+    [RateLimit(20)]  // cap hits to the upstream CheapShark API per IP
     public async Task<IActionResult> Index(string sortBy = "Savings", int pageSize = 30, CancellationToken ct = default)
     {
         var result = await _dealsService.GetDealsAsync(pageSize, sortBy, ct);

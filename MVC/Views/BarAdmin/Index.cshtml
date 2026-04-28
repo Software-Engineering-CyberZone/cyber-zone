@@ -1,4 +1,4 @@
-@model IEnumerable<CyberZone.Application.DTOs.BarMenuItemDto>
+﻿@model IEnumerable<CyberZone.Application.DTOs.BarMenuItemDto>
 @{
     ViewData["Title"] = "Меню Бару";
 }
@@ -102,6 +102,7 @@
                     <th>Ціна</th>
                     <th>Залишок</th>
                     <th>Статус</th>
+                    <th>Дії</th>
                 </tr>
             </thead>
             <tbody>
@@ -110,11 +111,11 @@
                     <tr class="@(item.StockQuantity < 5 ? "danger-row" : "")">
                         <td><strong>@item.Name</strong></td>
                         <td>
-                            @if (item.Category == "Снеки")
+                            @if (item.Category == "Снеки" || item.Category == "Snacks")
                             {
                                 <text>🍔 Снеки</text>
                             }
-                            else if (item.Category == "Напої")
+                            else if (item.Category == "Напої" || item.Category == "Drinks")
                             {
                                 <text>🥤 Напої</text>
                             }
@@ -147,6 +148,11 @@
                                     }
                                 </select>
                             </form>
+                        </td>
+                        <td>
+                            <a href="/BarAdmin/Edit/@item.Id" class="cyber-btn-sm" style="text-decoration:none; background: #FFD21E; color: #0B1222; font-weight: 600;">
+                                &#9998; Редагувати
+                            </a>
                         </td>
                     </tr>
                 }

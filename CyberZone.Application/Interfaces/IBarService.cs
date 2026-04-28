@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CyberZone.Application.Common;
@@ -8,6 +8,7 @@ namespace CyberZone.Application.Interfaces;
 
 public interface IBarService
 {
+    Task<Result<BarMenuItemDto>> GetMenuItemAsync(Guid id);
     Task<Result<IEnumerable<BarMenuItemDto>>> GetMenuItemsAsync(Guid clubId);
     Task<Result<Guid>> CreateMenuItemAsync(CreateBarMenuItemDto dto);
     Task<Result<bool>> UpdateMenuItemAsync(Guid id, UpdateBarMenuItemDto dto);

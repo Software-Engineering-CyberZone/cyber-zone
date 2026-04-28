@@ -1,4 +1,4 @@
-using CyberZone.Domain.Entities;
+ï»¿using CyberZone.Domain.Entities;
 using CyberZone.Domain.Enums;
 using CyberZone.Infrastructure.Persistence;
 using CyberZone.Infrastructure.Services;
@@ -34,18 +34,32 @@ public class OrderController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Bar() // <-- ÏÐÈÁÐÀËÈ sessionId
+    public async Task<IActionResult> Bar() // Ð’Ñ€Ð°Ñ…Ð¾Ð²Ð°Ð½Ð¾ Ð¿Ð¾Ñ‚Ð¾Ñ‡Ð½Ð¸Ð¹ ÐºÐ»ÑƒÐ± ÑÐµÑÑ–Ñ—
     {
-        // 1. Ä³ñòàºìî âñ³ ÄÎÑÒÓÏÍ² òîâàðè ç áàçè
+        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!Guid.TryParse(userIdString, out var userId))
+            return Unauthorized();
+
+        var activeSession = await _context.GamingSessions
+            .Include(s => s.Hardware)
+            .FirstOrDefaultAsync(s => s.UserId == userId && s.Status == SessionStatus.Active);
+
+        if (activeSession == null)
+        {
+            ViewBag.ErrorMessage = "Ð£ Ð²Ð°Ñ Ð½ÐµÐ¼Ð°Ñ” Ð°ÐºÑ‚Ð¸Ð²Ð½Ð¾Ñ— Ñ–Ð³Ñ€Ð¾Ð²Ð¾Ñ— ÑÐµÑÑ–Ñ—. Ð—Ð°Ð¼Ð¾Ð²Ð»ÐµÐ½Ð½Ñ Ð· Ð±Ð°Ñ€Ñƒ Ð´Ð¾ÑÑ‚ÑƒÐ¿Ð½Ñ– Ð»Ð¸ÑˆÐµ Ð¿Ñ–Ð´ Ñ‡Ð°Ñ Ð³Ñ€Ð¸ Ð·Ð° ÐºÐ¾Ð¼Ð¿'ÑŽÑ‚ÐµÑ€Ð¾Ð¼ ÐºÐ»ÑƒÐ±Ñƒ.";
+            return View(new BarViewModel { Drinks = new(), Snacks = new() });
+        }
+
+        // 1. Ð”Ñ–ÑÑ‚Ð°Ñ”Ð¼Ð¾ Ð²ÑÑ– Ð”ÐžÐ¡Ð¢Ð£ÐŸÐÐ† Ñ‚Ð¾Ð²Ð°Ñ€Ð¸ Ð· Ð±Ð°Ð·Ð¸ Ð¢Ð†Ð›Ð¬ÐšÐ˜ Ð”Ð›Ð¯ ÐŸÐžÐ¢ÐžÐ§ÐÐžÐ“Ðž ÐšÐ›Ð£Ð‘Ð£ Ñ– Ð² Ð½Ð°ÑÐ²Ð½Ð¾ÑÑ‚Ñ–  
         var items = await _context.MenuItems
-            .Where(m => m.IsAvailable)
+            .Where(m => m.IsAvailable && m.IsActive && m.StockQuantity > 0 && m.ClubId == activeSession.Hardware.ClubId)
             .ToListAsync();
 
-        // 2. Ãðóïóºìî ¿õ çà êàòåãîð³ÿìè
+        // 2. Ð“Ñ€ÑƒÐ¿ÑƒÑ”Ð¼Ð¾ Ñ—Ñ… Ð·Ð° ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ñ–ÑÐ¼Ð¸
         var model = new BarViewModel
         {
-            Drinks = items.Where(i => i.Category == "Drinks").ToList(),
-            Snacks = items.Where(i => i.Category == "Snacks").ToList()
+            Drinks = items.Where(i => i.Category == "Drinks" || i.Category == "ÐÐ°Ð¿Ð¾Ñ—").ToList(),
+            Snacks = items.Where(i => i.Category == "Snacks" || i.Category == "Ð¡Ð½ÐµÐºÐ¸").ToList()
         };
 
         return View(model);
@@ -55,17 +69,24 @@ public class OrderController : Controller
     public async Task<IActionResult> Checkout([FromBody] CheckoutRequest request)
     {
         if (request?.Items == null || !request.Items.Any())
-            return BadRequest(new { success = false, message = "Êîøèê ïîðîæí³é" });
+            return BadRequest(new { success = false, message = "ÐšÐ¾ÑˆÐ¸Ðº Ð¿Ð¾Ñ€Ð¾Ð¶Ð½Ñ–Ð¹" });
 
-        // Îòðèìóºìî ID ïîòî÷íîãî êîðèñòóâà÷à
+        // ÐžÑ‚Ñ€Ð¸Ð¼ÑƒÑ”Ð¼Ð¾ ID Ð¿Ð¾Ñ‚Ð¾Ñ‡Ð½Ð¾Ð³Ð¾ ÐºÐ¾Ñ€Ð¸ÑÑ‚ÑƒÐ²Ð°Ñ‡Ð°
         var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (!Guid.TryParse(userIdString, out var userId))
             return Unauthorized();
 
-        // 1. Ä³ñòàºìî àêòóàëüí³ òîâàðè ç áàçè äëÿ ôîðìóâàííÿ ö³í
+        var activeSession = await _context.GamingSessions
+            .Include(s => s.Hardware)
+            .FirstOrDefaultAsync(s => s.UserId == userId && s.Status == SessionStatus.Active);
+
+        if (activeSession == null)
+            return BadRequest(new { success = false, message = "ÐÐµÐ¼Ð°Ñ” Ð°ÐºÑ‚Ð¸Ð²Ð½Ð¾Ñ— Ñ–Ð³Ñ€Ð¾Ð²Ð¾Ñ— ÑÐµÑÑ–Ñ—." });
+
+        // 1. Ð”Ñ–ÑÑ‚Ð°Ñ”Ð¼Ð¾ Ð°ÐºÑ‚ÑƒÐ°Ð»ÑŒÐ½Ñ– Ñ‚Ð¾Ð²Ð°Ñ€Ð¸ Ð· Ð±Ð°Ð·Ð¸ Ð´Ð»Ñ Ñ„Ð¾Ñ€Ð¼ÑƒÐ²Ð°Ð½Ð½Ñ Ñ†Ñ–Ð½ (Ð»Ð¸ÑˆÐµ Ð°ÐºÑ‚Ð¸Ð²Ð½Ñ– Ñ‚Ð° Ñ†ÑŒÐ¾Ð³Ð¾ ÐºÐ»ÑƒÐ±Ñƒ)
         var itemIds = request.Items.Select(i => i.MenuItemId).ToList();
         var menuItems = await _context.MenuItems
-            .Where(m => itemIds.Contains(m.Id) && m.IsAvailable)
+            .Where(m => itemIds.Contains(m.Id) && m.IsAvailable && m.IsActive && m.ClubId == activeSession.Hardware.ClubId)
             .ToDictionaryAsync(m => m.Id);
 
         decimal totalAmount = 0;
@@ -75,48 +96,59 @@ public class OrderController : Controller
         {
             if (menuItems.TryGetValue(reqItem.MenuItemId, out var dbItem))
             {
+                if (dbItem.StockQuantity < reqItem.Quantity)
+                {
+                    return BadRequest(new { success = false, message = $"ÐÐ° Ð¶Ð°Ð»ÑŒ, Ñ‚Ð¾Ð²Ð°Ñ€Ñƒ '{dbItem.Name}' Ð·Ð°Ð»Ð¸ÑˆÐ¸Ð»Ð¾ÑÑ Ð»Ð¸ÑˆÐµ {dbItem.StockQuantity} ÑˆÑ‚." });
+                }
+
+                dbItem.StockQuantity -= reqItem.Quantity; // Ð¡Ð¿Ð¸ÑÑƒÑ”Ð¼Ð¾ Ñ‚Ð¾Ð²Ð°Ñ€ Ð·Ñ– ÑÐºÐ»Ð°Ð´Ñƒ
                 totalAmount += dbItem.Price * reqItem.Quantity;
                 orderItems.Add(new OrderItem
                 {
                     MenuItemId = dbItem.Id,
                     Quantity = reqItem.Quantity,
-                    UnitPrice = dbItem.Price // Ô³êñóºìî ö³íó íà ìîìåíò ïîêóïêè
+                    UnitPrice = dbItem.Price // Ð¤Ñ–ÐºÑÑƒÑ”Ð¼Ð¾ Ñ†Ñ–Ð½Ñƒ Ð½Ð° Ð¼Ð¾Ð¼ÐµÐ½Ñ‚ Ð¿Ð¾ÐºÑƒÐ¿ÐºÐ¸
                 });
+            }
+            else
+            {
+                return BadRequest(new { success = false, message = "ÐžÐ´Ð¸Ð½ Ñ–Ð· Ñ‚Ð¾Ð²Ð°Ñ€Ñ–Ð² Ð½Ðµ Ð·Ð½Ð°Ð¹Ð´ÐµÐ½Ð¾ Ð°Ð±Ð¾ Ð½ÐµÐ´Ð¾ÑÑ‚ÑƒÐ¿Ð½Ð¸Ð¹ Ñƒ Ð²Ð°ÑˆÐ¾Ð¼Ñƒ Ð¿Ð¾Ñ‚Ð¾Ñ‡Ð½Ð¾Ð¼Ñƒ ÐºÐ»ÑƒÐ±Ñ–." });
             }
         }
 
-        // 2. Ñòâîðþºìî çàìîâëåííÿ
+        // 2. Ð¡Ñ‚Ð²Ð¾Ñ€ÑŽÑ”Ð¼Ð¾ Ð·Ð°Ð¼Ð¾Ð²Ð»ÐµÐ½Ð½Ñ
         var order = new Order
         {
             UserId = userId,
             Status = OrderStatus.Pending,
             TotalAmount = totalAmount,
             CreatedAt = DateTime.UtcNow,
+            PcNumber = activeSession.Hardware.PcNumber, // Ð¤Ñ–ÐºÑÑƒÑ”Ð¼Ð¾ ÐŸÐš, Ð·Ð° ÑÐºÐ¸Ð¼ ÑÐ¸Ð´Ð¸Ñ‚ÑŒ Ð³Ñ€Ð°Ð²ÐµÑ†ÑŒ
             Items = orderItems
         };
 
         _context.Orders.Add(order);
-        await _context.SaveChangesAsync(); // Çáåð³ãàºìî, ùîá îòðèìàòè OrderId
+        await _context.SaveChangesAsync(); // Ð—Ð±ÐµÑ€Ñ–Ð³Ð°Ñ”Ð¼Ð¾, Ñ‰Ð¾Ð± Ð¾Ñ‚Ñ€Ð¸Ð¼Ð°Ñ‚Ð¸ OrderId
 
-        // 3. Ïðîáóºìî ñïèñàòè êîøòè
+        // 3. ÐŸÑ€Ð¾Ð±ÑƒÑ”Ð¼Ð¾ ÑÐ¿Ð¸ÑÐ°Ñ‚Ð¸ ÐºÐ¾ÑˆÑ‚Ð¸
         try
         {
             await _paymentService.PayOrderAsync(userId, order.Id, totalAmount);
 
-            // ßêùî îïëàòà óñï³øíà, ì³íÿºìî ñòàòóñ (ïðèïóñòèìî, º ñòàòóñ Paid àáî InProgress)
-            // order.Status = OrderStatus.Paid; // Ðîçêîìåíòóéòå, ÿêùî º òàêèé ñòàòóñ â OrderStatus
+            // Ð¯ÐºÑ‰Ð¾ Ð¾Ð¿Ð»Ð°Ñ‚Ð° ÑƒÑÐ¿Ñ–ÑˆÐ½Ð°, Ð¼Ñ–Ð½ÑÑ”Ð¼Ð¾ ÑÑ‚Ð°Ñ‚ÑƒÑ (Ð¿Ñ€Ð¸Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð¾, Ñ” ÑÑ‚Ð°Ñ‚ÑƒÑ Paid Ð°Ð±Ð¾ InProgress)
+            // order.Status = OrderStatus.Paid; // Ð Ð¾Ð·ÐºÐ¾Ð¼ÐµÐ½Ñ‚ÑƒÐ¹Ñ‚Ðµ, ÑÐºÑ‰Ð¾ Ñ” Ñ‚Ð°ÐºÐ¸Ð¹ ÑÑ‚Ð°Ñ‚ÑƒÑ Ð² OrderStatus
             await _context.SaveChangesAsync();
 
-            return Ok(new { success = true, message = "Îïëàòà óñï³øíà! Çàìîâëåííÿ ïðèéíÿòî." });
+            return Ok(new { success = true, message = "ÐžÐ¿Ð»Ð°Ñ‚Ð° ÑƒÑÐ¿Ñ–ÑˆÐ½Ð°! Ð—Ð°Ð¼Ð¾Ð²Ð»ÐµÐ½Ð½Ñ Ð¿Ñ€Ð¸Ð¹Ð½ÑÑ‚Ð¾." });
         }
         catch (InvalidOperationException ex)
         {
-            // ßêùî ïîìèëêà (íåäîñòàòíüî êîøò³â)
+            // Ð¯ÐºÑ‰Ð¾ Ð¿Ð¾Ð¼Ð¸Ð»ÐºÐ° (Ð½ÐµÐ´Ð¾ÑÑ‚Ð°Ñ‚Ð½ÑŒÐ¾ ÐºÐ¾ÑˆÑ‚Ñ–Ð²)
             return BadRequest(new { success = false, message = ex.Message });
         }
         catch (Exception)
         {
-            return StatusCode(500, new { success = false, message = "Ñòàëàñÿ ïîìèëêà ïðè îáðîáö³ ïëàòåæó." });
+            return StatusCode(500, new { success = false, message = "Ð¡Ñ‚Ð°Ð»Ð°ÑÑ Ð¿Ð¾Ð¼Ð¸Ð»ÐºÐ° Ð¿Ñ€Ð¸ Ð¾Ð±Ñ€Ð¾Ð±Ñ†Ñ– Ð¿Ð»Ð°Ñ‚ÐµÐ¶Ñƒ." });
         }
     }
 }

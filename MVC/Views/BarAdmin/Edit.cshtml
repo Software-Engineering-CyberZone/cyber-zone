@@ -1,6 +1,6 @@
-﻿@model CyberZone.Application.DTOs.CreateBarMenuItemDto
+﻿@model CyberZone.Application.DTOs.UpdateBarMenuItemDto
 @{
-    ViewData["Title"] = "Додати позицію в Меню";
+    ViewData["Title"] = "Редагування";
 }
 
 <style>
@@ -85,38 +85,38 @@
     <h2 style="margin-bottom: 25px;">@ViewData["Title"]</h2>
 
     <div class="cyber-panel">
-        <form asp-action="Create" method="post">
+        <form asp-action="Edit" method="post">
             <div asp-validation-summary="ModelOnly" style="color: #E05BBE; margin-bottom: 15px;"></div>
 
-            <input type="hidden" asp-for="ClubId" />
+            
 
-            <label asp-for="Name" class="form-label">Назва</label>
-            <input asp-for="Name" class="cyber-input" placeholder="Наприклад: Кока-Кола 0.5" />
+            <label asp-for="Name" class="form-label">Назва товару</label>
+            <input asp-for="Name" class="cyber-input" placeholder="Назва товару 0.5" />
             <span asp-validation-for="Name" style="color: #E05BBE; font-size: 0.9em;"></span>
 
             <label asp-for="Category" class="form-label">Категорія</label>
             <select asp-for="Category" class="cyber-input" style="cursor: pointer;">
-                <option value="Снеки">🍔 Снеки</option>
-                <option value="Напої">🥤 Напої</option>
+                <option value="Snacks">Snacks</option>
+                <option value="Drinks">Drinks—</option>
             </select>
 
-            <label asp-for="Description" class="form-label">Опис (необов'язково)</label>
-            <textarea asp-for="Description" class="cyber-input" rows="3" placeholder="Деталі позиції..."></textarea>
+            <label asp-for="Description" class="form-label">Опис</label>
+            <textarea asp-for="Description" class="cyber-input" rows="3" placeholder="..."></textarea>
 
-            <label asp-for="Price" class="form-label">Ціна (₴)</label>
+            <label asp-for="Price" class="form-label">Вартість (грн/одиницю)</label>
             <input asp-for="Price" type="number" step="0.01" class="cyber-input" />
             <span asp-validation-for="Price" style="color: #E05BBE; font-size: 0.9em;"></span>
 
-            <label asp-for="StockQuantity" class="form-label">Початковий залишок (шт)</label>
+            <label asp-for="StockQuantity" class="form-label">Кількість</label>
             <input asp-for="StockQuantity" type="number" class="cyber-input" value="0" />
 
             <div class="checkbox-container">
                 <input asp-for="IsActive" class="cyber-checkbox" />
-                <label asp-for="IsActive" style="color: #EDEDED; cursor: pointer;">Активно (показувати клієнтам)</label>
+                <label asp-for="IsActive" style="color: #EDEDED; cursor: pointer;">Показувати як доступний</label>
             </div>
 
-            <button type="submit" class="cyber-btn-success">Створити позицію</button>
-            <a asp-action="Index" class="cyber-btn-back">← Назад до Меню</a>
+            <button type="submit" class="cyber-btn-success">Зберегти</button>
+            <a asp-action="Index" class="cyber-btn-back">Повернутися</a>
         </form>
     </div>
 </div>

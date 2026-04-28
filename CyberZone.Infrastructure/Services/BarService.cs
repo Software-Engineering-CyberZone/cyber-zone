@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,6 +19,25 @@ public class BarService : IBarService
     public BarService(IApplicationDbContext context)
     {
         _context = context;
+    }
+
+    public async Task<Result<BarMenuItemDto>> GetMenuItemAsync(Guid id)
+    {
+        var item = await _context.MenuItems.FindAsync(id);
+        if (item == null) return Result.Failure<BarMenuItemDto>("Menu item not found.");
+        
+        return Result.Success(new BarMenuItemDto
+        {
+            Id = item.Id,
+            Name = item.Name,
+            Description = item.Description,
+            Price = item.Price,
+            Category = item.Category,
+            IsAvailable = item.IsAvailable,
+            StockQuantity = item.StockQuantity,
+            IsActive = item.IsActive,
+            ImageUrl = item.ImageUrl
+        });
     }
 
     public async Task<Result<IEnumerable<BarMenuItemDto>>> GetMenuItemsAsync(Guid clubId)

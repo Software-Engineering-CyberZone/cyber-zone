@@ -17,12 +17,19 @@ public class ClubServiceAdminActionsTests
 
     public ClubServiceAdminActionsTests()
     {
-        _mockContext = new Mock<CyberZone.Application.Interfaces.IApplicationDbContext>();
+        _mockContext = new Mock<CyberZone.Application.Interfaces.IApplicationDbContext>(); 
         var logger = new Mock<ILogger<ClubService>>();
+<<<<<<< Updated upstream
         _clubService = new ClubService(_mockContext.Object, logger.Object, new NoOpCacheService(), CacheTestHelper.DefaultOptions());
     }
 
     [Fact]
+=======
+        var cache = new Mock<CyberZone.Application.Interfaces.ICacheService>();
+        var cacheOptions = Microsoft.Extensions.Options.Options.Create(new CyberZone.Application.Common.CacheOptions());
+        _clubService = new ClubService(_mockContext.Object, logger.Object, cache.Object, cacheOptions);
+    }    [Fact]
+>>>>>>> Stashed changes
     public async Task GetClubForEditAsync_ExistingClub_ReturnsDto()
     {
         var clubId = Guid.NewGuid();

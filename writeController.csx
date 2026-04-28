@@ -1,4 +1,9 @@
-﻿using System;
+﻿
+using System;
+using System.IO;
+using System.Text;
+var code = @"
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using CyberZone.Application.DTOs;
@@ -8,7 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 namespace MVC.Controllers;
-[Authorize(Roles = "Admin, Staff")]
+[Authorize(Roles = ""Admin, Staff"")]
 public class BarAdminController : Controller
 {
     private readonly IBarService _barService;
@@ -26,7 +31,7 @@ public class BarAdminController : Controller
     public async Task<IActionResult> Index()
     {
         var managedClubId = await GetManagedClubIdAsync();
-        if (managedClubId == null) return Unauthorized("You do not have a managed club assigned.");
+        if (managedClubId == null) return Unauthorized(""You do not have a managed club assigned."");
         var result = await _barService.GetMenuItemsAsync(managedClubId.Value);
         if (result.IsFailure) return NotFound(result.Error);
         return View(result.Value);
@@ -43,10 +48,10 @@ public class BarAdminController : Controller
     public async Task<IActionResult> Create(CreateBarMenuItemDto dto)
     {
         if (!ModelState.IsValid) return View(dto);
-        if (dto.Category == "Снеки") dto.Category = "Snacks";
-        if (dto.Category == "апої") dto.Category = "Drinks";
+        if (dto.Category == ""Снеки"") dto.Category = ""Snacks"";
+        if (dto.Category == ""апої"") dto.Category = ""Drinks"";
         var result = await _barService.CreateMenuItemAsync(dto);
-        if (result.IsFailure) { ModelState.AddModelError("", result.Error ?? "Unknown error occurred."); return View(dto); }
+        if (result.IsFailure) { ModelState.AddModelError("""", result.Error ?? ""Unknown error occurred.""); return View(dto); }
         return RedirectToAction(nameof(Index));
     }
     public async Task<IActionResult> Edit(Guid id)
@@ -73,10 +78,10 @@ public class BarAdminController : Controller
     public async Task<IActionResult> Edit(Guid id, UpdateBarMenuItemDto dto)
     {
         if (!ModelState.IsValid) return View(dto);
-        if (dto.Category == "Снеки") dto.Category = "Snacks";
-        if (dto.Category == "апої") dto.Category = "Drinks";
+        if (dto.Category == ""Снеки"") dto.Category = ""Snacks"";
+        if (dto.Category == ""апої"") dto.Category = ""Drinks"";
         var result = await _barService.UpdateMenuItemAsync(id, dto);
-        if (result.IsFailure) { ModelState.AddModelError("", result.Error ?? "Unknown error."); return View(dto); }
+        if (result.IsFailure) { ModelState.AddModelError("""", result.Error ?? ""Unknown error.""); return View(dto); }
         return RedirectToAction(nameof(Index));
     }
     [HttpPost]
@@ -96,7 +101,7 @@ public class BarAdminController : Controller
     public async Task<IActionResult> Orders()
     {
         var managedClubId = await GetManagedClubIdAsync();
-        if (managedClubId == null) return Unauthorized("You do not have a managed club assigned.");
+        if (managedClubId == null) return Unauthorized(""You do not have a managed club assigned."");
         var result = await _barService.GetActiveOrdersAsync(managedClubId.Value);
         if (result.IsFailure) return NotFound(result.Error);
         return View(result.Value);
@@ -110,3 +115,5 @@ public class BarAdminController : Controller
         return RedirectToAction(nameof(Orders));
     }
 }
+";
+File.WriteAllText(""MVC/Controllers/BarAdminController.cs"", code, Encoding.UTF8);

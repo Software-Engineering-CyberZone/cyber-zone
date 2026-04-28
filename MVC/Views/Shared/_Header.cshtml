@@ -12,6 +12,7 @@
         @if (SignInManager.IsSignedIn(User))
         {
             <a asp-controller="Home" asp-action="Catalog" class="nav-badge">Клуби</a>
+            <a asp-controller="Deals" asp-action="Index" class="nav-badge">Знижки</a>
             @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
             {
                 <a asp-controller="BarAdmin" asp-action="Index" class="nav-badge">Бар Меню</a>

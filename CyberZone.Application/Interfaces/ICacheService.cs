@@ -16,7 +16,10 @@ public static class CacheKeys
     public const string ClubCatalog = "club:catalog";
     public const string ClubDetailsPrefix = "club:details:";
     public const string ClubMapPrefix = "club:map:";
+    public const string GameDealsPrefix = "deals:";
 
     public static string ClubDetails(Guid id) => $"{ClubDetailsPrefix}{id}";
     public static string ClubMap(Guid clubId) => $"{ClubMapPrefix}{clubId}";
+    public static string GameDeals(int pageSize, string sortBy) => $"{GameDealsPrefix}{sortBy}:{pageSize}";
+    public static string GameAaaHighlights(int pageSize) => $"{GameDealsPrefix}aaa:{pageSize}";
 }

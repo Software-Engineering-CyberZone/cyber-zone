@@ -22,6 +22,7 @@ public class AccountController : Controller
     private readonly CyberZoneDbContext _context;
     private readonly IWebHostEnvironment _environment;
     private readonly IReviewService _reviewService;
+    private readonly ICacheService _cache;
 
     public AccountController(
         UserManager<User> userManager,
@@ -30,7 +31,8 @@ public class AccountController : Controller
         PaymentService paymentService,
         CyberZoneDbContext context,
         IWebHostEnvironment environment,
-        IReviewService reviewService)
+        IReviewService reviewService,
+        ICacheService cache)
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -39,6 +41,7 @@ public class AccountController : Controller
         _context = context;
         _environment = environment;
         _reviewService = reviewService;
+        _cache = cache;
     }
 
     [HttpGet]
@@ -541,15 +544,32 @@ public class AccountController : Controller
 
         if (expiredSessions.Any())
         {
+            var affectedClubs = new HashSet<Guid>();
             foreach (var session in expiredSessions)
             {
                 session.EndSession(); // Викликаємо доменний метод (рахує гроші, міняє статус)
 
                 // Звільняємо ПК
                 if (session.Hardware != null)
+                {
                     session.Hardware.Status = CyberZone.Domain.Enums.HardwareStatus.Available;
+                    affectedClubs.Add(session.Hardware.ClubId);
+                }
+
+                // Закриваємо пов'язаний Booking
+                var relatedBooking = await _context.Bookings
+                    .Where(b => b.HardwareId == session.HardwareId
+                             && b.UserId == session.UserId
+                             && b.Status == CyberZone.Domain.Enums.BookingStatus.Active)
+                    .OrderByDescending(b => b.StartTime)
+                    .FirstOrDefaultAsync();
+                if (relatedBooking != null)
+                    relatedBooking.Status = CyberZone.Domain.Enums.BookingStatus.Completed;
             }
             await _context.SaveChangesAsync(); // Зберігаємо зміни в базу
+
+            foreach (var clubId in affectedClubs)
+                _cache.Remove(CyberZone.Application.Interfaces.CacheKeys.ClubMap(clubId));
         }
 
         var viewModels = new List<SessionItemViewModel>();
@@ -655,11 +675,18 @@ public class AccountController : Controller
             var plannedDuration = booking.EndTime - booking.StartTime;
             newSession.EndTime = newSession.StartTime.Add(plannedDuration);
 
+            Guid? clubId = null;
             if (booking.Hardware != null)
+            {
                 booking.Hardware.Status = CyberZone.Domain.Enums.HardwareStatus.Busy;
+                clubId = booking.Hardware.ClubId;
+            }
 
             _context.GamingSessions.Add(newSession);
             await _context.SaveChangesAsync();
+
+            if (clubId.HasValue)
+                _cache.Remove(CyberZone.Application.Interfaces.CacheKeys.ClubMap(clubId.Value));
         }
 
         return RedirectToAction("Sessions");
@@ -695,11 +722,28 @@ public class AccountController : Controller
         {
             session.EndSession(); // Викликаємо твій доменний метод розрахунку
 
+            Guid? clubId = null;
             // Звільняємо ПК
             if (session.Hardware != null)
+            {
                 session.Hardware.Status = CyberZone.Domain.Enums.HardwareStatus.Available;
+                clubId = session.Hardware.ClubId;
+            }
+
+            // Закриваємо пов'язаний Booking (щоб не блокував overlap при новому бронюванні)
+            var relatedBooking = await _context.Bookings
+                .Where(b => b.HardwareId == session.HardwareId
+                         && b.UserId == session.UserId
+                         && b.Status == CyberZone.Domain.Enums.BookingStatus.Active)
+                .OrderByDescending(b => b.StartTime)
+                .FirstOrDefaultAsync();
+            if (relatedBooking != null)
+                relatedBooking.Status = CyberZone.Domain.Enums.BookingStatus.Completed;
 
             await _context.SaveChangesAsync();
+
+            if (clubId.HasValue)
+                _cache.Remove(CyberZone.Application.Interfaces.CacheKeys.ClubMap(clubId.Value));
         }
 
         return RedirectToAction("Sessions");

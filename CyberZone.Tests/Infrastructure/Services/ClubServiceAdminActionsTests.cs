@@ -19,7 +19,7 @@ public class ClubServiceAdminActionsTests
     {
         _mockContext = new Mock<CyberZone.Application.Interfaces.IApplicationDbContext>();
         var logger = new Mock<ILogger<ClubService>>();
-        _clubService = new ClubService(_mockContext.Object, logger.Object);
+        _clubService = new ClubService(_mockContext.Object, logger.Object, new NoOpCacheService(), CacheTestHelper.DefaultOptions());
     }
 
     [Fact]

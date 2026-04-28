@@ -5,6 +5,7 @@ namespace CyberZone.Application.Interfaces;
 
 public interface IApplicationDbContext
 {
+    DbSet<User> Users { get; }
     DbSet<Club> Clubs { get; }
     DbSet<Hardware> Hardwares { get; }
     DbSet<Tariff> Tariffs { get; }

@@ -198,7 +198,7 @@
                     ttBtn.classList.remove('disabled');
                     ttBtn.removeAttribute('aria-disabled');
                     ttBtn.textContent = 'Забронювати';
-                    ttBtn.href = '/Home/Booking/' + clubId + '?hardwareId=' + hwId;
+                    ttBtn.href = '/Booking/Create?clubId=' + clubId + '&hardwareId=' + hwId;
                 } else {
                     ttBtn.classList.add('disabled');
                     ttBtn.setAttribute('aria-disabled', 'true');

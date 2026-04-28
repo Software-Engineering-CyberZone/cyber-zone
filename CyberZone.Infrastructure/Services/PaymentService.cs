@@ -1,3 +1,4 @@
+using CyberZone.Application.Interfaces;
 using CyberZone.Domain.Entities;
 using CyberZone.Domain.Enums;
 using CyberZone.Infrastructure.Persistence;
@@ -6,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace CyberZone.Infrastructure.Services;
 
-public class PaymentService
+public class PaymentService : IPaymentService
 {
     private readonly CyberZoneDbContext _context;
     private readonly ILogger<PaymentService> _logger;

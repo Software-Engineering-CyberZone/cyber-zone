@@ -1,0 +1,123 @@
+@using CyberZone.Application.DTOs
+@model BookNowDto
+@{
+    ViewData["Title"] = $"Бронювання ПК {Model.PcNumber}";
+    Layout = null;
+    var minPrice = Model.AvailableTariffs.Min(t => t.PricePerHour);
+}
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CyberZone</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/clubmap.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/booking.css" asp-append-version="true" />
+</head>
+<body class="map-page">
+
+<partial name="_Header" />
+
+<div class="breadcrumb-bar">
+    <a asp-controller="Home" asp-action="Catalog">Каталог клубів</a>
+    <span class="breadcrumb-sep">›</span>
+    <a asp-controller="Home" asp-action="Details" asp-route-id="@Model.ClubId">@Model.ClubName</a>
+    <span class="breadcrumb-sep">›</span>
+    <a asp-controller="Home" asp-action="Map" asp-route-id="@Model.ClubId">Інтерактивна мапа</a>
+    <span class="breadcrumb-sep">›</span>
+    <span class="breadcrumb-current">Бронювання ПК @Model.PcNumber</span>
+</div>
+
+<div class="booking-container">
+    <div class="booking-card">
+        <div class="booking-header">
+            <h1>Бронювання</h1>
+            <div class="booking-sub">@Model.ClubName · ПК <strong>@Model.PcNumber</strong></div>
+        </div>
+
+        @if (TempData["Error"] is string err)
+        {
+            <div class="booking-alert error">@err</div>
+        }
+
+        <div asp-validation-summary="ModelOnly" class="booking-alert error"></div>
+
+        <form asp-action="Create" method="post" id="booking-form">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="ClubId" />
+            <input type="hidden" asp-for="HardwareId" />
+            <input type="hidden" asp-for="PcNumber" />
+            <input type="hidden" asp-for="ClubName" />
+
+            <div class="form-row">
+                <label asp-for="TariffId">Тариф</label>
+                <select asp-for="TariffId" id="tariff-select" class="form-input">
+                    @foreach (var t in Model.AvailableTariffs)
+                    {
+                        var priceInv = t.PricePerHour.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                        <option value="@t.Id" data-price="@priceInv">
+                            @t.Name (@t.Type) — @t.PricePerHour.ToString("0") ₴/год
+                        </option>
+                    }
+                </select>
+                <span asp-validation-for="TariffId" class="field-error"></span>
+            </div>
+
+            <div class="form-row">
+                <label asp-for="StartTime">Час початку</label>
+                <input asp-for="StartTime" type="datetime-local" class="form-input" id="start-input" />
+                <span asp-validation-for="StartTime" class="field-error"></span>
+            </div>
+
+            <div class="form-row">
+                <label asp-for="Hours">Тривалість (годин)</label>
+                <input asp-for="Hours" type="number" min="1" max="24" class="form-input" id="hours-input" />
+                <span asp-validation-for="Hours" class="field-error"></span>
+            </div>
+
+            <div class="form-row">
+                <label asp-for="Notes">Коментар (необов'язково)</label>
+                <textarea asp-for="Notes" rows="2" class="form-input"></textarea>
+            </div>
+
+            <div class="booking-summary">
+                <div class="summary-row">
+                    <span>Вартість:</span>
+                    <span class="summary-value"><span id="summary-cost">@minPrice.ToString("0", System.Globalization.CultureInfo.InvariantCulture)</span> ₴</span>
+                </div>
+                <div class="summary-row">
+                    <span>Ваш баланс:</span>
+                    <span class="summary-value">@Model.UserBalance.ToString("0.00") ₴</span>
+                </div>
+            </div>
+
+            <div class="booking-actions">
+                <a asp-controller="Home" asp-action="Map" asp-route-id="@Model.ClubId" class="btn-ghost">Назад</a>
+                <button type="submit" class="btn-primary">Підтвердити бронювання</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const tariff = document.getElementById('tariff-select');
+        const hours = document.getElementById('hours-input');
+        const cost = document.getElementById('summary-cost');
+
+        function recalc() {
+            const price = Number(tariff.options[tariff.selectedIndex].dataset.price || 0);
+            const h = Math.max(1, Math.min(24, Number(hours.value || 1)));
+            cost.textContent = (price * h).toFixed(0);
+        }
+
+        tariff.addEventListener('change', recalc);
+        hours.addEventListener('input', recalc);
+        recalc();
+    })();
+</script>
+
+</body>
+</html>

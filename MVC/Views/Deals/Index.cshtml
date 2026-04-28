@@ -1,0 +1,97 @@
+@using CyberZone.Application.DTOs
+@model IReadOnlyList<GameDealDto>
+@{
+    ViewData["Title"] = "Знижки на ігри";
+    Layout = null;
+    var sortBy = ViewData["SortBy"] as string ?? "Savings";
+    var err = TempData["Error"] as string;
+}
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CyberZone</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/clubmap.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/deals.css" asp-append-version="true" />
+</head>
+<body class="map-page">
+
+<partial name="_Header" />
+
+<div class="breadcrumb-bar">
+    <a asp-controller="Home" asp-action="Catalog">Каталог клубів</a>
+    <span class="breadcrumb-sep">›</span>
+    <span class="breadcrumb-current">Знижки на ігри</span>
+</div>
+
+<div class="deals-container">
+    <div class="deals-header">
+        <div>
+            <h1>🔥 Гарячі знижки на ігри</h1>
+            <p class="deals-sub">Актуальні пропозиції у Steam, GOG, Epic та інших сторфронтах. Дані з CheapShark API.</p>
+        </div>
+        <form method="get" class="deals-filter">
+            <label>Сортування:</label>
+            <select name="sortBy" onchange="this.form.submit()">
+                <option value="Savings" selected="@(sortBy == "Savings")">За знижкою</option>
+                <option value="Price" selected="@(sortBy == "Price")">За ціною</option>
+                <option value="Metacritic" selected="@(sortBy == "Metacritic")">За рейтингом</option>
+                <option value="Recent" selected="@(sortBy == "Recent")">Свіжі</option>
+                <option value="Deal Rating" selected="@(sortBy == "Deal Rating")">За рейтингом знижки</option>
+            </select>
+        </form>
+    </div>
+
+    @if (!string.IsNullOrEmpty(err))
+    {
+        <div class="deals-alert">@err</div>
+    }
+
+    @if (Model.Count == 0 && string.IsNullOrEmpty(err))
+    {
+        <div class="deals-empty">Наразі немає доступних знижок.</div>
+    }
+    else
+    {
+        <div class="deals-grid">
+            @foreach (var d in Model)
+            {
+                <a href="@d.DealUrl" target="_blank" rel="noopener noreferrer" class="deal-card">
+                    <div class="deal-thumb">
+                        @if (!string.IsNullOrEmpty(d.ThumbnailUrl))
+                        {
+                            <img src="@d.ThumbnailUrl" alt="@d.Title" loading="lazy" />
+                        }
+                        @if (d.SavingsPercent > 0)
+                        {
+                            <span class="deal-badge">-@d.SavingsPercent.ToString("0")%</span>
+                        }
+                    </div>
+                    <div class="deal-body">
+                        <div class="deal-title">@d.Title</div>
+                        <div class="deal-meta">
+                            <span class="deal-store">@d.StoreName</span>
+                            @if (d.MetacriticScore.HasValue)
+                            {
+                                <span class="deal-score">MC @d.MetacriticScore</span>
+                            }
+                        </div>
+                        <div class="deal-prices">
+                            <span class="deal-sale">$@d.SalePrice.ToString("0.00")</span>
+                            @if (d.NormalPrice > d.SalePrice)
+                            {
+                                <span class="deal-normal">$@d.NormalPrice.ToString("0.00")</span>
+                            }
+                        </div>
+                    </div>
+                </a>
+            }
+        </div>
+    }
+</div>
+
+</body>
+</html>

@@ -1,0 +1,41 @@
+@{
+    // Shared on-every-page left drawer with fresh AAA deals.
+}
+
+<aside id="deals-sidebar" class="deals-sidebar">
+    <div class="deals-sidebar-header">
+        <span class="deals-sidebar-title">🔥 AAA новинки</span>
+        <button type="button" id="deals-sidebar-toggle" class="deals-sidebar-btn" aria-label="Згорнути" title="Згорнути">✕</button>
+    </div>
+    <div class="deals-sidebar-body">
+        @await Component.InvokeAsync("DealsWidget", new { count = 8, aaaOnly = true })
+        <a asp-controller="Deals" asp-action="Index" class="deals-sidebar-all">Усі знижки →</a>
+    </div>
+</aside>
+
+<button type="button" id="deals-sidebar-open" class="deals-sidebar-handle" aria-label="Показати знижки">
+    <span class="deals-sidebar-handle-icon">🔥</span>
+    <span class="deals-sidebar-handle-text">Знижки</span>
+</button>
+
+<script>
+    (function () {
+        const sidebar = document.getElementById('deals-sidebar');
+        const toggle = document.getElementById('deals-sidebar-toggle');
+        const openBtn = document.getElementById('deals-sidebar-open');
+        const STORAGE_KEY = 'cz.dealsSidebar.collapsed';
+
+        function setCollapsed(collapsed, persist) {
+            sidebar.classList.toggle('is-collapsed', collapsed);
+            openBtn.classList.toggle('is-visible', collapsed);
+            document.body.classList.toggle('has-deals-sidebar', !collapsed);
+            if (persist) localStorage.setItem(STORAGE_KEY, collapsed ? '1' : '0');
+        }
+
+        const initiallyCollapsed = localStorage.getItem(STORAGE_KEY) === '1';
+        setCollapsed(initiallyCollapsed, false);
+
+        toggle.addEventListener('click', () => setCollapsed(true, true));
+        openBtn.addEventListener('click', () => setCollapsed(false, true));
+    })();
+</script>

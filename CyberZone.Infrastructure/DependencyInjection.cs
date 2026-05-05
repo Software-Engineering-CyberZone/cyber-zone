@@ -89,6 +89,9 @@ public static class DependencyInjection
 
         services.AddScoped<IDealsService, DealsService>();
 
+        // Real-time notifications: polls DB every 30s and pushes via SignalR.
+        services.AddHostedService<Realtime.NotificationPollingService>();
+
         return services;
     }
 }

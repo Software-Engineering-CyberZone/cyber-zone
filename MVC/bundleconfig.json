@@ -1,0 +1,37 @@
+[
+  {
+    "outputFileName": "wwwroot/css/bundle.min.css",
+    "inputFiles": [
+      "wwwroot/css/site.css",
+      "wwwroot/css/auth.css",
+      "wwwroot/css/balance.css",
+      "wwwroot/css/bar.css",
+      "wwwroot/css/bar-index-list.css",
+      "wwwroot/css/booking.css",
+      "wwwroot/css/catalog.css",
+      "wwwroot/css/deals.css",
+      "wwwroot/css/clubmap.css",
+      "wwwroot/css/details.css",
+      "wwwroot/css/editprofile.css",
+      "wwwroot/css/my-reviews.css",
+      "wwwroot/css/profile.css",
+      "wwwroot/css/sessions.css",
+      "wwwroot/css/top-up-account.css",
+      "wwwroot/css/welcome.css"
+    ],
+    "minify": { "enabled": true }
+  },
+  {
+    "outputFileName": "wwwroot/js/bundle.min.js",
+    "inputFiles": [
+      "wwwroot/js/bar.js",
+      "wwwroot/js/create-booking.js",
+      "wwwroot/js/edit-profile.js",
+      "wwwroot/js/map.js",
+      "wwwroot/js/rate-limited.js",
+      "wwwroot/js/sessions.js"
+    ],
+    "minify": { "enabled": true },
+    "sourceMap": false
+  }
+]

@@ -395,7 +395,7 @@
 }
 
 /* When sidebar is open, shift page content so it doesn't hide under it */
-@@media (min-width: 1200px) {
+@media (min-width: 1200px) {
     body.has-deals-sidebar .catalog-wrapper,
     body.has-deals-sidebar .details-main,
     body.has-deals-sidebar .deals-container,
@@ -405,6 +405,6 @@
     }
 }
 
-@@media (max-width: 768px) {
+@media (max-width: 768px) {
     .deals-sidebar { width: 85vw; }
 }

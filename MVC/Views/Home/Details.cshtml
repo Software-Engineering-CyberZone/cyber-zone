@@ -8,7 +8,6 @@
 
 @{
     ViewData["Title"] = Model.Name;
-    Layout = null;
 
     bool canEdit = false;
     if (User.Identity?.IsAuthenticated == true)
@@ -22,18 +21,9 @@
     }
 }
 
-<!DOCTYPE html>
-<html lang="uk">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - CyberZone</title>
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+@section Styles {
     <link rel="stylesheet" href="~/css/details.css" asp-append-version="true" />
-</head>
-<body class="details-page">
-
-<partial name="_Header" />
+}
 
 <div class="breadcrumb-bar">
     <a asp-action="Catalog">Каталог клубів</a>
@@ -411,6 +401,3 @@
     </div>
 
 </div>
-
-</body>
-</html>

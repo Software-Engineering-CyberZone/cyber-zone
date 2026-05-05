@@ -1,7 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Lato:wght@300;500&display=swap');
-
 :root {
-    --bg-dark: #0B1222; /* Темний фон сторінки */
+    --bg-dark: #0B1222; /* пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ */
     --text-light: #EDEDED;
     --text-dark: #000000;
     --btn-bg: #1C2838;
@@ -14,25 +12,25 @@ body.cyber-welcome {
     background-color: var(--bg-dark);
     margin: 0;
     padding: 0;
-    font-family: 'Lato', sans-serif; /* Базовий шрифт */
+    font-family: 'Lato', sans-serif; /* пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ */
     color: var(--text-light);
     min-height: 100vh;
 }
 
-/* ================= ХЕДЕР ================= */
+/* ================= пїЅпїЅпїЅпїЅпїЅ ================= */
 .cyber-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     height: 84px;
-    padding: 0 40px; /* Відступи з боків */
+    padding: 0 40px; /* ВіпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ */
     border-bottom: 1px solid var(--line-color);
 }
 
 .header-left, .header-right {
     display: flex;
     align-items: center;
-    gap: 15px; /* Відстань між іконкою та текстом */
+    gap: 15px; /* ВіпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ */
 }
 
 .logo-img {
@@ -64,10 +62,10 @@ body.cyber-welcome {
     color: var(--text-light);
 }
 
-/* ================= ОСНОВНИЙ КОНТЕНТ ================= */
+/* ================= пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ ================= */
 .main-container {
-    max-width: 1024px; /* Ширина по картинці з макета */
-    margin: 60px auto; /* Відцентровуємо по горизонталі */
+    max-width: 1024px; /* пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ */
+    margin: 60px auto; /* ВіпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ */
     padding: 0 20px;
 }
 
@@ -76,11 +74,11 @@ body.cyber-welcome {
     max-width: 1024px;
     height: 432px;
     object-fit: cover;
-    border-radius: 8px; /* Легке заокруглення, якщо треба */
+    border-radius: 8px; /* пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ */
     margin-bottom: 40px;
 }
 
-/* Блок під картинкою: Текст зліва, Кнопки справа */
+/* пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ */
 .content-split {
     display: flex;
     justify-content: space-between;
@@ -88,7 +86,7 @@ body.cyber-welcome {
     gap: 40px;
 }
 
-/* Ліва частина (Текст) */
+/* ЛіпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅ) */
 .text-section {
     max-width: 665px;
 }
@@ -112,11 +110,11 @@ body.cyber-welcome {
     max-width: 597px;
 }
 
-/* Права частина (Кнопки) */
+/* пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅ) */
 .actions-section {
     display: flex;
     flex-direction: column;
-    gap: 14px; /* Вирахувано з макета (682px - 627px - 41px) */
+    gap: 14px; /* пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ (682px - 627px - 41px) */
     width: 265px;
     flex-shrink: 0;
 }
@@ -142,7 +140,7 @@ body.cyber-welcome {
         opacity: 0.85;
     }
 
-/* Стилі конкретних кнопок */
+/* пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ */
 .btn-dark {
     background: var(--btn-bg);
     color: var(--text-light);

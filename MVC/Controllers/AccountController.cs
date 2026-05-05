@@ -112,7 +112,7 @@ public class AccountController : Controller
                 }
             }
 
-            ModelState.AddModelError(string.Empty, "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ email пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ.");
+            ModelState.AddModelError(string.Empty, "������� email ��� ������.");
         }
 
         return View(model);
@@ -141,19 +141,19 @@ public class AccountController : Controller
                 string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "ClubRequests");
                 if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
 
-                string fileName = $"пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ-{DateTime.Now:yyyyMMdd-HHmmss}.txt";
+                string fileName = $"�����������-{DateTime.Now:yyyyMMdd-HHmmss}.txt";
                 string filePath = Path.Combine(folderPath, fileName);
 
-                string content = $"пїЅпїЅпїЅпїЅ: {DateTime.Now}\nEmail: {model.Email}\nпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: {model.Phone}";
+                string content = $"����: {DateTime.Now}\nEmail: {model.Email}\n�������: {model.Phone}";
 
                 await System.IO.File.WriteAllTextAsync(filePath, content);
 
-                TempData["Message"] = "пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ!";
+                TempData["Message"] = "������ ������ ��������!";
                 return View();
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ: " + ex.Message);
+                ModelState.AddModelError("", "������� ��� ���������� �����: " + ex.Message);
             }
         }
         return View(model);
@@ -199,11 +199,11 @@ public class AccountController : Controller
 
         if (userProfile == null) return NotFound();
 
-        // Р”РѕРґР°С”РјРѕ ViewData, С‰РѕР± Р°РЅР°Р»С–Р·Р°С‚РѕСЂ Р±Р°С‡РёРІ, С‰Рѕ РјРµС‚РѕРґРё СЂРѕР±Р»СЏС‚СЊ СЂС–Р·РЅС– СЂРµС‡С–.
-        // РЈ РјР°Р№Р±СѓС‚РЅСЊРѕРјСѓ С†Рµ РјРѕР¶РЅР° РІРёРєРѕСЂРёСЃС‚Р°С‚Рё РґР»СЏ РїС–РґСЃРІС–С‡СѓРІР°РЅРЅСЏ Р°РєС‚РёРІРЅРѕРіРѕ РїСѓРЅРєС‚Сѓ РјРµРЅСЋ
+        // Додаємо ViewData, щоб аналізатор бачив, що методи роблять різні речі.
+        // У майбутньому це можна використати для підсвічування активного пункту меню
         ViewData["ActiveTab"] = "Balance";
 
-        // РЇРІРЅРѕ РІРєР°Р·СѓС”РјРѕ РЅР°Р·РІСѓ С€Р°Р±Р»РѕРЅСѓ
+        // Явно вказуємо назву шаблону
         return View("Balance", userProfile);
     }
 
@@ -221,11 +221,11 @@ public class AccountController : Controller
     {
         if (!ModelState.IsValid) return View(model);
 
-        // Р¤Р•Р™РљРћР’РР™ РЁР›Р®Р—: Р’Р°Р»С–РґР°С†С–СЏ "С‚РµСЃС‚РѕРІРѕС—" РєР°СЂС‚РєРё
-        // РџСЂРёР№РјР°С”РјРѕ С‚С–Р»СЊРєРё РєР°СЂС‚РєСѓ 4111111111111111 С‚Р° CVV 123
+        // ФЕЙКОВИЙ ШЛЮЗ: Валідація "тестової" картки
+        // Приймаємо тільки картку 4111111111111111 та CVV 123
         if (model.CardNumber != "4111111111111111" || model.Cvv != "123")
         {
-            ModelState.AddModelError("", "РўСЂР°РЅР·Р°РєС†С–СЋ РІС–РґС…РёР»РµРЅРѕ Р±Р°РЅРєРѕРј. Р’РёРєРѕСЂРёСЃС‚РѕРІСѓР№С‚Рµ С‚РµСЃС‚РѕРІСѓ РєР°СЂС‚РєСѓ (4111... / 123).");
+            ModelState.AddModelError("", "Транзакцію відхилено банком. Використовуйте тестову картку (4111... / 123).");
             return View(model);
         }
 
@@ -235,15 +235,15 @@ public class AccountController : Controller
 
         try
         {
-            // Р’РёРєР»РёРєР°С”РјРѕ С‚РІС–Р№ PaymentService РґР»СЏ Р·Р°РїРёСЃСѓ РІ Р‘Р”
-            await _paymentService.TopUpAsync(userId, model.Amount, "РџРѕРїРѕРІРЅРµРЅРЅСЏ Р±Р°Р»Р°РЅСЃСѓ (Visa/Mastercard)");
+            // Викликаємо твій PaymentService для запису в БД
+            await _paymentService.TopUpAsync(userId, model.Amount, "Поповнення балансу (Visa/Mastercard)");
 
-            TempData["SuccessMessage"] = $"Р‘Р°Р»Р°РЅСЃ СѓСЃРїС–С€РЅРѕ РїРѕРїРѕРІРЅРµРЅРѕ РЅР° {model.Amount} в‚ґ!";
+            TempData["SuccessMessage"] = $"Баланс успішно поповнено на {model.Amount} ₴!";
             return RedirectToAction("Balance");
         }
         catch (Exception ex)
         {
-            ModelState.AddModelError("", "Р’РёРЅРёРєР»Р° РїРѕРјРёР»РєР° РїСЂРё РїРѕРїРѕРІРЅРµРЅРЅС–: " + ex.Message);
+            ModelState.AddModelError("", "Виникла помилка при поповненні: " + ex.Message);
             return View(model);
         }
 
@@ -272,7 +272,7 @@ public class AccountController : Controller
         var targetClubId = user?.ManagedClubId;
         
         CyberZone.Domain.Entities.Club? club = null;
-        var realAddress = new CyberZone.Domain.ValueObjects.Address("вул. Болоня, 51", "м. Київ", "Київ", "04210", "Україна");
+        var realAddress = new CyberZone.Domain.ValueObjects.Address("���. ������, 51", "�. ���", "���", "04210", "������");
 
         if (targetClubId.HasValue && targetClubId.Value != Guid.Empty)
         {
@@ -378,10 +378,10 @@ public class AccountController : Controller
         {
             var menuItems = new List<CyberZone.Domain.Entities.MenuItem>
             {
-                new CyberZone.Domain.Entities.MenuItem { Name = "CocaCola", Description = "330»", Price = 50.00m, Category = "Drinks", ImageUrl = "/images/cocacola.png", IsAvailable = true, Club = club!, CreatedAt = DateTime.UtcNow },
-                new CyberZone.Domain.Entities.MenuItem { Name = "Fanta", Description = "330»", Price = 50.00m, Category = "Drinks", ImageUrl = "/images/fanta.png", IsAvailable = true, Club = club!, CreatedAt = DateTime.UtcNow },
-                new CyberZone.Domain.Entities.MenuItem { Name = "Sprite", Description = "330»", Price = 50.00m, Category = "Drinks", ImageUrl = "/images/sprite.png", IsAvailable = true, Club = club!, CreatedAt = DateTime.UtcNow },
-                new CyberZone.Domain.Entities.MenuItem { Name = "LayвЂ™s", Description = "120", Price = 70.00m, Category = "Snacks", ImageUrl = "/images/lays.png", IsAvailable = true, Club = club!, CreatedAt = DateTime.UtcNow },
+                new CyberZone.Domain.Entities.MenuItem { Name = "CocaCola", Description = "330�", Price = 50.00m, Category = "Drinks", ImageUrl = "/images/cocacola.png", IsAvailable = true, Club = club!, CreatedAt = DateTime.UtcNow },
+                new CyberZone.Domain.Entities.MenuItem { Name = "Fanta", Description = "330�", Price = 50.00m, Category = "Drinks", ImageUrl = "/images/fanta.png", IsAvailable = true, Club = club!, CreatedAt = DateTime.UtcNow },
+                new CyberZone.Domain.Entities.MenuItem { Name = "Sprite", Description = "330�", Price = 50.00m, Category = "Drinks", ImageUrl = "/images/sprite.png", IsAvailable = true, Club = club!, CreatedAt = DateTime.UtcNow },
+                new CyberZone.Domain.Entities.MenuItem { Name = "Lay’s", Description = "120", Price = 70.00m, Category = "Snacks", ImageUrl = "/images/lays.png", IsAvailable = true, Club = club!, CreatedAt = DateTime.UtcNow },
                 new CyberZone.Domain.Entities.MenuItem { Name = "Doritos", Description = "100", Price = 80.00m, Category = "Snacks", ImageUrl = "/images/doritos.png", IsAvailable = true, Club = club!, CreatedAt = DateTime.UtcNow }
             };
             _context.MenuItems.AddRange(menuItems);
@@ -430,12 +430,12 @@ public class AccountController : Controller
             return View(model);
         }
 
-        // HTML-СЃР°РЅС–С‚РёР·Р°С†С–СЏ Р±С–РѕРіСЂР°С„С–С—
+        // HTML-санітизація біографії
         string? sanitizedBio = model.Bio != null
             ? System.Net.WebUtility.HtmlEncode(model.Bio)
             : null;
 
-        // РћР±СЂРѕР±РєР° Р·Р°РІР°РЅС‚Р°Р¶РµРЅРЅСЏ Р·РѕР±СЂР°Р¶РµРЅРЅСЏ
+        // Обробка завантаження зображення
         string? newImagePath = null;
         if (model.ProfileImage != null && model.ProfileImage.Length > 0)
         {
@@ -469,7 +469,7 @@ public class AccountController : Controller
 
         if (result.IsFailure)
         {
-            // РЇРєС‰Рѕ РѕРЅРѕРІР»РµРЅРЅСЏ Р‘Р” РЅРµ РІРґР°Р»РѕСЃСЊ, РІРёРґР°Р»СЏС”РјРѕ С‰РѕР№РЅРѕ Р·Р±РµСЂРµР¶РµРЅРёР№ С„Р°Р№Р»
+            // Якщо оновлення БД не вдалось, видаляємо щойно збережений файл
             if (newImagePath != null)
                 DeleteProfileImage(newImagePath);
 
@@ -478,38 +478,38 @@ public class AccountController : Controller
             return View(model);
         }
 
-        // РЇРєС‰Рѕ РѕРЅРѕРІР»РµРЅРЅСЏ СѓСЃРїС–С€РЅРµ С– С” РЅРѕРІРµ С„РѕС‚Рѕ вЂ” РІРёРґР°Р»СЏС”РјРѕ СЃС‚Р°СЂРµ
+        // Якщо оновлення успішне і є нове фото — видаляємо старе
         if (newImagePath != null && oldImagePath != null)
             DeleteProfileImage(oldImagePath);
 
-        TempData["SuccessMessage"] = "РџСЂРѕС„С–Р»СЊ СѓСЃРїС–С€РЅРѕ РѕРЅРѕРІР»РµРЅРѕ!";
+        TempData["SuccessMessage"] = "Профіль успішно оновлено!";
         return RedirectToAction("Profile");
     }
 
     private static string? ValidateImage(IFormFile file)
     {
-        // РњР°РєСЃРёРјСѓРј 5 РњР‘
+        // Максимум 5 МБ
         if (file.Length > 5 * 1024 * 1024)
-            return "Р РѕР·РјС–СЂ С„Р°Р№Р»Сѓ РЅРµ РјРѕР¶Рµ РїРµСЂРµРІРёС‰СѓРІР°С‚Рё 5 РњР‘.";
+            return "Розмір файлу не може перевищувати 5 МБ.";
 
-        // РџРµСЂРµРІС–СЂРєР° MIME-С‚РёРїСѓ
+        // Перевірка MIME-типу
         var allowedMimeTypes = new[] { "image/jpeg", "image/png", "image/gif" };
         if (!allowedMimeTypes.Contains(file.ContentType.ToLowerInvariant()))
-            return "Р”РѕР·РІРѕР»РµРЅС– С„РѕСЂРјР°С‚Рё: JPG, PNG, GIF.";
+            return "Дозволені формати: JPG, PNG, GIF.";
 
-        // РџРµСЂРµРІС–СЂРєР° СЂРѕР·С€РёСЂРµРЅРЅСЏ (Р·Р°С…РёСЃС‚ РІС–Рґ РїС–РґРјС–РЅРё MIME)
+        // Перевірка розширення (захист від підміни MIME)
         var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
         var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
         if (!allowedExtensions.Contains(extension))
-            return "Р”РѕР·РІРѕР»РµРЅС– С„РѕСЂРјР°С‚Рё: JPG, PNG, GIF.";
+            return "Дозволені формати: JPG, PNG, GIF.";
 
-        // РџРµСЂРµРІС–СЂРєР° СЂРѕР·РјС–СЂС–РІ Р·РѕР±СЂР°Р¶РµРЅРЅСЏ
+        // Перевірка розмірів зображення
         using var stream = file.OpenReadStream();
         using var image = Image.Load(stream);
         if (image.Width < 300 || image.Height < 300)
-            return "РњС–РЅС–РјР°Р»СЊРЅРёР№ СЂРѕР·РјС–СЂ Р·РѕР±СЂР°Р¶РµРЅРЅСЏ: 300x300 РїС–РєСЃРµР»С–РІ.";
+            return "Мінімальний розмір зображення: 300x300 пікселів.";
         if (image.Width > 2000 || image.Height > 2000)
-            return "РњР°РєСЃРёРјР°Р»СЊРЅРёР№ СЂРѕР·РјС–СЂ Р·РѕР±СЂР°Р¶РµРЅРЅСЏ: 2000x2000 РїС–РєСЃРµР»С–РІ.";
+            return "Максимальний розмір зображення: 2000x2000 пікселів.";
 
         return null;
     }
@@ -551,7 +551,7 @@ public class AccountController : Controller
             .Where(s => s.UserId == userId
                      && s.Status == CyberZone.Domain.Enums.SessionStatus.Active
                      && s.EndTime.HasValue
-                     && s.EndTime.Value <= DateTime.UtcNow) // РЇРєС‰Рѕ С‡Р°СЃ Р·Р°РІРµСЂС€РµРЅРЅСЏ РІР¶Рµ РЅР°СЃС‚Р°РІ Р°Р±Рѕ РјРёРЅСѓРІ
+                     && s.EndTime.Value <= DateTime.UtcNow) // Якщо час завершення вже настав або минув
             .ToListAsync();
 
         if (expiredSessions.Any())
@@ -559,16 +559,16 @@ public class AccountController : Controller
             var affectedClubs = new HashSet<Guid>();
             foreach (var session in expiredSessions)
             {
-                session.EndSession(); // Р’РёРєР»РёРєР°С”РјРѕ РґРѕРјРµРЅРЅРёР№ РјРµС‚РѕРґ (СЂР°С…СѓС” РіСЂРѕС€С–, РјС–РЅСЏС” СЃС‚Р°С‚СѓСЃ)
+                session.EndSession(); // Викликаємо доменний метод (рахує гроші, міняє статус)
 
-                // Р—РІС–Р»СЊРЅСЏС”РјРѕ РџРљ
+                // Звільняємо ПК
                 if (session.Hardware != null)
                 {
                     session.Hardware.Status = CyberZone.Domain.Enums.HardwareStatus.Available;
                     affectedClubs.Add(session.Hardware.ClubId);
                 }
 
-                // Закриваємо пов'язаний Booking
+                // ��������� ���'������ Booking
                 var relatedBooking = await _context.Bookings
                     .Where(b => b.HardwareId == session.HardwareId
                              && b.UserId == session.UserId
@@ -579,29 +579,29 @@ public class AccountController : Controller
                     relatedBooking.Status = CyberZone.Domain.Enums.BookingStatus.Completed;
             }
 
-            await _context.SaveChangesAsync(); // Зберігаємо зміни в базу
+            await _context.SaveChangesAsync(); // �������� ���� � ����
 
             foreach (var clubId in affectedClubs)
                 _cache.Remove(CyberZone.Application.Interfaces.CacheKeys.ClubMap(clubId));
-            await _context.SaveChangesAsync(); // Р—Р±РµСЂС–РіР°С”РјРѕ Р·РјС–РЅРё РІ Р±Р°Р·Сѓ
+            await _context.SaveChangesAsync(); // Зберігаємо зміни в базу
 
         }
 
         var viewModels = new List<SessionItemViewModel>();
 
-        // РћС‚СЂРёРјСѓС”РјРѕ С‡Р°СЃРѕРІРёР№ РїРѕСЏСЃ РЈРєСЂР°С—РЅРё (Р±РµР·РїРµС‡РЅРёР№ СЃРїРѕСЃС–Р± РґР»СЏ Windows С‚Р° Linux/Mac)
+        // Отримуємо часовий пояс України (безпечний спосіб для Windows та Linux/Mac)
         TimeZoneInfo kyivZone;
-        try { kyivZone = TimeZoneInfo.FindSystemTimeZoneById("FLE Standard Time"); } // Р”Р»СЏ Windows
-        catch { kyivZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Kyiv"); } // Р”Р»СЏ Linux/macOS
+        try { kyivZone = TimeZoneInfo.FindSystemTimeZoneById("FLE Standard Time"); } // Для Windows
+        catch { kyivZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Kyiv"); } // Для Linux/macOS
 
-        // 1. РўСЏРіРЅРµРјРѕ РђРљРўРР’РќР† С‚Р° Р—РђР’Р•Р РЁР•РќР† СЃРµСЃС–С—
+        // 1. Тягнемо АКТИВНІ та ЗАВЕРШЕНІ сесії
         var sessions = await _context.GamingSessions
             .Include(s => s.Hardware).ThenInclude(h => h.Club)
             .Include(s => s.Tariff)
             .Where(s => s.UserId == userId)
             .ToListAsync();
 
-        // РћС‚СЂРёРјСѓС”РјРѕ ClubId-Рё, РґР»СЏ СЏРєРёС… С” РІС–РґРіСѓРєРё
+        // Отримуємо ClubId-и, для яких є відгуки
         var reviewedClubIds = await _context.Reviews
             .Where(r => r.UserId == userId)
             .Select(r => r.ClubId)
@@ -609,7 +609,7 @@ public class AccountController : Controller
 
         viewModels.AddRange(sessions.Select(s =>
         {
-            // РџРµСЂРµРІРѕРґРёРјРѕ UTC С‡Р°СЃ Сѓ РљРёС—РІСЃСЊРєРёР№ РґР»СЏ РєСЂР°СЃРёРІРѕРіРѕ РІС–РґРѕР±СЂР°Р¶РµРЅРЅСЏ
+            // Переводимо UTC час у Київський для красивого відображення
             var localStartTime = TimeZoneInfo.ConvertTimeFromUtc(s.StartTime, kyivZone);
             var clubId = s.Hardware?.Club?.Id ?? Guid.Empty;
 
@@ -617,21 +617,21 @@ public class AccountController : Controller
             {
                 Id = s.Id,
                 ClubName = s.Hardware?.Club?.Name ?? "CyberZone Club",
-                Address = s.Hardware?.Club?.Address?.ToString() ?? "РђРґСЂРµСЃР° РЅРµ РІРєР°Р·Р°РЅР°",
+                Address = s.Hardware?.Club?.Address?.ToString() ?? "Адреса не вказана",
                 PcNumber = s.Hardware?.PcNumber ?? "N/A",
 
-                // Р’РёРєРѕСЂРёСЃС‚РѕРІСѓС”РјРѕ РЅР°С€ Р»РѕРєР°Р»СЊРЅРёР№ С‡Р°СЃ РґР»СЏ С‚РµРєСЃС‚Сѓ
+                // Використовуємо наш локальний час для тексту
                 Date = localStartTime.ToString("dd.MM.yyyy"),
                 Time = localStartTime.ToString("HH:mm"),
 
                 Duration = s.EndTime.HasValue
-                    ? Math.Round((s.EndTime.Value - s.StartTime).TotalHours, 1).ToString() + " РіРѕРґ."
-                    : "РўСЂРёРІР°С”",
+                    ? Math.Round((s.EndTime.Value - s.StartTime).TotalHours, 1).ToString() + " год."
+                    : "Триває",
                 SessionState = s.Status == CyberZone.Domain.Enums.SessionStatus.Active ? "Active" : "Completed",
                 ClubId = clubId,
                 HasReview = reviewedClubIds.Contains(clubId),
 
-                // Р”Р»СЏ JS С– СЃРѕСЂС‚СѓРІР°РЅРЅСЏ Р·Р°Р»РёС€Р°С”РјРѕ РѕСЂРёРіС–РЅР°Р»СЊРЅРёР№ UTC (Р±СЂР°СѓР·РµСЂ СЃР°Рј Р№РѕРіРѕ Р·СЂРѕР·СѓРјС–С”)
+                // Для JS і сортування залишаємо оригінальний UTC (браузер сам його зрозуміє)
                 SortDate = s.StartTime,
                 TargetTime = s.Status == CyberZone.Domain.Enums.SessionStatus.Active && s.EndTime.HasValue
                     ? s.EndTime.Value.ToString("yyyy-MM-ddTHH:mm:ssZ")
@@ -639,7 +639,7 @@ public class AccountController : Controller
             };
         }));
 
-        // 2. РўСЏРіРЅРµРјРѕ РџР›РђРќРћР’РђРќР† СЃРµСЃС–С—
+        // 2. Тягнемо ПЛАНОВАНІ сесії
         var bookings = await _context.Bookings
             .Include(b => b.Hardware).ThenInclude(h => h.Club)
             .Include(b => b.Tariff)
@@ -648,21 +648,21 @@ public class AccountController : Controller
 
         viewModels.AddRange(bookings.Select(b =>
         {
-            // РџРµСЂРµРІРѕРґРёРјРѕ UTC С‡Р°СЃ Сѓ РљРёС—РІСЃСЊРєРёР№ РґР»СЏ РєСЂР°СЃРёРІРѕРіРѕ РІС–РґРѕР±СЂР°Р¶РµРЅРЅСЏ
+            // Переводимо UTC час у Київський для красивого відображення
             var localStartTime = TimeZoneInfo.ConvertTimeFromUtc(b.StartTime, kyivZone);
 
             return new SessionItemViewModel
             {
                 Id = b.Id,
                 ClubName = b.Hardware?.Club?.Name ?? "CyberZone Club",
-                Address = b.Hardware?.Club?.Address?.ToString() ?? "РђРґСЂРµСЃР° РЅРµ РІРєР°Р·Р°РЅР°",
+                Address = b.Hardware?.Club?.Address?.ToString() ?? "Адреса не вказана",
                 PcNumber = b.Hardware?.PcNumber ?? "N/A",
 
-                // Р’РёРєРѕСЂРёСЃС‚РѕРІСѓС”РјРѕ РЅР°С€ Р»РѕРєР°Р»СЊРЅРёР№ С‡Р°СЃ РґР»СЏ С‚РµРєСЃС‚Сѓ
+                // Використовуємо наш локальний час для тексту
                 Date = localStartTime.ToString("dd.MM.yyyy"),
                 Time = localStartTime.ToString("HH:mm"),
 
-                Duration = Math.Round((b.EndTime - b.StartTime).TotalHours, 1).ToString() + " РіРѕРґ.",
+                Duration = Math.Round((b.EndTime - b.StartTime).TotalHours, 1).ToString() + " год.",
                 SessionState = "Pending",
                 ClubId = b.Hardware?.Club?.Id ?? Guid.Empty,
                 SortDate = b.StartTime
@@ -711,7 +711,7 @@ public class AccountController : Controller
     [Authorize]
     public async Task<IActionResult> CancelSession(Guid id)
     {
-        // Р”Р»СЏ Р±СЂРѕРЅСЋРІР°РЅСЊ РєРЅРѕРїРєР° "РЎРєР°СЃСѓРІР°С‚Рё" РїСЂРѕСЃС‚Рѕ РјС–РЅСЏС” СЃС‚Р°С‚СѓСЃ
+        // Для бронювань кнопка "Скасувати" просто міняє статус
         var booking = await _context.Bookings.FindAsync(id);
 
         if (booking != null && booking.Status == CyberZone.Domain.Enums.BookingStatus.Pending)
@@ -744,7 +744,7 @@ public class AccountController : Controller
                 clubId = session.Hardware.ClubId;
             }
 
-            // Закриваємо пов'язаний Booking (щоб не блокував overlap при новому бронюванні)
+            // ��������� ���'������ Booking (��� �� �������� overlap ��� ������ ����������)
             var relatedBooking = await _context.Bookings
                 .Where(b => b.HardwareId == session.HardwareId
                          && b.UserId == session.UserId
@@ -776,7 +776,7 @@ public class AccountController : Controller
         if (result.IsFailure)
             TempData["Error"] = result.Error;
         else
-            TempData["SuccessMessage"] = "Р’С–РґРіСѓРє СѓСЃРїС–С€РЅРѕ Р·Р°Р»РёС€РµРЅРѕ!";
+            TempData["SuccessMessage"] = "Відгук успішно залишено!";
 
         return RedirectToAction("Sessions");
     }

@@ -18,9 +18,6 @@ if (!string.IsNullOrEmpty(keyVaultUri))
         new DefaultAzureCredential());
 }
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-                       ?? builder.Configuration["DbConnectionString"];
-
 builder.Services.AddControllersWithViews();
 builder.Services.AddSignalR();
 

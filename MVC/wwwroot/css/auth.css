@@ -20,7 +20,7 @@ body.cyber-auth {
     flex-direction: column;
 }
 
-/* ================= ����� ================= */
+
 .cyber-header {
     display: flex;
     justify-content: space-between;
@@ -60,7 +60,7 @@ body.cyber-auth {
     color: var(--text-light);
 }
 
-/* ================= ������ �Ū����ֲ� / ��ò�� ================= */
+
 .auth-wrapper {
     flex-grow: 1;
     display: flex;
@@ -87,7 +87,7 @@ body.cyber-auth {
     margin: 0 0 35px 0;
 }
 
-/* ================= ���� ����� ================= */
+
 .form-group {
     margin-bottom: 21px;
 }
@@ -102,7 +102,7 @@ body.cyber-auth {
     margin-bottom: 6px;
 }
 
-/* ���� ��� ��� ������ � ���䳺����� �������� */
+
 .auth-input {
     width: 100%;
     height: 38px;
@@ -112,27 +112,21 @@ body.cyber-auth {
     color: var(--text-light);
     font-size: 14px;
     outline: none;
-    /* ����� � Գ��� */
     border-radius: 3px;
-    /* ���� ��� ���������� ������������ � ���䳺����� ������ (������� ����� 2px) */
     border: 2px solid transparent;
     background-image: linear-gradient(var(--input-bg), var(--input-bg)), linear-gradient(90deg, #D6FF3F 0%, #E05BBE 100%);
     background-origin: border-box;
     background-clip: padding-box, border-box;
-    /* ����� ������ �� ������������� */
     box-shadow: 0 0 8px rgba(224, 91, 190, 0.1);
     transition: all 0.3s ease;
 }
 
-    /* �����, ���� ���������� ���� �� ����-��� ����, ��� ������ ����� */
+
     .auth-input:focus {
-        /* ϳ�������� ������� ������ */
         box-shadow: 0 0 15px rgba(214, 255, 63, 0.25), 0 0 15px rgba(224, 91, 190, 0.25);
-        /* ������ ��� ���� ���� ������� ��� �������� */
         background-image: linear-gradient(rgba(28, 40, 56, 0.9), rgba(28, 40, 56, 0.9)), linear-gradient(90deg, #D6FF3F 0%, #E05BBE 100%);
     }
 
-/* ================= ������ �� ��������� ================= */
 .auth-btn {
     width: 100%;
     height: 49px;

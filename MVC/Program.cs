@@ -1,3 +1,4 @@
+using Azure.Identity;
 using CyberZone.Domain.Entities;
 using CyberZone.Domain.Enums;
 using CyberZone.Infrastructure;
@@ -6,6 +7,19 @@ using MVC.Middleware;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var keyVaultUri = builder.Configuration["KeyVaultUri"];
+
+if (!string.IsNullOrEmpty(keyVaultUri))
+{
+ 
+    builder.Configuration.AddAzureKeyVault(
+        new Uri(keyVaultUri),
+        new DefaultAzureCredential());
+}
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+                       ?? builder.Configuration["DbConnectionString"];
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddSignalR();

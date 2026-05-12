@@ -4,19 +4,19 @@ namespace MVC.Models;
 
 public class TopUpViewModel
 {
-    [Required(ErrorMessage = "Введіть суму поповнення")]
-    [Range(10, 10000, ErrorMessage = "Сума має бути від 10 до 10000 грн")]
+    [Required(ErrorMessage = "пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ")]
+    [Range(10, 10000, ErrorMessage = "пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ 10 пїЅпїЅ 10000 пїЅпїЅпїЅ")]
     public decimal Amount { get; set; }
 
-    [Required(ErrorMessage = "Введіть номер картки")]
-    [RegularExpression(@"^\d{16}$", ErrorMessage = "Номер картки має містити 16 цифр без пробілів")]
+    [Required(ErrorMessage = "пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ")]
+    [RegularExpression(@"^\d{16}$", ErrorMessage = "пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ 16 пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ")]
     public string CardNumber { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Введіть термін дії")]
-    [RegularExpression(@"^(0[1-9]|1[0-2])\/?([0-9]{2})$", ErrorMessage = "Формат має бути MM/YY")]
+    [Required(ErrorMessage = "пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ дії")]
+    [RegularExpression(@"^(0[1-9]|1[0-2])\/?([0-9]{2})$", ErrorMessage = "пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ MM/YY")]
     public string ExpiryDate { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Введіть CVV")]
-    [RegularExpression(@"^\d{3}$", ErrorMessage = "CVV має містити 3 цифри")]
+    [Required(ErrorMessage = "пїЅпїЅпїЅпїЅпїЅпїЅ CVV")]
+    [RegularExpression(@"^\d{3}$", ErrorMessage = "CVV пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ 3 пїЅпїЅпїЅпїЅпїЅ")]
     public string Cvv { get; set; } = string.Empty;
 }

@@ -2,7 +2,7 @@
 @model BarViewModel
 
 @{
-    ViewData["Title"] = "Бар клубу";
+    ViewData["Title"] = "Р‘Р°СЂ РјРµРЅСЋ";
 }
 
 @section Styles {
@@ -12,7 +12,7 @@
 <div class="bar-page-container">
     
     <div class="bar-header">
-        <h2 class="bar-page-title">Меню бару</h2>
+        <h2 class="bar-page-title">РњРµРЅСЋ Р±Р°СЂСѓ</h2>
         <div class="cart-icon-wrapper" onclick="openCart()">
             <svg class="cart-icon" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
@@ -26,7 +26,7 @@
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M6 8l2 12h8l2-12M4 8h16M14 3l-2 5"/>
             </svg>
-            Напої
+            РќР°РїРѕС—
         </div>
         <hr class="category-divider" />
 
@@ -42,8 +42,8 @@
                             <span class="menu-name">@item.Name</span>
                             <span class="menu-desc">@item.Description</span>
                         </div>
-                        <div class="menu-price">@item.Price.ToString("N0") грн</div>
-                        <button class="btn-add-cart" onclick="addToCart('@item.Id', '@item.Name', @item.Price.ToString(System.Globalization.CultureInfo.InvariantCulture))">Додати у кошик</button>
+                        <div class="menu-price">@item.Price.ToString("N0") РіСЂРЅ</div>
+                        <button class="btn-add-cart" onclick="addToCart('@item.Id', '@item.Name', @item.Price.ToString(System.Globalization.CultureInfo.InvariantCulture))">Р”РѕРґР°С‚Рё РІ РєРѕС€РёРє</button>
                     </div>
                 </div>
             }
@@ -55,7 +55,7 @@
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M6 8l2 12h8l2-12M4 8h16M14 3l-2 5"/>
             </svg>
-            Снеки
+            РЎРЅРµРєРё
         </div>
         <hr class="category-divider" />
 
@@ -71,8 +71,8 @@
                             <span class="menu-name">@item.Name</span>
                             <span class="menu-desc">@item.Description</span>
                         </div>
-                        <div class="menu-price">@item.Price.ToString("N0") грн</div>
-                        <button class="btn-add-cart" onclick="addToCart('@item.Id', '@item.Name', @item.Price.ToString(System.Globalization.CultureInfo.InvariantCulture))">Додати у кошик</button>
+                        <div class="menu-price">@item.Price.ToString("N0") РіСЂРЅ</div>
+                        <button class="btn-add-cart" onclick="addToCart('@item.Id', '@item.Name', @item.Price.ToString(System.Globalization.CultureInfo.InvariantCulture))">Р”РѕРґР°С‚Рё РІ РєРѕС€РёРє</button>
                     </div>
                 </div>
             }
@@ -85,8 +85,8 @@
     <div class="cart-modal new-design-modal">
 
         <div class="cart-modal-header-centered">
-            <h3>Кошик</h3>
-            <p class="cart-subtitle">будь ласка, перевірте своє замовлення перед підтвердженням</p>
+            <h3>РљРѕС€РёРє</h3>
+            <p class="cart-subtitle">Р’Р°С€Рµ Р·Р°РјРѕРІР»РµРЅРЅСЏ, РїРµСЂРµРІС–СЂС‚Рµ Р№РѕРіРѕ РїРµСЂРµРґ РїС–РґС‚РІРµСЂРґР¶РµРЅРЅСЏРј.</p>
         </div>
 
         <div class="cart-modal-body" id="cartItemsContainer">
@@ -94,22 +94,22 @@
 
         <div class="cart-modal-footer">
             <div class="cart-total-row">
-                <span class="cart-total-label">Разом</span>
+                <span class="cart-total-label">Р’СЃСЊРѕРіРѕ</span>
                 <div class="dotted-leader"></div>
-                <span class="cart-total-sum"><span id="cartTotalSum">0</span> грн</span>
+                <span class="cart-total-sum"><span id="cartTotalSum">0</span> РіСЂРЅ</span>
             </div>
 
             <p class="cart-warning">
-                Увага!<br>
-                Кошти за товар будуть списані з вашого внутрішнього гаманця.<br>
-                Якщо ви хочете обрати інший спосіб оплати, пройдіть в бар, будь ласка
+                РЈРІР°РіР°!<br>
+                РћРїР»Р°С‚Р° Р·Р° Р±Р°СЂРЅРµ РјРµРЅСЋ Р·РЅС–РјР°С”С‚СЊСЃСЏ Р· РІР°С€РѕРіРѕ С–РіСЂРѕРІРѕРіРѕ Р±Р°Р»Р°РЅСЃСѓ.<br>
+                РЇРєС‰Рѕ РЅР° РІР°С€РѕРјСѓ Р±Р°Р»Р°РЅСЃС– РЅРµ РІРёСЃС‚Р°С‡Р°С” РєРѕС€С‚С–РІ, РїРѕРїРѕРІРЅС–С‚СЊ Р№РѕРіРѕ.
             </p>
 
             <div id="cartError" class="cart-error-message"></div>
 
             <div class="cart-actions-vertical">
-                <button class="btn-order-gradient" onclick="checkout()" id="btnCheckout">Замовити</button>
-                <button class="btn-cancel-outline" onclick="closeCart()">Скасувати</button>
+                <button class="btn-order-gradient" onclick="checkout()" id="btnCheckout">Р—Р°РјРѕРІРёС‚Рё</button>
+                <button class="btn-cancel-outline" onclick="closeCart()">РЎРєР°СЃСѓРІР°С‚Рё</button>
             </div>
         </div>
     </div>
@@ -123,11 +123,11 @@
                 <polyline points="22 4 12 14.01 9 11.01"></polyline>
             </svg>
         </div>
-        <h3 style="margin-bottom: 10px;">Оплата успішна!</h3>
+        <h3 style="margin-bottom: 10px;">Р—Р°РјРѕРІР»РµРЅРЅСЏ РїСЂРёР№РЅСЏС‚Рѕ!</h3>
         <p id="successMessageText" style="color: #a0a0a0; margin-bottom: 30px; font-size: 14px;">
-            Ваше замовлення прийнято в роботу.
+            Р’Р°С€Рµ Р·Р°РјРѕРІР»РµРЅРЅСЏ РіРѕС‚СѓС”С‚СЊСЃСЏ С‚Р° Р±СѓРґРµ РґРѕСЃС‚Р°РІР»РµРЅРѕ.
         </p>
-        <button class="btn-order-gradient" onclick="closeSuccessModal()">Чудово!</button>
+        <button class="btn-order-gradient" onclick="closeSuccessModal()">Р§СѓРґРѕРІРѕ!</button>
     </div>
 </div>
 

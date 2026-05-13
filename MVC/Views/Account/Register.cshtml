@@ -1,6 +1,6 @@
 @model MVC.Models.RegisterViewModel
 @{
-    ViewData["Title"] = "Реєстрація";
+    ViewData["Title"] = "Р РµС”СЃС‚СЂР°С†С–СЏ";
 }
 
 <!DOCTYPE html>
@@ -16,19 +16,19 @@
     <main class="auth-wrapper">
         <div class="auth-card">
             
-            <h1 class="auth-title">Раді з Вами познайомитись!</h1>
+            <h1 class="auth-title">Р РµС”СЃС‚СЂР°С†С–СЏ</h1>
             <div asp-validation-summary="ModelOnly" class="text-danger" style="color: #ff4d4d; font-size: 14px; margin-bottom: 15px; text-align: center;"></div>
             <form asp-controller="Account" asp-action="Register" method="post">
                 
                 <div class="form-group">
-                    <label class="auth-label" asp-for="UserName">Нікнейм (Логін)</label>
+                    <label class="auth-label" asp-for="UserName">РќС–РєРЅРµР№Рј (Р›РѕРіС–РЅ)</label>
                     <input type="text" class="auth-input" asp-for="UserName" placeholder="cyber_gamer99" />
                     <span asp-validation-for="UserName" class="text-danger" style="color: #ff4d4d; font-size: 12px; display: block; margin-top: 4px;"></span>
                 </div>
 
                 <div class="form-group">
-                    <label class="auth-label" asp-for="FullName">Ім’я</label>
-                    <input type="text" class="auth-input" asp-for="FullName" placeholder="Введіть ваше ім'я" />
+                    <label class="auth-label" asp-for="FullName">Р†Рј'СЏ С‚Р° РџСЂС–Р·РІРёС‰Рµ</label>
+                    <input type="text" class="auth-input" asp-for="FullName" placeholder="РџРѕРІРЅРµ С–Рј'СЏ" />
                     <span asp-validation-for="FullName" class="text-danger" style="color: #ff4d4d; font-size: 12px; display: block; margin-top: 4px;"></span>
                 </div>
 
@@ -39,25 +39,25 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="auth-label" asp-for="Password">Пароль</label>
-                    <input type="password" class="auth-input" asp-for="Password" placeholder="••••••••" />
+                    <label class="auth-label" asp-for="Password">РџР°СЂРѕР»СЊ</label>
+                    <input type="password" class="auth-input" asp-for="Password" placeholder="********" />
                     <span asp-validation-for="Password" class="text-danger" style="color: #ff4d4d; font-size: 12px; display: block; margin-top: 4px;"></span>
                 </div>
 
                 <div class="form-group">
-                    <label class="auth-label" asp-for="ConfirmPassword">Підтвердження паролю</label>
-                    <input type="password" class="auth-input" asp-for="ConfirmPassword" placeholder="••••••••" />
+                    <label class="auth-label" asp-for="ConfirmPassword">РџС–РґС‚РІРµСЂРґР¶РµРЅРЅСЏ РїР°СЂРѕР»СЏ</label>
+                    <input type="password" class="auth-input" asp-for="ConfirmPassword" placeholder="********" />
                     <span asp-validation-for="ConfirmPassword" class="text-danger" style="color: #ff4d4d; font-size: 12px; display: block; margin-top: 4px;"></span>
                 </div>
 
-                <button type="submit" class="auth-btn btn-register">Зареєструватися</button>
+                <button type="submit" class="auth-btn btn-register">Р—Р°СЂРµС”СЃС‚СЂСѓРІР°С‚РёСЃСЏ</button>
                 
-                <a asp-controller="Home" asp-action="Index" class="auth-btn btn-cancel">Скасувати</a>
+                <a asp-controller="Home" asp-action="Index" class="auth-btn btn-cancel">РЎРєР°СЃСѓРІР°С‚Рё</a>
 
             </form>
 
             <div class="auth-footer-text">
-                Вже маєте акаунт? <a asp-controller="Account" asp-action="Login" class="auth-link">Увійти</a>
+                Р’Р¶Рµ РјР°С”С‚Рµ Р°РєР°СѓРЅС‚? <a asp-controller="Account" asp-action="Login" class="auth-link">РЈРІС–Р№С‚Рё</a>
             </div>
 
         </div>

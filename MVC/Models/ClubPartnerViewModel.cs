@@ -4,11 +4,11 @@ namespace MVC.Models;
 
 public class ClubPartnerViewModel
 {
-    [Required(ErrorMessage = "Введіть ваш Email")]
-    [EmailAddress(ErrorMessage = "Некоректний формат Email")]
+    [Required(ErrorMessage = " Email")]
+    [EmailAddress(ErrorMessage = " Email")]
     public string Email { get; set; } = null!;
 
-    [Required(ErrorMessage = "Введіть номер телефону")]
-    [Phone(ErrorMessage = "Некоректний формат номеру")]
+    [Required(ErrorMessage = "РќРѕРјРµСЂ С‚РµР»РµС„РѕРЅСѓ")]
+    [Phone(ErrorMessage = "РќРµРєРѕСЂРµРєС‚РЅРёР№ РЅРѕРјРµСЂ С‚РµР»РµС„РѕРЅСѓ")]
     public string Phone { get; set; } = null!;
 }

@@ -4,23 +4,23 @@ namespace MVC.Models;
 
 public class RegisterViewModel
 {
-    [Required(ErrorMessage = "Поле Нікнейм є обов'язковим")]
+    [Required(ErrorMessage = "РЅРµРїСЂР°РІРёР»СЊРЅРµ С–Рј'СЏ")]
     public string UserName { get; set; } = null!;
 
-    [Required(ErrorMessage = "Поле Ім'я є обов'язковим")]
+    [Required(ErrorMessage = "РЅРµРїСЂР°РІРёР»СЊРЅРµ С–Рј'СЏ")]
     public string FullName { get; set; } = null!;
 
-    [Required(ErrorMessage = "Поле Email є обов'язковим")]
-    [EmailAddress(ErrorMessage = "Некоректний формат Email")]
+    [Required(ErrorMessage = "С‚Р°РєРёР№ Email СѓР¶Рµ Р·Р°СЂРµС”СЃС‚СЂРѕРІР°РЅРёР№")]
+    [EmailAddress(ErrorMessage = "Р’РІРµРґС–С‚СЊ Email")]
     public string Email { get; set; } = null!;
 
-    [Required(ErrorMessage = "Поле Пароль є обов'язковим")]
-    [StringLength(100, ErrorMessage = "Пароль має містити щонайменше {2} символів.", MinimumLength = 6)]
+    [Required(ErrorMessage = "РЅРµРєРѕСЂРµРєС‚РЅРёР№ РїР°СЂРѕР»СЊ")]
+    [StringLength(100, ErrorMessage = "РџСЂРёРґСѓРјР°Р№С‚Рµ РїР°СЂРѕР»СЊ", MinimumLength = 6)]
     [DataType(DataType.Password)]
     public string Password { get; set; } = null!;
 
     [DataType(DataType.Password)]
-    [Display(Name = "Підтвердження паролю")]
-    [Compare("Password", ErrorMessage = "Паролі не співпадають.")]
+    [Display(Name = "РџС–РґС‚РІРµСЂРґС–С‚СЊ РїР°СЂРѕР»СЊ")]
+    [Compare("Password", ErrorMessage = "РџР°СЂРѕР»С– РЅРµ Р·Р±С–РіР°СЋС‚СЊСЃСЏ")]
     public string ConfirmPassword { get; set; } = null!;
 }

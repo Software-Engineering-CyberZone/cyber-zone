@@ -9,6 +9,7 @@ public class BookingDto
     public DateTime EndTime { get; set; }
     public BookingStatus Status { get; set; }
     public string? Notes { get; set; }
+    public string? CancellationReason { get; set; }
   public Guid UserId { get; set; }
     public string? UserName { get; set; }
     public Guid HardwareId { get; set; }

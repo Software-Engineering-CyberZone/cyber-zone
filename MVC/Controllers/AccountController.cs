@@ -643,13 +643,22 @@ public class AccountController : Controller
         var bookings = await _context.Bookings
             .Include(b => b.Hardware).ThenInclude(h => h.Club)
             .Include(b => b.Tariff)
-            .Where(b => b.UserId == userId && b.Status == CyberZone.Domain.Enums.BookingStatus.Pending)
+            .Where(b => b.UserId == userId
+                     && (b.Status == CyberZone.Domain.Enums.BookingStatus.Pending
+                      || b.Status == CyberZone.Domain.Enums.BookingStatus.Confirmed
+                      || b.Status == CyberZone.Domain.Enums.BookingStatus.Cancelled))
             .ToListAsync();
 
         viewModels.AddRange(bookings.Select(b =>
         {
-            // Переводимо UTC час у Київський для красивого відображення
             var localStartTime = TimeZoneInfo.ConvertTimeFromUtc(b.StartTime, kyivZone);
+
+            var state = b.Status switch
+            {
+                CyberZone.Domain.Enums.BookingStatus.Confirmed => "Confirmed",
+                CyberZone.Domain.Enums.BookingStatus.Cancelled => "Cancelled",
+                _ => "Pending"
+            };
 
             return new SessionItemViewModel
             {
@@ -657,13 +666,11 @@ public class AccountController : Controller
                 ClubName = b.Hardware?.Club?.Name ?? "CyberZone Club",
                 Address = b.Hardware?.Club?.Address?.ToString() ?? "Адреса не вказана",
                 PcNumber = b.Hardware?.PcNumber ?? "N/A",
-
-                // Використовуємо наш локальний час для тексту
                 Date = localStartTime.ToString("dd.MM.yyyy"),
                 Time = localStartTime.ToString("HH:mm"),
-
                 Duration = Math.Round((b.EndTime - b.StartTime).TotalHours, 1).ToString() + " год.",
-                SessionState = "Pending",
+                SessionState = state,
+                CancellationReason = b.CancellationReason,
                 ClubId = b.Hardware?.Club?.Id ?? Guid.Empty,
                 SortDate = b.StartTime
             };

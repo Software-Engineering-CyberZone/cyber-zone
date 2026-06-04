@@ -15,4 +15,9 @@ public interface IBookingService
     /// and creates a Pending Booking.
     /// </summary>
     Task<Result<Guid>> CreateAsync(Guid userId, BookNowDto dto);
+
+    /// <summary>
+    /// Cancels a booking owned by the given user. Only Pending or Confirmed bookings can be cancelled.
+    /// </summary>
+    Task<Result> CancelAsync(Guid bookingId, Guid userId, string? reason);
 }

@@ -17,6 +17,9 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
         builder.Property(b => b.Notes)
             .HasMaxLength(1000);
 
+        builder.Property(b => b.CancellationReason)
+            .HasMaxLength(500);
+
         builder.HasOne(b => b.User)
                  .WithMany(u => u.Bookings)
            .HasForeignKey(b => b.UserId)

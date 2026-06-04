@@ -9,6 +9,7 @@ public class Booking : EntityBase, IAuditable
     public DateTime EndTime { get; set; }
     public BookingStatus Status { get; set; } = BookingStatus.Pending;
     public string? Notes { get; set; }
+    public string? CancellationReason { get; set; }
 
     public Guid UserId { get; set; }
     public User User { get; set; } = null!;

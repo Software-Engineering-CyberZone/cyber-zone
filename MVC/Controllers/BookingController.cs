@@ -67,6 +67,22 @@ public class BookingController : Controller
         return RedirectToAction("Sessions", "Account");
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Cancel(Guid id, string? reason)
+    {
+        var userId = GetUserId();
+        if (userId is null) return RedirectToAction("Login", "Account");
+
+        var result = await _bookingService.CancelAsync(id, userId.Value, reason);
+        if (result.IsFailure)
+            TempData["Error"] = result.Error;
+        else
+            TempData["SuccessMessage"] = "Бронювання скасовано.";
+
+        return RedirectToAction("Sessions", "Account");
+    }
+
     private Guid? GetUserId()
     {
         var raw = User.FindFirstValue(ClaimTypes.NameIdentifier);

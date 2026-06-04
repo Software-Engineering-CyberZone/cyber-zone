@@ -148,4 +148,30 @@ public class BookingService : IBookingService
 
         return Result.Success(booking.Id);
     }
+
+    public async Task<Result> CancelAsync(Guid bookingId, Guid userId, string? reason)
+    {
+        var booking = await _context.Bookings
+            .FirstOrDefaultAsync(b => b.Id == bookingId);
+
+        if (booking is null)
+            return Result.Failure("Бронювання не знайдено.");
+
+        if (booking.UserId != userId)
+            return Result.Failure("Немає доступу до цього бронювання.");
+
+        if (booking.Status != BookingStatus.Pending && booking.Status != BookingStatus.Confirmed)
+            return Result.Failure("Скасувати можна лише бронювання зі статусом «Очікує» або «Підтверджено».");
+
+        booking.Status = BookingStatus.Cancelled;
+        booking.CancellationReason = reason?.Trim();
+
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation(
+            "Booking {BookingId} cancelled by user {UserId}. Reason: {Reason}",
+            bookingId, userId, reason);
+
+        return Result.Success();
+    }
 }

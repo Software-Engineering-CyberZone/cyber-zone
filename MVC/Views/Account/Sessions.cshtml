@@ -94,17 +94,23 @@
                     <div class="s-col-pc">@session.PcNumber</div>
 
                     <div class="s-col-actions">
-                        @if (session.SessionState == "Pending")
+                        @if (session.SessionState == "Pending" || session.SessionState == "Confirmed")
                         {
                             <form asp-action="StartSession" method="post" style="margin: 0;">
                                 <input type="hidden" name="id" value="@session.Id" />
                                 <button type="submit" class="btn-s-start">Розпочати</button>
                             </form>
-    
-                            <form asp-action="CancelSession" method="post" style="margin: 0;">
-                                <input type="hidden" name="id" value="@session.Id" />
-                                <button type="submit" class="btn-s-cancel">Скасувати</button>
-                            </form>
+
+                            <button type="button" class="btn-s-cancel"
+                                    onclick="toggleCancelForm('@session.Id')">Скасувати</button>
+                        }
+                        else if (session.SessionState == "Cancelled")
+                        {
+                            <div class="status-badge-cancelled">Скасовано</div>
+                            @if (!string.IsNullOrWhiteSpace(session.CancellationReason))
+                            {
+                                <div class="cancellation-reason">Причина: @session.CancellationReason</div>
+                            }
                         }
                         else
                         {
@@ -118,6 +124,23 @@
                             }
                         }
                     </div>
+
+                    @if (session.SessionState == "Pending" || session.SessionState == "Confirmed")
+                    {
+                        <div class="cancel-form-wrapper" id="cancel-form-@session.Id" style="display:none;">
+                            <form asp-controller="Booking" asp-action="Cancel" method="post" class="review-inline-form">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@session.Id" />
+                                <textarea name="reason" class="review-textarea" maxlength="500"
+                                          placeholder="Причина скасування (необов'язково)..."></textarea>
+                                <div class="review-form-actions">
+                                    <button type="submit" class="btn-s-review-submit">Підтвердити скасування</button>
+                                    <button type="button" class="btn-s-review-cancel"
+                                            onclick="toggleCancelForm('@session.Id')">Назад</button>
+                                </div>
+                            </form>
+                        </div>
+                    }
 
                     @if (!session.HasReview && session.SessionState == "Completed")
                     {
@@ -147,4 +170,10 @@
 
 @section Scripts {
     <script src="~/js/sessions.js" asp-append-version="true"></script>
+    <script>
+        function toggleCancelForm(id) {
+            const el = document.getElementById('cancel-form-' + id);
+            if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+        }
+    </script>
 }
